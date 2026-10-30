@@ -8,18 +8,15 @@ export const config = {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // Controllo ambiente (Task FIX1)
-    const requiredEnv = ["OPENROUTER_API_KEY", "AI_CHAIN_TEXT", "AI_CHAIN_VISION"];
-    for (const envVar of requiredEnv) {
-      if (!process.env[envVar]) {
-        console.error(`Missing environment variable: ${envVar}`);
-        return res.status(500).json({ 
-          error: { 
-            code: "CONFIG_MISSING", 
-            message: "Configurazione del server incompleta. Contatta l'amministratore." 
-          } 
-        });
-      }
+    // Controllo ambiente (Solo la chiave è strettamente obbligatoria)
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("Missing environment variable: OPENROUTER_API_KEY");
+      return res.status(500).json({ 
+        error: { 
+          code: "CONFIG_MISSING", 
+          message: "Configurazione del server incompleta: manca OPENROUTER_API_KEY." 
+        } 
+      });
     }
 
     if (req.method !== "POST") {

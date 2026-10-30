@@ -33,13 +33,13 @@ export interface RunChainResult<T = any> {
 }
 
 // Catalogo OpenRouter verificato (Task 11a / 11b)
-// Modelli Text: google/gemini-2.5-flash -> meta-llama/llama-3.3-70b-instruct -> modelli free ordinati per capacità
+// Modelli Text: google/gemini-2.0-flash-001 -> meta-llama/llama-3.3-70b-instruct -> modelli free
 const DEFAULT_TEXT_CHAIN =
-  "google/gemini-2.5-flash,meta-llama/llama-3.3-70b-instruct,google/gemma-4-31b-it:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-26b-a4b-it:free";
+  "google/gemini-2.0-flash-001,meta-llama/llama-3.3-70b-instruct,google/gemma-2-9b-it:free,google/gemini-2.0-flash-exp:free";
 
-// Modelli Vision: google/gemini-2.5-flash -> modello free con supporto immagini (Google Gemma 4 31B)
+// Modelli Vision: google/gemini-2.0-flash-001 -> modelli free con visione
 const DEFAULT_VISION_CHAIN =
-  "google/gemini-2.5-flash,google/gemma-4-31b-it:free";
+  "google/gemini-2.0-flash-001,google/gemini-2.0-flash-exp:free";
 
 /**
  * Ottiene la lista ordinata dei modelli per il tipo di task specificato,
