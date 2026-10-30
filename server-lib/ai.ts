@@ -239,8 +239,8 @@ export async function runChain(
   options?: RunChainOptions
 ): Promise<RunChainResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENROUTER_API_KEY non è configurata nelle variabili d'ambiente.");
+  if (!apiKey || apiKey === "MY_OPENROUTER_API_KEY" || apiKey === "") {
+    throw new Error("OPENROUTER_API_KEY non configurata o non valida.");
   }
 
   const FALLBACK_TIMEOUT_MS = Number(process.env.FALLBACK_TIMEOUT_MS) || 60000;

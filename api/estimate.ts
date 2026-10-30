@@ -8,15 +8,9 @@ export const config = {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    // 1. Controllo ambiente (Solo la chiave è strettamente obbligatoria per partire)
+    // 1. Controllo ambiente (Logga avviso se manca la chiave, ma non blocca l'esecuzione)
     if (!process.env.OPENROUTER_API_KEY) {
-      console.error("Missing environment variable: OPENROUTER_API_KEY");
-      return res.status(500).json({ 
-        error: { 
-          code: "CONFIG_MISSING", 
-          message: "Configurazione del server incompleta: manca OPENROUTER_API_KEY." 
-        } 
-      });
+      console.warn("ATTENZIONE: OPENROUTER_API_KEY non configurata. L'IA non sarà disponibile.");
     }
 
     if (req.method !== "POST") {
