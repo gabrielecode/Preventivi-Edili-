@@ -114,7 +114,11 @@ Fornisci un'analisi tecnica in formato JSON rigoroso (nella lingua ${langNameFul
       schemaName: "photo_analysis_schema"
     });
 
-    const parsedResult = JSON.parse(aiResponse.text.trim());
+    let cleanJson = aiResponse.text.trim();
+    if (cleanJson.startsWith("```")) {
+      cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    }
+    const parsedResult = JSON.parse(cleanJson);
 
     return res.json({
       success: true,

@@ -8,15 +8,29 @@ export async function generateWithFallback(messages: Array<any>, options: {
   schemaName?: string;
   systemInstruction?: string;
   models?: string[];
+  isVision?: boolean;
 }): Promise<{ text: string; raw: any; modelUsed: string }> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error("OPENROUTER_API_KEY non è configurata nelle variabili d'ambiente.");
   }
 
-  const primaryModel = options.models?.[0] || process.env.OPENROUTER_MODEL_TEXT_PRIMARY || process.env.OPENROUTER_MODEL_VISION_PRIMARY || "deepseek/deepseek-chat";
-  const secondaryModel = options.models?.[1] || process.env.OPENROUTER_MODEL_TEXT_SECONDARY || process.env.OPENROUTER_MODEL_VISION_SECONDARY || "openai/gpt-4o-mini";
-  const tertiaryModel = options.models?.[2] || process.env.OPENROUTER_MODEL_TEXT_TERTIARY || process.env.OPENROUTER_MODEL_VISION_TERTIARY || "google/gemini-2.0-flash-001";
+  const hasImages = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
+  const isVision = options.isVision || hasImages;
+
+  const defaultPrimary = isVision
+    ? (process.env.OPENROUTER_MODEL_VISION_PRIMARY || "google/gemini-2.0-flash-001")
+    : (process.env.OPENROUTER_MODEL_TEXT_PRIMARY || "deepseek/deepseek-chat");
+  const defaultSecondary = isVision
+    ? (process.env.OPENROUTER_MODEL_VISION_SECONDARY || "openai/gpt-4o-mini")
+    : (process.env.OPENROUTER_MODEL_TEXT_SECONDARY || "openai/gpt-4o-mini");
+  const defaultTertiary = isVision
+    ? (process.env.OPENROUTER_MODEL_VISION_TERTIARY || "google/gemini-flash-1.5")
+    : (process.env.OPENROUTER_MODEL_TEXT_TERTIARY || "google/gemini-2.0-flash-001");
+
+  const primaryModel = options.models?.[0] || defaultPrimary;
+  const secondaryModel = options.models?.[1] || defaultSecondary;
+  const tertiaryModel = options.models?.[2] || defaultTertiary;
 
   const modelsToTry = [primaryModel, secondaryModel, tertiaryModel];
   let lastError: any = null;
@@ -325,7 +339,11 @@ Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella ling
   let aiInsights: any = {};
   if (resultText) {
     try {
-      aiInsights = JSON.parse(resultText.trim());
+      let cleanJson = resultText.trim();
+      if (cleanJson.startsWith("```")) {
+        cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+      }
+      aiInsights = JSON.parse(cleanJson);
     } catch (e) {
       console.warn("Impossibile parsare la risposta JSON da OpenRouter:", e);
     }
@@ -344,16 +362,21 @@ Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella ling
     };
   });
 
+  const finalProMinIncl = proTotalIncl * 0.9;
+  const finalProMaxIncl = proTotalIncl * 1.1;
+  const finalEstimatedSavings = Math.max(0, proTotalIncl - diyTotalIncl);
+
   return {
     success: true,
     country: targetCountry,
     sector: sectorInfo.name,
     mode: mode || "compare",
+    modelUsed: aiResponse.modelUsed,
     professionalEstimate: {
       totalExcl: Math.round(proTotalExcl * 100) / 100,
       totalIncl: Math.round(proTotalIncl * 100) / 100,
-      minIncl: Math.round(proMinIncl * 100) / 100,
-      maxIncl: Math.round(proMaxIncl * 100) / 100
+      minIncl: Math.round(finalProMinIncl * 100) / 100,
+      maxIncl: Math.round(finalProMaxIncl * 100) / 100
     },
     diyEstimate: {
       totalExcl: Math.round(diyTotalExcl * 100) / 100,
@@ -363,7 +386,7 @@ Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella ling
       estimatedHours: Math.round(totalDiyHours * 10) / 10,
       estimatedDays: Math.max(1, Math.ceil(totalDiyHours / 6))
     },
-    estimatedSavings: Math.round(estimatedSavings * 100) / 100,
+    estimatedSavings: Math.round(finalEstimatedSavings * 100) / 100,
     daAffidareAProfessionista,
     listinoBreakdown: detailedBreakdown,
     additionalItems: processedAdditionalItems,

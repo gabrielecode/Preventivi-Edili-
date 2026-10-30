@@ -1,13 +1,13 @@
 # Preventivo Casa & Fai da Te (Multilingual Construction & DIY Estimator)
 
-Un'applicazione web professionale Full-Stack (React SPA + Vercel Serverless Functions) per la stima dei costi di interventi edili e di ristrutturazione, con confronto in tempo reale tra **Fai da Te (DIY)** e **Professionista**, analisi basata su Intelligenza Artificiale (Google Gemini & OpenRouter Vision), calcoli di fattibilità, liste della spesa con sfrido, utensili (acquisto vs noleggio), permessi normativi per paese (Italia, Germania, Francia, Regno Unito) e generazione di computi in PDF.
+Un'applicazione web professionale Full-Stack (React SPA + Vercel Serverless Functions) per la stima dei costi di interventi edili e di ristrutturazione, con confronto in tempo reale tra **Fai da Te (DIY)** e **Professionista**, analisi basata su Intelligenza Artificiale (OpenRouter con fallback multi-modello per testo e vision), calcoli di fattibilità, liste della spesa con sfrido, utensili (acquisto vs noleggio), permessi normativi per paese (Italia, Germania, Francia, Regno Unito) e generazione di computi in PDF.
 
 ## 🚀 Caratteristiche Principali
 
 - **Confronto Fai da Te vs Professionista**: Calcolo dettagliato dei costi dei materiali, sfridi, attrezzatura (noleggio vs acquisto), ore stimate e risparmio rispetto al professionista.
 - **Calcoli Server-Side**: Tutti i calcoli economici (prezzi, IVA territoriale, sfrido, totali) avvengono in modo sicuro sul backend serverless.
-- **Intelligenza Artificiale Generativa**: Integrazione con Google Gemini (`@google/genai`) con policy di fallback a cascata (`gemini-3.5-flash`, `gemini-flash-latest`, `gemini-3.1-flash-lite`) per assicurare massima affidabilità anche in caso di sovraccarico.
-- **Analisi Foto con IA (Vision)**: Caricamento fino a 3 foto della stanza per rilevare criticità (muffa, crepe, umidità) e stimare automaticamente le dimensioni.
+- **Intelligenza Artificiale con Fallback**: Integrazione con OpenRouter API per stime e fattibilità con modelli testuali a cascata (DeepSeek V3, GPT-4o-mini, Gemini Flash) per assicurare massima affidabilità, basso costo e output JSON strutturato.
+- **Analisi Foto con IA (Vision)**: Caricamento fino a 3 foto della stanza per rilevare criticità (muffa, crepe, umidità) e stimare automaticamente le dimensioni con modelli vision a cascata.
 - **Multilingua e Internazionale**: Supporto completo per Italia, Germania, Francia e Regno Unito con aliquote IVA dedicate e traduzioni in IT, DE, FR, EN.
 - **Esportazione PDF & Richiesta Preventivi**: Generazione di computi metrici estimativi in PDF con `jspdf` e sistema di invio richieste ai professionisti partner.
 - **Rate Limiting e Storage Redis**: Protezione da abusi tramite Upstash Ratelimit e persistenza dei lead su Upstash Redis con fallback locale in sviluppo.
@@ -16,7 +16,7 @@ Un'applicazione web professionale Full-Stack (React SPA + Vercel Serverless Func
 
 - **Frontend**: React 19, Vite, Tailwind CSS, Lucide React, jsPDF.
 - **Backend**: Vercel Serverless Functions (`/api/*`), Node.js, TypeScript.
-- **AI**: `@google/genai` (SDK ufficiale Gemini), OpenRouter API (per analisi foto avanzata).
+- **AI**: OpenRouter API con architettura a cascata (fallback primario, secondario, terziario).
 - **Storage & Rate Limit**: Upstash Redis & Ratelimit.
 
 ## ⚙️ Configurazione e Avvio Locale
@@ -50,8 +50,10 @@ Segui questi passaggi per pubblicare l'applicazione su Vercel:
    - **Build Command**: `npm run build`
    - **Output Directory**: `dist`
 3. **Imposta le Variabili d'Ambiente** (in **Settings > Environment Variables**):
-   - `GEMINI_API_KEY`: La tua chiave API di Google Gemini.
    - `OPENROUTER_API_KEY`: La tua chiave API di OpenRouter.
+   - `OPENROUTER_MODEL_TEXT_PRIMARY`: `deepseek/deepseek-chat`
+   - `OPENROUTER_MODEL_TEXT_SECONDARY`: `openai/gpt-4o-mini`
+   - `OPENROUTER_MODEL_TEXT_TERTIARY`: `google/gemini-2.0-flash-001`
    - `OPENROUTER_MODEL_VISION_PRIMARY`: `google/gemini-2.0-flash-001`
    - `OPENROUTER_MODEL_VISION_SECONDARY`: `openai/gpt-4o-mini`
    - `OPENROUTER_MODEL_VISION_TERTIARY`: `google/gemini-flash-1.5`
