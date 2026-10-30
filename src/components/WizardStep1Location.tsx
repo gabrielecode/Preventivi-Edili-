@@ -1,11 +1,13 @@
 import React from "react";
 import { countriesList } from "../data/countries";
+import { TranslationDict } from "../data/translations";
 
 interface Props {
   selectedCountryId: string;
   setSelectedCountryId: (id: string) => void;
   selectedLanguage: string;
   setSelectedLanguage: (lang: string) => void;
+  t: TranslationDict;
 }
 
 export const WizardStep1Location: React.FC<Props> = ({
@@ -13,16 +15,17 @@ export const WizardStep1Location: React.FC<Props> = ({
   setSelectedCountryId,
   selectedLanguage,
   setSelectedLanguage,
+  t,
 }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 mb-1">Dove si trova il tuo cantiere e quale lingua preferisci?</h2>
-        <p className="text-sm text-slate-500">Seleziona il paese per calcolare le imposte IVA locali e i prezzi di riferimento corretti.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t.step1Title}</h2>
+        <p className="text-sm text-slate-500">{t.step1Desc}</p>
       </div>
 
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Paese di riferimento</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">{t.countrySelectLabel}</label>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {countriesList.map((country) => (
             <button
@@ -44,13 +47,13 @@ export const WizardStep1Location: React.FC<Props> = ({
       </div>
 
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Lingua dell'applicazione</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">{t.languageSelectLabel}</label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { code: "it", flag: "🇮🇹", label: "Italiano" },
-            { code: "de", flag: "🇩🇪", label: "Deutsch" },
-            { code: "fr", flag: "🇫🇷", label: "Français" },
-            { code: "en", flag: "🇬🇧", label: "English" },
+            { code: "it", flag: "🇮🇹", label: t.langIt },
+            { code: "de", flag: "🇩🇪", label: t.langDe },
+            { code: "fr", flag: "🇫🇷", label: t.langFr },
+            { code: "en", flag: "🇬🇧", label: t.langEn },
           ].map((lang) => (
             <button
               key={lang.code}

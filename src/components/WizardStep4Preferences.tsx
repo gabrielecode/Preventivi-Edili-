@@ -1,4 +1,5 @@
 import React from "react";
+import { TranslationDict } from "../data/translations";
 
 interface Props {
   mode: "diy" | "pro" | "compare";
@@ -9,6 +10,7 @@ interface Props {
   setSkillLevel: (s: "beginner" | "handy" | "expert") => void;
   siteDifficulty: "low" | "medium" | "high";
   setSiteDifficulty: (d: "low" | "medium" | "high") => void;
+  t: TranslationDict;
 }
 
 export const WizardStep4Preferences: React.FC<Props> = ({
@@ -20,22 +22,23 @@ export const WizardStep4Preferences: React.FC<Props> = ({
   setSkillLevel,
   siteDifficulty,
   setSiteDifficulty,
+  t,
 }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 mb-1">Come vuoi affrontare il lavoro?</h2>
-        <p className="text-sm text-slate-500">Definisci le modalità di esecuzione, la qualità dei materiali e le tue competenze.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t.step4Title}</h2>
+        <p className="text-sm text-slate-500">{t.step4Desc}</p>
       </div>
 
       {/* Modalità */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Modalità di stima</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">{t.modeSelectLabel}</label>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
-            { id: "compare", label: "Confronta entrambi", desc: "Valuta Fai da Te vs Professionista" },
-            { id: "pro", label: "Con professionista", desc: "Preventivo affidato a ditta" },
-            { id: "diy", label: "Solo Fai da Te", desc: "Calcolo materiali, attrezzi e ore" },
+            { id: "compare", label: t.modeCompareLabel, desc: t.modeCompareDesc },
+            { id: "pro", label: t.modeProLabel, desc: t.modeProDesc },
+            { id: "diy", label: t.modeDiyLabel, desc: t.modeDiyDesc },
           ].map((m) => (
             <button
               key={m.id}
@@ -56,12 +59,12 @@ export const WizardStep4Preferences: React.FC<Props> = ({
 
       {/* Qualità materiali */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Qualità dei materiali</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">{t.qualitySelectLabel}</label>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: "base", label: "Base", desc: "Economica / Standard" },
-            { id: "standard", label: "Standard", desc: "Ottimo rapporto qualità" },
-            { id: "premium", label: "Premium", desc: "Alta gamma e design" },
+            { id: "base", label: t.qualityBaseLabel, desc: t.qualityBaseDesc },
+            { id: "standard", label: t.qualityStandardLabel, desc: t.qualityStandardDesc },
+            { id: "premium", label: t.qualityPremiumLabel, desc: t.qualityPremiumDesc },
           ].map((q) => (
             <button
               key={q.id}
@@ -82,12 +85,12 @@ export const WizardStep4Preferences: React.FC<Props> = ({
 
       {/* Tua esperienza */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Tua esperienza nel fai da te</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">{t.skillSelectLabel}</label>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: "beginner", label: "Principiante", desc: "Primo lavoro manuale" },
-            { id: "handy", label: "So arrangiarmi", desc: "Buona manualità hobbista" },
-            { id: "expert", label: "Esperto", desc: "Competenze avanzate" },
+            { id: "beginner", label: t.skillBeginnerLabel, desc: t.skillBeginnerDesc },
+            { id: "handy", label: t.skillHandyLabel, desc: t.skillHandyDesc },
+            { id: "expert", label: t.skillExpertLabel, desc: t.skillExpertDesc },
           ].map((s) => (
             <button
               key={s.id}
@@ -108,12 +111,12 @@ export const WizardStep4Preferences: React.FC<Props> = ({
 
       {/* Difficoltà del cantiere */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">Difficoltà del cantiere</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2.5">{t.difficultySelectLabel}</label>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: "low", label: "Bassa", desc: "Locale sgombro, piano terra" },
-            { id: "medium", label: "Media", desc: "Accesso standard" },
-            { id: "high", label: "Alta", desc: "Altezze, spazi ristretti" },
+            { id: "low", label: t.difficultyLowLabel, desc: t.difficultyLowDesc },
+            { id: "medium", label: t.difficultyMediumLabel, desc: t.difficultyMediumDesc },
+            { id: "high", label: t.difficultyHighLabel, desc: t.difficultyHighDesc },
           ].map((d) => (
             <button
               key={d.id}

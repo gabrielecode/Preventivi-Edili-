@@ -1,719 +1,638 @@
 export interface TranslationDict {
   appName: string;
   appSubtitle: string;
-  // Sections
-  section1Title: string;
-  section1Desc: string;
-  section2Title: string;
-  section2Desc: string;
-  section3Title: string;
-  section3Desc: string;
-  section4Title: string;
-  section4Desc: string;
-  section5Title: string;
-  section5Desc: string;
-  section6Title: string;
-  section6Desc: string;
+  stepIndicator: string;
+  backBtn: string;
+  nextBtn: string;
+  generateBtn: string;
+  generatingBtn: string;
+  newEstimateBtn: string;
+  downloadPdfBtn: string;
+  copySummaryBtn: string;
+  copiedSummarySuccess: string;
+  shareBtn: string;
 
-  // Country & VAT
+  // Step 1
+  step1Title: string;
+  step1Desc: string;
   countrySelectLabel: string;
-  vatRateLabel: string;
-  currencyLabel: string;
-  vatTypeDefault: string;
+  languageSelectLabel: string;
+  langIt: string;
+  langDe: string;
+  langFr: string;
+  langEn: string;
 
-  // Sector and items
+  // Step 2
+  step2Title: string;
+  step2Desc: string;
   sectorSelectLabel: string;
-  noSectorsText: string;
-  specializationLabel: string;
-  specializationDesc: string;
-  allWorks: string;
+  availableWorksLabel: string;
+  selectedCountLabel: string;
   noItemsFound: string;
-  certificationsHeading: string;
-
-  // Selected list customizer
-  selectedWorksTitle: string;
-  selectedWorksCount: string;
-  unitPriceLabel: string;
   quantityLabel: string;
-  deleteBtnTooltip: string;
 
-  // Customer Details
-  customerNameLabel: string;
-  customerNamePlaceholder: string;
-  projectNameLabel: string;
-  projectNamePlaceholder: string;
+  // Step 3
+  step3Title: string;
+  step3Desc: string;
+  measureTipTitle: string;
+  measureTipDesc: string;
+  areaMqLabel: string;
+  areaMqPlaceholder: string;
+  lengthMlLabel: string;
+  lengthMlPlaceholder: string;
+  quantityCadLabel: string;
+  quantityCadPlaceholder: string;
   workDescriptionLabel: string;
   workDescriptionPlaceholder: string;
-  additionalNotesLabel: string;
-  additionalNotesPlaceholder: string;
 
-  // Company Details
-  companyLogoLabel: string;
-  dragLogoText: string;
-  orSelectText: string;
-  removeLogoBtn: string;
-  companyNameLabel: string;
-  companyNamePlaceholder: string;
-  companyVatLabel: string;
-  companyEmailLabel: string;
-  companyPhoneLabel: string;
-  companyAddressLabel: string;
-  companyAddressPlaceholder: string;
-  companyWebsiteLabel: string;
+  // Step 4
+  step4Title: string;
+  step4Desc: string;
+  modeSelectLabel: string;
+  modeCompareLabel: string;
+  modeCompareDesc: string;
+  modeProLabel: string;
+  modeProDesc: string;
+  modeDiyLabel: string;
+  modeDiyDesc: string;
+  qualitySelectLabel: string;
+  qualityBaseLabel: string;
+  qualityBaseDesc: string;
+  qualityStandardLabel: string;
+  qualityStandardDesc: string;
+  qualityPremiumLabel: string;
+  qualityPremiumDesc: string;
+  skillSelectLabel: string;
+  skillBeginnerLabel: string;
+  skillBeginnerDesc: string;
+  skillHandyLabel: string;
+  skillHandyDesc: string;
+  skillExpertLabel: string;
+  skillExpertDesc: string;
+  difficultySelectLabel: string;
+  difficultyLowLabel: string;
+  difficultyLowDesc: string;
+  difficultyMediumLabel: string;
+  difficultyMediumDesc: string;
+  difficultyHighLabel: string;
+  difficultyHighDesc: string;
 
-  // Metrics & Labor
-  metricsPanelTitle: string;
-  metricsPanelSubmit: string;
-  dimensionsTitle: string;
-  areaLabel: string;
-  lengthLabel: string;
-  piecesLabel: string;
-  laborConfigTitle: string;
-  laborConfigDesc: string;
-  hourlyRateLabel: string;
-  estimatedHoursLabel: string;
-  travelCostsLabel: string;
-  setupCostsLabel: string;
-  difficultyLabel: string;
-  difficultyLow: string;
-  difficultyMedium: string;
-  difficultyHigh: string;
-  materialsCustomerLabel: string;
-  materialsCustomerDesc: string;
-  discountLabel: string;
-
-  // Generation Panel
-  generateBtnText: string;
-  generatingBtnText: string;
-  generateErrorTitle: string;
-  retryBtnText: string;
-
-  // Preview / Right Panel tabs
-  tabPreview: string;
-  tabDataSign: string;
-  tabEmail: string;
-
-  // Under reconstruction
-  noQuoteGenerated: string;
-  noQuoteHint: string;
-  loadingQuoteTitle: string;
-  loadingQuoteDesc: string;
-
-  // Preview Header & Elements
-  quoteProfessionalTitle: string;
-  invoiceIdLabel: string;
-  issueDateLabel: string;
-  issuerLabel: string;
-  receiverLabel: string;
-  projectPrefix: string;
-  sectorPrefix: string;
-  countryPrefix: string;
-  vatRegimePrefix: string;
-
-  // Presentation letter & general
-  presentationLetterTitle: string;
+  // Step 5 (Results)
+  resultsTitle: string;
+  resultsSubtitle: string;
+  diyCardTitle: string;
+  diyCardDesc: string;
+  diySavingsLabel: string;
+  proCardTitle: string;
+  proCardKey: string;
+  proCardDesc: string;
+  proCardFeature: string;
   feasibilityTitle: string;
-  ratingLabel: string;
-  technicalAnalysisLabel: string;
-  potentialRisksLabel: string;
-  recommendationsLabel: string;
-  costsBreakdownTitle: string;
-  itemDescriptionHeader: string;
-  itemSourceHeader: string;
-  itemQtyHeader: string;
-  itemPriceHeader: string;
-  itemTotalHeader: string;
-  costsSubtotal: string;
-  costsTaxRate: string;
-  costsDiscount: string;
-  costsTotal: string;
-  estimatedTimeTitle: string;
-  localRegsAndCertsTitle: string;
-
-  // Signatures
-  clientSignatureLabel: string;
-  contractorSignatureLabel: string;
-
-  // PDF & Actions
-  downloadPdfBtn: string;
-  copyAllBtn: string;
-  copiedSuccess: string;
-
-  // Email Config Section
-  emailConfigTitle: string;
-  emailConfigDesc: string;
-  emailRecipientLabel: string;
-  emailSubjectLabel: string;
-  emailBodyLabel: string;
-  sendEmailBtn: string;
-  sendingEmailBtn: string;
-  emailSentSuccess: string;
-  emailSendError: string;
-  itLanguage: string;
-  deLanguage: string;
-  frLanguage: string;
-  enLanguage: string;
+  shoppingListTitle: string;
+  shoppingListDesc: string;
+  itemHeader: string;
+  netQtyHeader: string;
+  wasteQtyHeader: string;
+  estCostHeader: string;
+  toolsTitle: string;
+  toolsDesc: string;
+  toolsTotal: string;
+  noToolsText: string;
+  rentBetter: string;
+  buyBetter: string;
+  alreadyOwned: string;
+  proMandatoryTitle: string;
+  proMandatoryDesc: string;
+  stepsTitle: string;
+  stepsDesc: string;
+  diyTimeTotal: string;
+  safetyTitle: string;
+  safetyDesc: string;
+  mainRisks: string;
+  safetyRecs: string;
+  permitsTitle: string;
+  permitsDesc: string;
+  disclaimerTitle: string;
+  disclaimerText: string;
+  photoSectionTitle: string;
+  photoSectionDesc: string;
+  photoPrivacyNotice: string;
+  photoAnalyzeBtn: string;
+  photoAnalyzingBtn: string;
+  photoMeasureWarning: string;
+  photoErrorMax10M: string;
+  photoErrorInvalid: string;
+  photoErrorMaxCount: string;
+  detectedIssuesTitle: string;
+  visibleStateTitle: string;
+  confidenceLabel: string;
+  recommendationsTitle: string;
+  photoAnalysisSuccess: string;
 }
 
 export const translations: Record<string, TranslationDict> = {
   it: {
-    appName: "Preventivatore Edile Multilingua",
-    appSubtitle: "Computi metrici estimativi, conformità normativa locale ed elaborazione preventivi tramite Intelligenza Artificiale per artigiani europei.",
-    section1Title: "1. Selezione Collocazione Geografica dell'Opera",
-    section1Desc: "Definisci il paese in cui si svolgerà il cantiere per calcolare autonomamente le aliquote IVA territoriali e applicare i regolamenti di settore vigenti nel luogo di esecuzione.",
-    countrySelectLabel: "Nazione di Riferimento",
-    vatRateLabel: "Aliquota IVA Territoriale (%)",
-    currencyLabel: "Valuta Locale",
-    vatTypeDefault: "In base alla nazione selezionata",
+    appName: "Preventivo Casa & Fai da Te",
+    appSubtitle: "Stima costi, fattibilità e confronto Fai da Te vs Professionista con l'Intelligenza Artificiale",
+    stepIndicator: "Passo {currentStep} di 4",
+    backBtn: "Indietro",
+    nextBtn: "Avanti",
+    generateBtn: "Calcola Preventivo con IA",
+    generatingBtn: "Elaborazione IA in corso...",
+    newEstimateBtn: "Nuova Stima",
+    downloadPdfBtn: "Scarica PDF",
+    copySummaryBtn: "Copia riepilogo",
+    copiedSummarySuccess: "Riepilogo copiato!",
+    shareBtn: "Condividi",
 
-    section2Title: "2. Selezione Settore e Configurazione Listino Prezzi",
-    section2Desc: "Scegli il settore d'intervento di riferimento. Verrà precaricato il listino prezzi professionale compilato in conformità con i tariffari medi del paese selezionato.",
-    sectorSelectLabel: "Settore del Lavoratore",
-    noSectorsText: "Nessun settore configurato",
-    specializationLabel: "Seleziona Specializzazione (Menu a tendina)",
-    specializationDesc: "Sfoglia il catalogo completo filtrato per ambito d'intervento.",
-    allWorks: "Tutte le lavorazioni",
-    noItemsFound: "Nessuna lavorazione trovata per questa categoria selezionata.",
-    certificationsHeading: "Abilitazioni Normative Medie Settoriali Richieste:",
+    step1Title: "Dove si trova il tuo cantiere e quale lingua preferisci?",
+    step1Desc: "Seleziona il paese per calcolare le imposte IVA locali e i prezzi di riferimento corretti.",
+    countrySelectLabel: "Paese di riferimento",
+    languageSelectLabel: "Lingua dell'applicazione",
+    langIt: "Italiano",
+    langDe: "Deutsch",
+    langFr: "Français",
+    langEn: "English",
 
-    selectedWorksTitle: "Lavorazioni Selezionate per il Computo",
-    selectedWorksCount: "voci attive",
-    unitPriceLabel: "Prezzo Unitario Personalizzato",
-    quantityLabel: "Quantità/Volume",
-    deleteBtnTooltip: "Rimuovi voce",
+    step2Title: "Che tipo di lavoro vuoi realizzare?",
+    step2Desc: "Scegli il settore d'intervento e seleziona le lavorazioni specifiche desiderate.",
+    sectorSelectLabel: "Settore d'intervento",
+    availableWorksLabel: "Voci di lavorazione disponibili",
+    selectedCountLabel: "selezionate",
+    noItemsFound: "Nessuna lavorazione trovata per questa categoria.",
+    quantityLabel: "Q.tà",
 
-    section3Title: "3. Dati Generali del Progetto e del Committente",
-    section3Desc: "Inserisci l'intestatario del preventivo e descrivi liberamente i dettagli del cantiere per permettere all'IA di calcolare lavorazioni aggiuntive stimate.",
-    customerNameLabel: "Nome del Committente (Cliente) *",
-    customerNamePlaceholder: "Es. Condominio Primavera / Mario Rossi",
-    projectNameLabel: "Nome del Progetto / Cantiere *",
-    projectNamePlaceholder: "Es. Rifacimento Facciata Esterna",
-    workDescriptionLabel: "Descrizione Dettagliata dei Lavori (Input Libero) *",
-    workDescriptionPlaceholder: "Descrivi cosa deve essere fatto (es. pareti con muffa in soggiorno, montaggio di 4 finestre in PVC con smaltimento delle vecchie tapparelle, ecc.) per permettere all'IA di analizzare la fattibilità.",
-    additionalNotesLabel: "Note Aggiuntive dello Specialista (Opzionale)",
-    additionalNotesPlaceholder: "Rapporti di sopralluogo, preferenze materiali, note d'accesso al cantiere...",
+    step3Title: "Misure e descrizione del lavoro",
+    step3Desc: "Inserisci le dimensioni approssimative del cantiere e descrivi cosa desideri realizzare.",
+    measureTipTitle: "Suggerimento utile per le misure:",
+    measureTipDesc: "Misura larghezza × altezza delle pareti per calcolare i metri quadrati (mq). Per elementi lineari (battiscopa, tubi) misura lo sviluppo in metri lineari (ml). Sfrido: materiale in più che serve per tagli e scarti.",
+    areaMqLabel: "Superficie (mq)",
+    areaMqPlaceholder: "Es. 45",
+    lengthMlLabel: "Sviluppo lineare (ml)",
+    lengthMlPlaceholder: "Es. 12",
+    quantityCadLabel: "Numero elementi (cad)",
+    quantityCadPlaceholder: "Es. 4",
+    workDescriptionLabel: "Descrizione libera dei lavori *",
+    workDescriptionPlaceholder: "Descrivi dettagliatamente cosa deve essere fatto (es. imbiancare soggiorno con presenza di lieve umidità angolare, stuccatura crepe e rifinitura con due mani di idropittura lavabile)...",
 
-    section4Title: "4. Dati & Logo della Tua Impresa (Emittente)",
-    section4Desc: "Questi dati e il tuo logo aziendale verranno stampati automaticamente in alto nella testata del preventivo a schermo e nel PDF finale.",
-    companyLogoLabel: "Logo Aziendale / Marchio",
-    dragLogoText: "Trascina logo",
-    orSelectText: "o seleziona file",
-    removeLogoBtn: "Rimuovi Logo",
-    companyNameLabel: "Nome della Tua Ditta *",
-    companyNamePlaceholder: "Es. EdilArtigiana S.r.l.",
-    companyVatLabel: "Partita IVA / Codice Fiscale",
-    companyEmailLabel: "Indirizzo Email Ditta",
-    companyPhoneLabel: "Telefono Contatto",
-    companyAddressLabel: "Indirizzo Sede Legale / Operativa",
-    companyAddressPlaceholder: "Es. Via dell'Artigianato, 12 - 00100 Roma",
-    companyWebsiteLabel: "Sito Web Aziendale (Opzionale)",
+    step4Title: "Come vuoi affrontare il lavoro?",
+    step4Desc: "Definisci le modalità di esecuzione, la qualità dei materiali e le tue competenze.",
+    modeSelectLabel: "Modalità di stima",
+    modeCompareLabel: "Confronta entrambi",
+    modeCompareDesc: "Valuta Fai da Te vs Professionista",
+    modeProLabel: "Con professionista",
+    modeProDesc: "Preventivo affidato a ditta",
+    modeDiyLabel: "Solo Fai da Te",
+    modeDiyDesc: "Calcolo materiali, attrezzi e ore",
+    qualitySelectLabel: "Qualità dei materiali",
+    qualityBaseLabel: "Base",
+    qualityBaseDesc: "Economica / Standard",
+    qualityStandardLabel: "Standard",
+    qualityStandardDesc: "Ottimo rapporto qualità",
+    qualityPremiumLabel: "Premium",
+    qualityPremiumDesc: "Alta gamma e design",
+    skillSelectLabel: "Tua esperienza nel fai da te",
+    skillBeginnerLabel: "Principiante",
+    skillBeginnerDesc: "Primo lavoro manuale",
+    skillHandyLabel: "So arrangiarmi",
+    skillHandyDesc: "Buona manualità hobbista",
+    skillExpertLabel: "Esperto",
+    skillExpertDesc: "Competenze avanzate",
+    difficultySelectLabel: "Difficoltà del cantiere",
+    difficultyLowLabel: "Bassa",
+    difficultyLowDesc: "Locale sgombro, piano terra",
+    difficultyMediumLabel: "Media",
+    difficultyMediumDesc: "Accesso standard",
+    difficultyHighLabel: "Alta",
+    difficultyHighDesc: "Altezze, spazi ristretti",
 
-    section5Title: "5. Dimensioni, Difficoltà e Manodopera",
-    section5Desc: "Definisci le specifiche quantitative, la configurazione dei costi di manodopera, allestimento cantiere e logistica per una stima analitica di precisione.",
-    metricsPanelTitle: " Scorciatoie di Calcolo Metrico",
-    metricsPanelSubmit: "Usa come quantità dell'ultimo articolo selezionato",
-    dimensionsTitle: "Dimensioni di Riferimento del Cantiere (Compila se applicabili)",
-    areaLabel: "Superficie Totale (mq)",
-    lengthLabel: "Lunghezza / Sviluppo (ml)",
-    piecesLabel: "Pezzi / Elementi Totali (cad)",
-    laborConfigTitle: "Configurazione Manodopera e Costi di Logistica",
-    laborConfigDesc: "I costi indicati di seguito saranno computati matematicamente nel totale e considerati dall'IA.",
-    hourlyRateLabel: "Tariffa Oraria Lavoratore (€/ora)",
-    estimatedHoursLabel: "Ore Totali Previste",
-    travelCostsLabel: "Spese di Trasferta e Logistica",
-    setupCostsLabel: "Oneri Sicurezza e Allestimento",
-    difficultyLabel: "Difficoltà Cantiere",
-    difficultyLow: "Bassa difficulty (Cantiere lineare)",
-    difficultyMedium: "Media difficulty (Altezze o accessi standard)",
-    difficultyHigh: "Alta difficulty (Ambienti angusti o altezze elevate)",
-    materialsCustomerLabel: "Materiali di Consumo ed Edili",
-    materialsCustomerDesc: "Materiali forniti direttamente dal Cliente (Manodopera esclusa)",
-    discountLabel: "Sconto Forfettario Applicato sul Totale",
-
-    section6Title: "6. Analisi e Computazione Preventivo con IA Europea",
-    section6Desc: "L'Intelligenza Artificiale di Gemini analizzerà la fattibilità tecnica, elaborerà lavorazioni stimate mancanti nel rispetto dei regolamenti del paese, ed elaborerà una lettera formale completa.",
-    generateBtnText: "Analizza e Genera ed Elabora Preventivo con IA",
-    generatingBtnText: "Generazione in corso in corso (Cascata Modelli)...",
-    generateErrorTitle: "Errore di Generazione",
-    retryBtnText: "Riprova Generazione",
-
-    tabPreview: "Visualizzazione Preventivo",
-    tabDataSign: "Scheda Dati & Firma",
-    tabEmail: "Configurazione Email",
-
-    noQuoteGenerated: "Nessun preventivo elaborato",
-    noQuoteHint: "Compila i dati obbligatori sulla sinistra e premi il tasto di generazione per ottenere un intero computo metrico dettagliato calcolato tramite Intelligenza Artificiale.",
-    loadingQuoteTitle: "Calcolo Computo in corso...",
-    loadingQuoteDesc: "L'IA sta validando le lavorazioni, calcolando gli estimi e strutturando la proposta formale in base alla conformità locale. Attendi qualche istante...",
-
-    quoteProfessionalTitle: "PREVENTIVO PROFESSIONALE",
-    invoiceIdLabel: "Identificativo",
-    issueDateLabel: "Data Emissione",
-    issuerLabel: "EMITTENTE / DIRETTORE TECNICO",
-    receiverLabel: "COMMITTENTE & SITO OPERA",
-    projectPrefix: "PROGETTO",
-    sectorPrefix: "SETTORE",
-    countryPrefix: "PAESE",
-    vatRegimePrefix: "REGIME IVA",
-
-    presentationLetterTitle: "Lettera di Presentazione / Relazione Tecnica",
-    feasibilityTitle: "1. Esito ed Analisi di Fattibilità Tecnica",
-    ratingLabel: "Valutazione di cantiere",
-    technicalAnalysisLabel: "Analisi Tecnica",
-    potentialRisksLabel: "Rischi e Criticità Rilevate",
-    recommendationsLabel: "Raccomandazioni Operative & Best Practices",
-    costsBreakdownTitle: "2. Computo Metrico Estimativo Dettagliato",
-    itemDescriptionHeader: "Descrizione Lavorazione / Voce di Spesa",
-    itemSourceHeader: "Origine",
-    itemQtyHeader: "Q.tà",
-    itemPriceHeader: "Prezzo Unit.",
-    itemTotalHeader: "Totale",
-    costsSubtotal: "Imponibile Subtotale",
-    costsTaxRate: "Imposta IVA",
-    costsDiscount: "Sconto Applicato",
-    costsTotal: "TOTALE PREVENTIVO",
-    estimatedTimeTitle: "3. Tempi di Consegna e Cronoprogramma Stimato",
-    localRegsAndCertsTitle: "4. Riferimenti Normativi e Abilitazioni Obbligatorie",
-
-    clientSignatureLabel: "Firma del Committente per approvazione",
-    contractorSignatureLabel: "Sottoscrizione per",
-
-    downloadPdfBtn: "Esporta Computo in PDF",
-    copyAllBtn: "Copia Testo Preventivo",
-    copiedSuccess: "Preventivo copiato negli appunti!",
-
-    emailConfigTitle: "Configurazione ed Invio Mail al Cliente",
-    emailConfigDesc: "Invia direttamente il preventivo dettagliato via email in formato PDF allegato codificato in Base64.",
-    emailRecipientLabel: "Email del Destinatario (Cliente)",
-    emailSubjectLabel: "Oggetto della Mail",
-    emailBodyLabel: "Testo della Mail di Accompagnamento",
-    sendEmailBtn: "Invia Preventivo via Email",
-    sendingEmailBtn: "Invio in corso...",
-    emailSentSuccess: "Email inviata con successo! (Sandbox abilitata)",
-    emailSendError: "Errore durante l'invio della mail.",
-    itLanguage: "Italiano",
-    deLanguage: "Tedesco (Deutsch)",
-    frLanguage: "Francese (Français)",
-    enLanguage: "Inglese (English)"
+    resultsTitle: "Risultato della Stima & Analisi",
+    resultsSubtitle: "Analisi personalizzata per {country}",
+    diyCardTitle: "Fai da Te",
+    diyCardDesc: "Costo stimato materiali e attrezzi (IVA incl.)",
+    diySavingsLabel: "Risparmio stimato rispetto al professionista: ~{amount} {currency}",
+    proCardTitle: "Con Professionista",
+    proCardKey: "Chiavi in mano",
+    proCardDesc: "Intervallo di costo ditta (IVA incl.)",
+    proCardFeature: "Include manodopera specializzata, garanzia e conformità normativa.",
+    feasibilityTitle: "Fattibilità Fai da Te: {rating}",
+    shoppingListTitle: "Lista della Spesa & Materiali",
+    shoppingListDesc: "Quantità calcolate con percentuale di sfrido inclusa per evitare carenze in cantiere. (Sfrido: materiale in più che serve per tagli e scarti)",
+    itemHeader: "Materiale / Voce",
+    netQtyHeader: "Q.tà Netta",
+    wasteQtyHeader: "Q.tà con Sfrido",
+    estCostHeader: "Costo Stimato",
+    toolsTitle: "Attrezzatura & Utensili",
+    toolsDesc: "Confronto convenienza acquisto vs noleggio. Spunta gli attrezzi che possiedi già.",
+    toolsTotal: "Totale attrezzi",
+    noToolsText: "Nessun attrezzo speciale richiesto per queste lavorazioni.",
+    rentBetter: "Conviene noleggiare",
+    buyBetter: "Conviene acquistare",
+    alreadyOwned: "Ce l'ho già (0 €)",
+    proMandatoryTitle: "Lavori Obbligatoriamente da Affidare a Professionista",
+    proMandatoryDesc: "Per legge o per normative tecniche di sicurezza, alcune lavorazioni non possono essere eseguite in fai da te.",
+    stepsTitle: "Passi Operativi & Tempistiche",
+    stepsDesc: "Cronoprogramma stimato per l'esecuzione.",
+    diyTimeTotal: "Tempo stimato Fai da Te:",
+    safetyTitle: "Rischi, Sicurezza & DPI",
+    safetyDesc: "Dispositivi di protezione individuale e precauzioni.",
+    mainRisks: "Rischi principali",
+    safetyRecs: "Raccomandazioni di sicurezza",
+    permitsTitle: "Permessi, Autorizzazioni e Normative ({country})",
+    permitsDesc: "Adempimenti burocratici richiesti dalle normative locali vigenti.",
+    disclaimerTitle: "Avvertenza Importante e Limitazione di Responsabilità",
+    disclaimerText: "Stima indicativa non vincolante. I prezzi dei materiali e della manodopera possono variare in base alla zona geografica, alla stagionalità e alla complessità specifica del cantiere. Si consiglia vivamente di richiedere sempre almeno 2-3 preventivi scritti a professionisti abilitati prima di avviare qualsiasi intervento edile o impiantistico.",
+    photoSectionTitle: "Foto del locale (Opzionale)",
+    photoSectionDesc: "Carica fino a 3 foto per far analizzare lo stato, rilevare criticità e stimare automaticamente le misure.",
+    photoPrivacyNotice: "Le foto vengono elaborate in memoria solo per l'analisi e non vengono salvate sul server.",
+    photoAnalyzeBtn: "Analizza foto con IA",
+    photoAnalyzingBtn: "Analisi foto in corso...",
+    photoMeasureWarning: "Attenzione: le misure sono stimate dalle foto, verificale sempre con un metro.",
+    photoErrorMax10M: "Il file supera la dimensione massima di 10MB all'origine.",
+    photoErrorInvalid: "Il file selezionato non è un'immagine valida.",
+    photoErrorMaxCount: "Puoi caricare al massimo 3 foto.",
+    detectedIssuesTitle: "Criticità e problemi rilevati",
+    visibleStateTitle: "Stato visibile",
+    confidenceLabel: "Confidenza stima:",
+    recommendationsTitle: "Consigli e verifiche",
+    photoAnalysisSuccess: "Analisi completata! Misure e osservazioni aggiornate."
   },
   de: {
-    appName: "Mehrsprachiger Bau-Angebotsrechner",
-    appSubtitle: "Mengenberechnungen, Einhaltung lokaler Vorschriften und KI-gestützte Angebotserstellung für europäische Handwerker.",
-    section1Title: "1. Geografische Lage des Projekts wählen",
-    section1Desc: "Definieren Sie das Land, in dem das Projekt durchgeführt wird, um länderspezifische MwSt.-Sätze automatisch zu berechnen und geltende Bauvorschriften anzuwenden.",
+    appName: "Haus- & Heimwerker-Rechner",
+    appSubtitle: "Kostenschätzung, Machbarkeit und DIY-Vergleich vs. Profi mit Künstlicher Intelligenz",
+    stepIndicator: "Schritt {currentStep} von 4",
+    backBtn: "Zurück",
+    nextBtn: "Weiter",
+    generateBtn: "Angebot mit KI berechnen",
+    generatingBtn: "KI-Verarbeitung läuft...",
+    newEstimateBtn: "Neue Schätzung",
+    downloadPdfBtn: "PDF herunterladen",
+    copySummaryBtn: "Zusammenfassung kopieren",
+    copiedSummarySuccess: "Zusammenfassung kopiert!",
+    shareBtn: "Teilen",
+
+    step1Title: "Wo befindet sich Ihre Baustelle und welche Sprache bevorzugen Sie?",
+    step1Desc: "Wählen Sie das Land aus, um lokale Mehrwertsteuern und korrekte Referenzpreise zu berechnen.",
     countrySelectLabel: "Referenzland",
-    vatRateLabel: "Lokaler MwSt.-Satz (%)",
-    currencyLabel: "Lokale Währung",
-    vatTypeDefault: "Basierend auf dem ausgewählten Land",
+    languageSelectLabel: "Anwendungssprache",
+    langIt: "Italienisch",
+    langDe: "Deutsch",
+    langFr: "Französisch",
+    langEn: "Englisch",
 
-    section2Title: "2. Handwerksbereich & Preislistenkonfiguration",
-    section2Desc: "Wählen Sie Ihren Handwerksbereich. Die professionelle Preisliste für das ausgewählte Land wird automatisch geladen.",
-    sectorSelectLabel: "Handwerksbereich des Arbeiters",
-    noSectorsText: "Keine Handwerksbereiche konfiguriert",
-    specializationLabel: "Spezialisierung wählen (Drop-down-Menü)",
-    specializationDesc: "Durchsuchen Sie den vollständigen, nach Arbeitsbereich gefilterten Katalog.",
-    allWorks: "Alle Arbeiten",
-    noItemsFound: "Keine Arbeiten für diese ausgewählte Kategorie gefunden.",
-    certificationsHeading: "Geforderte bauaufsichtliche Zulassungen/Zertifizierungen:",
+    step2Title: "Welche Art von Arbeit möchten Sie ausführen?",
+    step2Desc: "Wählen Sie den Gewerbebereich und die gewünschten spezifischen Arbeitsschritte aus.",
+    sectorSelectLabel: "Gewerbebereich",
+    availableWorksLabel: "Verfügbare Arbeitspositionen",
+    selectedCountLabel: "ausgewählt",
+    noItemsFound: "Keine Arbeiten für diese Kategorie gefunden.",
+    quantityLabel: "Menge",
 
-    selectedWorksTitle: "Ausgewählte Arbeiten für das Angebot",
-    selectedWorksCount: "aktive Positionen",
-    unitPriceLabel: "Eigener Einheitspreis",
-    quantityLabel: "Menge/Volumen",
-    deleteBtnTooltip: "Position entfernen",
+    step3Title: "Maße und Arbeitsbeschreibung",
+    step3Desc: "Geben Sie die ungefähren Maße der Baustelle ein und beschreiben Sie Ihr Vorhaben.",
+    measureTipTitle: "Nützlicher Tipp für Messungen:",
+    measureTipDesc: "Messen Sie Breite × Höhe der Wände, um Quadratmeter (qm) zu berechnen. Für lineare Elemente (Fußleisten, Rohre) messen Sie in Laufmetern (lfm). Verschnitt: zusätzliches Material für Schnitte und Reste.",
+    areaMqLabel: "Fläche (qm)",
+    areaMqPlaceholder: "z.B. 45",
+    lengthMlLabel: "Laufmeter (lfm)",
+    lengthMlPlaceholder: "z.B. 12",
+    quantityCadLabel: "Anzahl Elemente (Stk)",
+    quantityCadPlaceholder: "z.B. 4",
+    workDescriptionLabel: "Freitextbeschreibung der Arbeiten *",
+    workDescriptionPlaceholder: "Beschreiben Sie detailliert, was gemacht werden muss (z.B. Wohnzimmer streichen bei leichter Eckenfeuchte, Risse verspachteln und mit zwei Lagen abwaschbarer Wandfarbe streichen)...",
 
-    section3Title: "3. Allgemeine Projekt- und Kundendaten",
-    section3Desc: "Geben Sie den Empfänger des Angebots ein und beschreiben Sie das Projekt frei, damit die KI zusätzliche geschätzte Arbeiten vorschlagen kann.",
-    customerNameLabel: "Name des Kunden (Auftraggeber) *",
-    customerNamePlaceholder: "z.B. Schmidt GmbH / Herr Max Mustermann",
-    projectNameLabel: "Projektname / Baustelle *",
-    projectNamePlaceholder: "z.B. Renovierung der Außenfassade",
-    workDescriptionLabel: "Detaillierte Arbeitsbeschreibung (Freitext) *",
-    workDescriptionPlaceholder: "Beschreiben Sie die auszuführenden Arbeiten (z.B. feuchte Wände im Wohnzimmer, Montage von 4 PVC-Fenstern inklusive Entsorgung der alten Rollläden), damit die KI die technische Machbarkeit prüfen kann.",
-    additionalNotesLabel: "Zusätzliche Notizen des Fachmanns (Optional)",
-    additionalNotesPlaceholder: "Ortstermine, Materialpräferenzen, Zugangshinweise zur Baustelle...",
+    step4Title: "Wie möchten Sie vorgehen?",
+    step4Desc: "Definieren Sie die Ausführungsmethode, Materialqualität und Ihre handwerklichen Fähigkeiten.",
+    modeSelectLabel: "Schätzungsmodus",
+    modeCompareLabel: "Beide vergleichen",
+    modeCompareDesc: "DIY vs. Profi bewerten",
+    modeProLabel: "Mit Profi",
+    modeProDesc: "Auftrag an Fachfirma vergeben",
+    modeDiyLabel: "Nur DIY (Heimwerken)",
+    modeDiyDesc: "Material, Werkzeug und Stunden berechnen",
+    qualitySelectLabel: "Materialqualität",
+    qualityBaseLabel: "Basis",
+    qualityBaseDesc: "Günstig / Standard",
+    qualityStandardLabel: "Standard",
+    qualityStandardDesc: "Gutes Preis-Leistungs-Verhältnis",
+    qualityPremiumLabel: "Premium",
+    qualityPremiumDesc: "High-End und Design",
+    skillSelectLabel: "Ihre Heimwerker-Erfahrung",
+    skillBeginnerLabel: "Anfänger",
+    skillBeginnerDesc: "Erste handwerkliche Arbeit",
+    skillHandyLabel: "Geschickt",
+    skillHandyDesc: "Gutes handwerkliches Geschick",
+    skillExpertLabel: "Experte",
+    skillExpertDesc: "Fortgeschrittene Kenntnisse",
+    difficultySelectLabel: "Baustellenschwierigkeit",
+    difficultyLowLabel: "Niedrig",
+    difficultyLowDesc: "Freier Raum, Erdgeschoss",
+    difficultyMediumLabel: "Mittel",
+    difficultyMediumDesc: "Standardzugang",
+    difficultyHighLabel: "Hoch",
+    difficultyHighDesc: "Große Höhe, enge Räume",
 
-    section4Title: "4. Daten & Logo Ihres Unternehmens (Aussteller)",
-    section4Desc: "Diese Daten und Ihr Logo werden automatisch oben im Angebot und im finalen PDF-Dokument abgedruckt.",
-    companyLogoLabel: "Firmenlogo / Marke",
-    dragLogoText: "Logo hierher ziehen",
-    orSelectText: "oder Datei auswählen",
-    removeLogoBtn: "Logo entfernen",
-    companyNameLabel: "Name Ihrer Firma *",
-    companyNamePlaceholder: "z.B. HandwerkPro GmbH",
-    companyVatLabel: "Umsatzsteuer-ID / Steuernummer",
-    companyEmailLabel: "E-Mail-Adresse der Firma",
-    companyPhoneLabel: "Kontakt-Telefonnummer",
-    companyAddressLabel: "Firmenadresse (Hauptsitz / Büro)",
-    companyAddressPlaceholder: "z.B. Hauptstraße 12, 10115 Berlin",
-    companyWebsiteLabel: "Firmenwebsite (Optional)",
-
-    section5Title: "5. Dimensionen, Schwierigkeit und Arbeitskraft",
-    section5Desc: "Definieren Sie Mengenspezifikationen, Arbeitskosten sowie Einrichtungs- und Logistikgebühren für ein hochpräzises Angebot.",
-    metricsPanelTitle: " Schnellrechner für Aufmaß",
-    metricsPanelSubmit: "Als Menge für das zuletzt ausgewählte Element verwenden",
-    dimensionsTitle: "Referenzmaße der Baustelle (Ausfüllen falls zutreffend)",
-    areaLabel: "Gesamtfläche (qm)",
-    lengthLabel: "Länge / Umfang (lfm)",
-    piecesLabel: "Gesamtstückzahl (Stk)",
-    laborConfigTitle: "Konfiguration Arbeitszeit und Logistikkosten",
-    laborConfigDesc: "Die folgenden Kosten werden mathematisch berechnet und fließen in das Angebot ein.",
-    hourlyRateLabel: "Stundensatz des Handwerkers (€/Std)",
-    estimatedHoursLabel: "Voraussichtliche Gesamtstunden",
-    travelCostsLabel: "Fahrtkosten & Logistikpauschale",
-    setupCostsLabel: "Baustelleneinrichtung & Sicherheit",
-    difficultyLabel: "Baustellenschwierigkeit",
-    difficultyLow: "Niedrige Schwierigkeit (Einfache Baustelle)",
-    difficultyMedium: "Mittlere Schwierigkeit (Standardhöhe / Standardzugang)",
-    difficultyHigh: "Hohe Schwierigkeit (Enge Verhältnisse / Große Höhen)",
-    materialsCustomerLabel: "Baumaterialien & Verbrauchsmaterial",
-    materialsCustomerDesc: "Material wird direkt vom Kunden bereitgestellt (Arbeitszeit exklusive)",
-    discountLabel: "Pauschalrabatt auf das Gesamtergebnis",
-
-    section6Title: "6. KI-Analyse und Angebotsberechnung (Europäischer Standard)",
-    section6Desc: "Die Gemini-KI prüft die technische Machbarkeit, ermittelt eventuell fehlende Arbeiten gemäß lokalen Richtlinien und verfasst ein formelles Anschreiben.",
-    generateBtnText: "Angebot per KI analysieren & erstellen",
-    generatingBtnText: "Angebot wird generiert (Kaskadierung)...",
-    generateErrorTitle: "Fehler bei der Generierung",
-    retryBtnText: "Generierung wiederholen",
-
-    tabPreview: "Angebotsansicht",
-    tabDataSign: "Datenblatt & Unterschrift",
-    tabEmail: "E-Mail-Konfiguration",
-
-    noQuoteGenerated: "Noch kein Angebot generiert",
-    noQuoteHint: "Füllen Sie die erforderlichen Daten auf der linken Seite aus und klicken Sie auf 'Generieren', um das vollständige Angebot per KI zu berechnen.",
-    loadingQuoteTitle: "Angebot wird berechnet...",
-    loadingQuoteDesc: "Die KI validiert die Arbeiten, berechnet Preise und strukturiert das formelle Dokument nach lokalen Compliance-Regularien. Bitte warten...",
-
-    quoteProfessionalTitle: "PROFESSIONELLES ANGEBOT",
-    invoiceIdLabel: "Angebot-ID",
-    issueDateLabel: "Erstellungsdatum",
-    issuerLabel: "AUSTELLER / TECHNISCHE LEITUNG",
-    receiverLabel: "AUFTRAGGEBER & PROJEKTORT",
-    projectPrefix: "PROJEKT",
-    sectorPrefix: "BEREICH",
-    countryPrefix: "LAND",
-    vatRegimePrefix: "STEUERSATZ",
-
-    presentationLetterTitle: "Anschreiben / Technische Baubeschreibung",
-    feasibilityTitle: "1. Technische Berechnungen und Machbarkeitsprüfung",
-    ratingLabel: "Baustellenbewertung",
-    technicalAnalysisLabel: "Technische Analyse",
-    potentialRisksLabel: "Erkannte Risiken & Herausforderungen",
-    recommendationsLabel: "Mitarbeiter-Empfehlungen & Best Practices",
-    costsBreakdownTitle: "2. Detaillierte Mengen- und Kostenaufstellung",
-    itemDescriptionHeader: "Bezeichnung der Leistung / Arbeitsposition",
-    itemSourceHeader: "Quelle",
-    itemQtyHeader: "Menge",
-    itemPriceHeader: "Einzelpreis",
-    itemTotalHeader: "Gesamt",
-    costsSubtotal: "Netto-Zwischensumme",
-    costsTaxRate: "Mehrwertsteuer",
-    costsDiscount: "Angewandter Rabatt",
-    costsTotal: "GESAMTSUMME ANGEBOT",
-    estimatedTimeTitle: "3. Voraussichtliche Bauzeit & Zeitplan",
-    localRegsAndCertsTitle: "4. Gesetzliche Vorschriften und Pflichtzertifikate",
-
-    clientSignatureLabel: "Unterschrift des Auftraggebers zur Freigabe",
-    contractorSignatureLabel: "Unterzeichnet für",
-
-    downloadPdfBtn: "Angebot als PDF exportieren",
-    copyAllBtn: "Angebotstext kopieren",
-    copiedSuccess: "Angebotstext in die Zwischenablage kopiert!",
-
-    emailConfigTitle: "E-Mail-Versand an den Kunden",
-    emailConfigDesc: "Senden Sie das detaillierte Angebot direkt als PDF-Anhang (Base64-kodiert) an Ihren Kunden.",
-    emailRecipientLabel: "Empfänger E-Mail (Kunde)",
-    emailSubjectLabel: "E-Mail-Betreff",
-    emailBodyLabel: "E-Mail-Begleittext",
-    sendEmailBtn: "Angebot per E-Mail senden",
-    sendingEmailBtn: "Wird gesendet...",
-    emailSentSuccess: "E-Mail erfolgreich versendet! (Sandbox-Modus)",
-    emailSendError: "Fehler beim E-Mail-Versand.",
-    itLanguage: "Italienisch",
-    deLanguage: "Deutsch",
-    frLanguage: "Französisch",
-    enLanguage: "Englisch"
+    resultsTitle: "Schätzungsergebnis & Analyse",
+    resultsSubtitle: "Maßgeschneiderte Analyse für {country}",
+    diyCardTitle: "Heimwerken (DIY)",
+    diyCardDesc: "Geschätzte Kosten für Material & Werkzeug (inkl. MwSt.)",
+    diySavingsLabel: "Geschätzte Ersparnis im Vergleich zum Profi: ~{amount} {currency}",
+    proCardTitle: "Mit Fachfirma (Profi)",
+    proCardKey: "Schlüsselfertig",
+    proCardDesc: "Unternehmenskosten (inkl. MwSt.)",
+    proCardFeature: "Inklusive Facharbeit, Gewährleistung und Normkonformität.",
+    feasibilityTitle: "DIY-Machbarkeit: {rating}",
+    shoppingListTitle: "Einkaufsliste & Materialien",
+    shoppingListDesc: "Mengen berechnet inkl. Verschnittprozentsatz zur Vermeidung von Materialengpässen. (Verschnitt: zusätzliches Material für Schnitte und Reste)",
+    itemHeader: "Material / Position",
+    netQtyHeader: "Nettomenge",
+    wasteQtyHeader: "Menge mit Verschnitt",
+    estCostHeader: "Geschätzte Kosten",
+    toolsTitle: "Werkzeuge & Geräte",
+    toolsDesc: "Vergleich Kaufen vs. Mieten. Haken Sie Werkzeuge an, die Sie bereits besitzen.",
+    toolsTotal: "Werkzeuge gesamt",
+    noToolsText: "Keine Spezialwerkzeuge für diese Arbeiten erforderlich.",
+    rentBetter: "Mieten lohnt sich",
+    buyBetter: "Kaufen lohnt sich",
+    alreadyOwned: "Bereits vorhanden (0 €)",
+    proMandatoryTitle: "Zwingend an Profi abzugebende Arbeiten",
+    proMandatoryDesc: "Aus rechtlichen oder sicherheitstechnischen Gründen dürfen bestimmte Arbeiten nicht in Eigenregie durchgeführt werden.",
+    stepsTitle: "Arbeitsschritte & Zeitplan",
+    stepsDesc: "Geschätzter Zeitplan für die Ausführung.",
+    diyTimeTotal: "Geschätzte DIY-Zeit:",
+    safetyTitle: "Risiken, Sicherheit & PSA",
+    safetyDesc: "Persönliche Schutzausrüstung und Vorsichtsmaßnahmen.",
+    mainRisks: "Hauptrisiken",
+    safetyRecs: "Sicherheitsempfehlungen",
+    permitsTitle: "Genehmigungen, Zulassungen und Vorschriften ({country})",
+    permitsDesc: "Behördliche Auflagen nach geltendem Ortsrecht.",
+    disclaimerTitle: "Wichtiger Hinweis & Haftungsausschluss",
+    disclaimerText: "Unverbindliche indikative Schätzung. Material- und Lohnkosten können je nach geografischer Lage, Saisonalität und Projektspezifik auftreten. Es wird dringend empfohlen, vor Beginn von Bau- oder Installationsarbeiten stets 2-3 schriftliche Angebote von zugelassenen Fachleuten einzuholen.",
+    photoSectionTitle: "Raumfotos (Optional)",
+    photoSectionDesc: "Laden Sie bis zu 3 Fotos hoch, um den Zustand analysieren, Probleme erkennen und Maße schätzen zu lassen.",
+    photoPrivacyNotice: "Fotos werden nur im Arbeitsspeicher für die Analyse verarbeitet und nicht auf dem Server gespeichert.",
+    photoAnalyzeBtn: "Fotos mit KI analysieren",
+    photoAnalyzingBtn: "Fotos werden analysiert...",
+    photoMeasureWarning: "Achtung: Maße sind aus Fotos geschätzt, bitte immer mit einem Maßband überprüfen.",
+    photoErrorMax10M: "Die Datei überschreitet die maximale Größe von 10 MB.",
+    photoErrorInvalid: "Die ausgewählte Datei ist kein gültiges Bild.",
+    photoErrorMaxCount: "Sie können maximal 3 Fotos hochladen.",
+    detectedIssuesTitle: "Erkannte Probleme",
+    visibleStateTitle: "Sichtbarer Zustand",
+    confidenceLabel: "Konfidenz der Schätzung:",
+    recommendationsTitle: "Empfehlungen & Überprüfungen",
+    photoAnalysisSuccess: "Analyse abgeschlossen! Maße und Beobachtungen aktualisiert."
   },
   fr: {
-    appName: "Estimateur de Devis Multilingue",
-    appSubtitle: "Métrés estimatifs, conformité réglementaire locale et génération de devis par Intelligence Artificielle pour les artisans européens.",
-    section1Title: "1. Localisation Géographique du Chantier",
-    section1Desc: "Définissez le pays du chantier pour calculer automatiquement les taux de TVA locaux et appliquer les réglementations de construction nationales en vigueur.",
-    countrySelectLabel: "Pays de Référence",
-    vatRateLabel: "Taux de TVA Local (%)",
-    currencyLabel: "Devise Locale",
-    vatTypeDefault: "Basé sur le pays sélectionné",
+    appName: "Calculateur Maison & Bricolage",
+    appSubtitle: "Estimation des coûts, faisabilité et comparatif DIY vs. Professionnel par Intelligence Artificielle",
+    stepIndicator: "Étape {currentStep} sur 4",
+    backBtn: "Retour",
+    nextBtn: "Suivant",
+    generateBtn: "Calculer le devis par IA",
+    generatingBtn: "Traitement IA en cours...",
+    newEstimateBtn: "Nouvelle estimation",
+    downloadPdfBtn: "Télécharger le PDF",
+    copySummaryBtn: "Copier le résumé",
+    copiedSummarySuccess: "Résumé copié !",
+    shareBtn: "Partager",
 
-    section2Title: "2. Choix du Secteur et Configuration du Tarif",
-    section2Desc: "Sélectionnez votre secteur d'activité. Le catalogue professionnel de prix moyens du pays cible sera automatiquement chargé.",
-    sectorSelectLabel: "Secteur Professionnel",
-    noSectorsText: "Aucun secteur configuré",
-    specializationLabel: "Sélectionner la spécialisation (Menu déroulant)",
-    specializationDesc: "Parcourez le catalogue complet des prestations de votre profession.",
-    allWorks: "Tous les travaux",
+    step1Title: "Où se situe votre chantier et quelle langue préférez-vous ?",
+    step1Desc: "Sélectionnez le pays pour calculer automatiquement la TVA locale et les prix de référence corrects.",
+    countrySelectLabel: "Pays de référence",
+    languageSelectLabel: "Langue de l'application",
+    langIt: "Italien",
+    langDe: "Allemand",
+    langFr: "Français",
+    langEn: "Anglais",
+
+    step2Title: "Quel type de travaux souhaitez-vous réaliser ?",
+    step2Desc: "Choisissez le secteur d'intervention et sélectionnez les prestations spécifiques souhaitées.",
+    sectorSelectLabel: "Secteur d'activité",
+    availableWorksLabel: "Prestations disponibles",
+    selectedCountLabel: "sélectionnées",
     noItemsFound: "Aucune prestation trouvée pour cette catégorie.",
-    certificationsHeading: "Homologations et qualifications professionnelles requises :",
+    quantityLabel: "Qté",
 
-    selectedWorksTitle: "Prestations Sélectionnées pour le Devis",
-    selectedWorksCount: "lignes actives",
-    unitPriceLabel: "Prix Unitaire Personnalisé",
-    quantityLabel: "Quantité / Volume",
-    deleteBtnTooltip: "Supprimer la prestation",
+    step3Title: "Mesures et description des travaux",
+    step3Desc: "Indiquez les dimensions approximatives du chantier et décrivez votre projet.",
+    measureTipTitle: "Conseil utile pour les mesures :",
+    measureTipDesc: "Mesurez la largeur × hauteur des murs pour calculer les mètres carrés (m²). Pour les éléments linéaires (plinthes, tuyaux), mesurez en mètres linéaires (ml). Chute : matériau supplémentaire nécessaire pour les coupes et déchets.",
+    areaMqLabel: "Superficie (m²)",
+    areaMqPlaceholder: "Ex. 45",
+    lengthMlLabel: "Linéaire (ml)",
+    lengthMlPlaceholder: "Ex. 12",
+    quantityCadLabel: "Nombre d'éléments (u)",
+    quantityCadPlaceholder: "Ex. 4",
+    workDescriptionLabel: "Description libre des travaux *",
+    workDescriptionPlaceholder: "Décrivez en détail ce qui doit être fait (ex: repeindre le salon avec présence d'humidité légère dans les angles, reboucher les fissures et finition avec deux couches de peinture lavable)...",
 
-    section3Title: "3. Informations Générales Projet & Client",
-    section3Desc: "Renseignez le nom du client et décrivez librement le chantier afin d'aider l'IA à suggérer d'éventuels travaux complémentaires.",
-    customerNameLabel: "Nom du Client (Maitre d'Ouvrage) *",
-    customerNamePlaceholder: "Ex. Copropriété Les Fleurs / M. Jean Dupont",
-    projectNameLabel: "Nom du Projet / Chantier *",
-    projectNamePlaceholder: "Ex. Rénovation de la Façade Extérieure",
-    workDescriptionLabel: "Description Détaillée des Travaux (Champ Libre) *",
-    workDescriptionPlaceholder: "Décrivez les travaux à effectuer (ex: murs humides dans le salon, pose de 4 fenêtres double vitrage PVC avec dépose des anciens volets roulants, etc.) afin que l'IA puisse étudier la faisabilité technique.",
-    additionalNotesLabel: "Notes Complémentaires de l'Artisan (Optionnel)",
-    additionalNotesPlaceholder: "Rapports de visite, préférences matériaux, contraintes d'accès au chantier...",
+    step4Title: "Comment souhaitez-vous procéder ?",
+    step4Desc: "Définissez le mode d'exécution, la qualité des matériaux et vos compétences.",
+    modeSelectLabel: "Mode d'estimation",
+    modeCompareLabel: "Comparer les deux",
+    modeCompareDesc: "Évaluer DIY vs. Professionnel",
+    modeProLabel: "Avec professionnel",
+    modeProDesc: "Devis confié à une entreprise",
+    modeDiyLabel: "DIY (Fait maison) uniquement",
+    modeDiyDesc: "Calcul des matériaux, outils et heures",
+    qualitySelectLabel: "Qualité des matériaux",
+    qualityBaseLabel: "Économique",
+    qualityBaseDesc: "Standard / Basique",
+    qualityStandardLabel: "Standard",
+    qualityStandardDesc: "Bon rapport qualité-prix",
+    qualityPremiumLabel: "Premium",
+    qualityPremiumDesc: "Haut de gamme et design",
+    skillSelectLabel: "Votre expérience en bricolage",
+    skillBeginnerLabel: "Débutant",
+    skillBeginnerDesc: "Premier travail manuel",
+    skillHandyLabel: "Bricoleur",
+    skillHandyDesc: "Bonne aisance manuelle",
+    skillExpertLabel: "Expert",
+    skillExpertDesc: "Compétences avancées",
+    difficultySelectLabel: "Difficulté du chantier",
+    difficultyLowLabel: "Faible",
+    difficultyLowDesc: "Pièce vide, rez-de-chaussée",
+    difficultyMediumLabel: "Moyenne",
+    difficultyMediumDesc: "Accès standard",
+    difficultyHighLabel: "Élevée",
+    difficultyHighDesc: "Hauteur, espaces restreints",
 
-    section4Title: "4. Coordonnées & Logo de Votre Entreprise (Émetteur)",
-    section4Desc: "Ces coordonnées et votre logo d'entreprise seront automatiquement imprimés sur l'en-tête du devis et du document PDF final.",
-    companyLogoLabel: "Logo de l'entreprise / Marque",
-    dragLogoText: "Glisser le logo ici",
-    orSelectText: "ou sélectionner un fichier",
-    removeLogoBtn: "Retirer le logo",
-    companyNameLabel: "Nom de Votre Entreprise *",
-    companyNamePlaceholder: "Ex. Art Batiment SAS",
-    companyVatLabel: "Numéro de TVA Intracommunautaire",
-    companyEmailLabel: "Email de l'Entreprise",
-    companyPhoneLabel: "Téléphone de Contact",
-    companyAddressLabel: "Adresse du Siège Social / Opérationnel",
-    companyAddressPlaceholder: "Ex. 12 rue des Artisans, 75001 Paris",
-    companyWebsiteLabel: "Site Web Professionnel (Optionnel)",
-
-    section5Title: "5. Dimensions, Difficulté et Main-d'œuvre",
-    section5Desc: "Définissez les spécifications quantitatives, les coûts de main-d'œuvre, d'installation de chantier et de logistique pour une précision optimale.",
-    metricsPanelTitle: " Raccourcis de calcul de métré",
-    metricsPanelSubmit: "Utiliser comme quantité pour le dernier élément sélectionné",
-    dimensionsTitle: "Dimensions de Référence du Chantier (Remplir si applicables)",
-    areaLabel: "Superficie Totale (m²)",
-    lengthLabel: "Longueur / Périphérie (ml)",
-    piecesLabel: "Nombre de pièces / Éléments (u)",
-    laborConfigTitle: "Configuration Main-d'œuvre et Coûts Logistiques",
-    laborConfigDesc: "Ces coûts ci-dessous seront calculés mathématiquement et intégrés au devis final.",
-    hourlyRateLabel: "Taux Horaire de l'Artisan (€/heure)",
-    estimatedHoursLabel: "Heures Totales Estimées",
-    travelCostsLabel: "Frais de Déplacement & Logistique",
-    setupCostsLabel: "Sécurité & Installation de Chantier",
-    difficultyLabel: "Difficulté du Chantier",
-    difficultyLow: "Difficulté faible (Chantier simple de plain-pied)",
-    difficultyMedium: "Difficulté moyenne (Hauteur ou accès standard)",
-    difficultyHigh: "Difficulté élevée (Espaces étroits, grande hauteur, etc.)",
-    materialsCustomerLabel: "Fourniture des Matériaux de Construction",
-    materialsCustomerDesc: "Matériaux fournis directement par le client (Main-d'œuvre seule)",
-    discountLabel: "Remise forfaitaire globale appliquée sur le total",
-
-    section6Title: "6. Analyse et Devis par IA Européenne",
-    section6Desc: "L'intelligence artificielle Gemini étudiera la faisabilité technique, calculera les coûts complémentaires et rédigera une lettre d'accompagnement officielle de haut niveau.",
-    generateBtnText: "Analyser et Générer le Devis par IA",
-    generatingBtnText: "Génération en cours (Modèles en cascade)...",
-    generateErrorTitle: "Erreur lors de la génération",
-    retryBtnText: "Réessayer la génération",
-
-    tabPreview: "Aperçu du Devis",
-    tabDataSign: "Fiche technique & Signature",
-    tabEmail: "Configuration Mail",
-
-    noQuoteGenerated: "Aucun devis généré pour le moment",
-    noQuoteHint: "Remplissez les informations obligatoires à gauche puis cliquez sur 'Générer' pour obtenir l'estimation complète par Intelligence Artificielle.",
-    loadingQuoteTitle: "Calcul du devis en cours...",
-    loadingQuoteDesc: "L'IA valide les travaux, évalue les prix et structure le devis conformément aux réglementations de construction locales. Veuillez patienter...",
-
-    quoteProfessionalTitle: "DEVIS PROFESSIONNEL",
-    invoiceIdLabel: "Référence",
-    issueDateLabel: "Date d'émission",
-    issuerLabel: "ÉMETTEUR / RESPONSABLE TECHNIQUE",
-    receiverLabel: "MAÎTRE D'OUVRAGE & CHANTIER",
-    projectPrefix: "PROJET",
-    sectorPrefix: "SECTEUR",
-    countryPrefix: "PAYS",
-    vatRegimePrefix: "RÉGIME TVA",
-
-    presentationLetterTitle: "Lettre d'Accompagnement / Rapport Technique",
-    feasibilityTitle: "1. Rapport de Faisabilité Technique",
-    ratingLabel: "Avis de faisabilité",
-    technicalAnalysisLabel: "Description Technique",
-    potentialRisksLabel: "Risques et Points de Vigilance",
-    recommendationsLabel: "Recommandations du Professionnel & Bonnes Pratiques",
-    costsBreakdownTitle: "2. Métré Descriptif et Estimatif Détaillé",
-    itemDescriptionHeader: "Description des Prestations / Postes de Dépense",
-    itemSourceHeader: "Origine",
-    itemQtyHeader: "Qté",
-    itemPriceHeader: "Prix Unitaire",
-    itemTotalHeader: "Total HT",
-    costsSubtotal: "Sous-total HT",
-    costsTaxRate: "Montant TVA",
-    costsDiscount: "Remise accordée",
-    costsTotal: "TOTAL DU DEVIS (TTC)",
-    estimatedTimeTitle: "3. Durée Estimée pour l'Exécution des Travaux",
-    localRegsAndCertsTitle: "4. Références Réglementaires & Assurances Obligatoires",
-
-    clientSignatureLabel: "Bon pour accord, signature du Client",
-    contractorSignatureLabel: "Signé pour l'entreprise",
-
-    downloadPdfBtn: "Exporter le Devis en PDF",
-    copyAllBtn: "Copier le texte du devis",
-    copiedSuccess: "Devis copié dans le presse-papiers !",
-
-    emailConfigTitle: "Configuration et Envoi du Mail au Client",
-    emailConfigDesc: "Envoyez directement le devis détaillé avec le document PDF joint (encodé en Base64) au client.",
-    emailRecipientLabel: "Email du Destinataire (Client)",
-    emailSubjectLabel: "Objet du Mail",
-    emailBodyLabel: "Texte d'accompagnement de l'email",
-    sendEmailBtn: "Envoyer le Devis par Mail",
-    sendingEmailBtn: "Envoi en cours...",
-    emailSentSuccess: "Email envoyé avec succès ! (Mode sandbox actif)",
-    emailSendError: "Une erreur est survenue lors de l'envoi de l'email.",
-    itLanguage: "Italien",
-    deLanguage: "Allemand",
-    frLanguage: "Français",
-    enLanguage: "Anglais"
+    resultsTitle: "Résultat de l'Estimation & Analyse",
+    resultsSubtitle: "Analyse personnalisée pour {country}",
+    diyCardTitle: "Fait Maison (DIY)",
+    diyCardDesc: "Coût estimé matériaux et outils (TTC)",
+    diySavingsLabel: "Économie estimée par rapport au professionnalisme : ~{amount} {currency}",
+    proCardTitle: "Avec un Professionnel",
+    proCardKey: "Clé en main",
+    proCardDesc: "Fourchette de prix entreprise (TTC)",
+    proCardFeature: "Inclut la main-d'œuvre qualifiée, la garantie et la conformité réglementaire.",
+    feasibilityTitle: "Faisabilité DIY : {rating}",
+    shoppingListTitle: "Liste de Courses & Matériaux",
+    shoppingListDesc: "Quantités calculées avec pourcentage de chute inclus pour éviter les pénuries sur chantier. (Chute : matériau supplémentaire nécessaire pour les coupes et déchets)",
+    itemHeader: "Matériau / Prestation",
+    netQtyHeader: "Qté Nette",
+    wasteQtyHeader: "Qté avec Chutes",
+    estCostHeader: "Coût Estimé",
+    toolsTitle: "Outillage & Équipement",
+    toolsDesc: "Comparatif achat vs. location. Cochez les outils que vous possédez déjà.",
+    toolsTotal: "Total outillage",
+    noToolsText: "Aucun outil spécial requis pour ces travaux.",
+    rentBetter: "Location plus avantageuse",
+    buyBetter: "Achat plus avantageuse",
+    alreadyOwned: "Déjà possédé (0 €)",
+    proMandatoryTitle: "Travaux Obligatoirement Confiés à un Professionnel",
+    proMandatoryDesc: "Pour des raisons légales ou de sécurité technique, certains travaux ne peuvent pas être réalisés en DIY.",
+    stepsTitle: "Étapes Opérationnelles & Planning",
+    stepsDesc: "Calendrier estimatif d'exécution.",
+    diyTimeTotal: "Temps estimé DIY :",
+    safetyTitle: "Risques, Sécurité & EPI",
+    safetyDesc: "Équipements de protection individuelle et précautions.",
+    mainRisks: "Principaux risques",
+    safetyRecs: "Recommandations de sécurité",
+    permitsTitle: "Permis, Autorisations et Réglementations ({country})",
+    permitsDesc: "Démarches administratives requises par les réglementations locales en vigueur.",
+    disclaimerTitle: "Avertissement Important et Limitation de Responsabilité",
+    disclaimerText: "Estimation indicative non contractuelle. Les prix des matériaux et de la main-d'œuvre peuvent varier selon la zone géographique, la saisonnalité et la complexité spécifique du chantier. Il est fortement conseillé de toujours demander au moins 2 à 3 devis écrits à des professionnels qualifiés avant d'entreprendre des travaux de construction ou d'installation.",
+    photoSectionTitle: "Photos de la pièce (Optionnel)",
+    photoSectionDesc: "Téléchargez jusqu'à 3 photos pour analyser l'état, détecter les problèmes et estimer automatiquement les dimensions.",
+    photoPrivacyNotice: "Les photos sont traitées en mémoire uniquement pour l'analyse et ne sont pas enregistrées sur le serveur.",
+    photoAnalyzeBtn: "Analyser les photos avec l'IA",
+    photoAnalyzingBtn: "Analyse des photos en cours...",
+    photoMeasureWarning: "Attention : les mesures sont estimées à partir des photos, vérifiez-les toujours avec un mètre.",
+    photoErrorMax10M: "Le fichier dépasse la taille maximale de 10 Mo.",
+    photoErrorInvalid: "Le fichier sélectionné n'est pas une image valide.",
+    photoErrorMaxCount: "Vous pouvez télécharger 3 photos maximum.",
+    detectedIssuesTitle: "Problèmes et défauts détectés",
+    visibleStateTitle: "État visible",
+    confidenceLabel: "Confiance de l'estimation :",
+    recommendationsTitle: "Conseils et vérifications",
+    photoAnalysisSuccess: "Analyse terminée ! Mesures et observations mises à jour."
   },
   en: {
-    appName: "Multilingual Construction Estimator",
-    appSubtitle: "Accurate quantity takeoffs, compliance with local regulations, and AI-powered quote generation for European trade contractors.",
-    section1Title: "1. Geographical Location of the Project",
-    section1Desc: "Select the country of the construction project to automatically apply territorial tax rates and localized trade building guidelines.",
-    countrySelectLabel: "Target Country",
-    vatRateLabel: "Territorial VAT Rate (%)",
-    currencyLabel: "Local Currency",
-    vatTypeDefault: "Based on selected country",
+    appName: "Home & DIY Estimator",
+    appSubtitle: "Cost estimation, feasibility, and DIY vs. Pro comparison powered by Artificial Intelligence",
+    stepIndicator: "Step {currentStep} of 4",
+    backBtn: "Back",
+    nextBtn: "Next",
+    generateBtn: "Calculate Estimate with AI",
+    generatingBtn: "AI Processing...",
+    newEstimateBtn: "New Estimate",
+    downloadPdfBtn: "Download PDF",
+    copySummaryBtn: "Copy Summary",
+    copiedSummarySuccess: "Summary copied!",
+    shareBtn: "Share",
 
-    section2Title: "2. Select Trade Sector & Configure Catalog",
-    section2Desc: "Pick your core trade sector. A professional base catalog will be loaded reflecting average material and trade prices for the target country.",
+    step1Title: "Where is your project located and which language do you prefer?",
+    step1Desc: "Select the project country to automatically calculate local VAT rates and correct reference prices.",
+    countrySelectLabel: "Reference Country",
+    languageSelectLabel: "Application Language",
+    langIt: "Italian",
+    langDe: "German",
+    langFr: "French",
+    langEn: "English",
+
+    step2Title: "What type of work do you want to do?",
+    step2Desc: "Choose your trade sector and select the specific work items you need.",
     sectorSelectLabel: "Trade Sector",
-    noSectorsText: "No trade sectors configured",
-    specializationLabel: "Select Sub-Category / Specialization (Dropdown)",
-    specializationDesc: "Browse the complete trade price catalog filtered by focus area.",
-    allWorks: "All work items",
-    noItemsFound: "No items found for the selected category.",
-    certificationsHeading: "Standard National Regulatory Accreditations / Requirements:",
+    availableWorksLabel: "Available Work Items",
+    selectedCountLabel: "selected",
+    noItemsFound: "No items found for this category.",
+    quantityLabel: "Qty",
 
-    selectedWorksTitle: "Selected Line Items for Estimation",
-    selectedWorksCount: "active items",
-    unitPriceLabel: "Override Unit Price",
-    quantityLabel: "Quantity / Volume",
-    deleteBtnTooltip: "Remove line item",
+    step3Title: "Measurements & Work Description",
+    step3Desc: "Enter approximate project dimensions and describe what you want to achieve.",
+    measureTipTitle: "Useful measurement tip:",
+    measureTipDesc: "Measure width × height of walls to calculate square meters (sqm). For linear items (baseboards, pipes), measure in linear meters (lm). Waste/scrap: extra material needed for cuts and waste.",
+    areaMqLabel: "Area (sqm)",
+    areaMqPlaceholder: "e.g. 45",
+    lengthMlLabel: "Linear length (lm)",
+    lengthMlPlaceholder: "e.g. 12",
+    quantityCadLabel: "Item count (pcs)",
+    quantityCadPlaceholder: "e.g. 4",
+    workDescriptionLabel: "Detailed work description *",
+    workDescriptionPlaceholder: "Describe in detail what needs to be done (e.g., painting living room with slight corner mold, filling cracks, and finishing with two coats of washable paint)...",
 
-    section3Title: "3. Project and Customer Profile Information",
-    section3Desc: "Input client registration details and write a general summary of the project to allow the AI to extract any additional estimated works.",
-    customerNameLabel: "Client / Customer Name *",
-    customerNamePlaceholder: "e.g., Spring Residences / John Smith",
-    projectNameLabel: "Project Title / Site Address *",
-    projectNamePlaceholder: "e.g., External Facade Painting",
-    workDescriptionLabel: "Detailed Work Specifications (Free Text Input) *",
-    workDescriptionPlaceholder: "Describe the tasks to be completed (e.g., removal of damp mold in living room, installing 4 PVC double-pane windows, and disposing of old rolling shutters) to let the AI estimate feasibility.",
-    additionalNotesLabel: "Contractor's Site Notes (Optional)",
-    additionalNotesPlaceholder: "Survey details, material preferences, specialized access, safety observations...",
+    step4Title: "How do you want to approach the work?",
+    step4Desc: "Define execution mode, material quality, and your skill level.",
+    modeSelectLabel: "Estimation Mode",
+    modeCompareLabel: "Compare both",
+    modeCompareDesc: "Evaluate DIY vs. Professional",
+    modeProLabel: "With professional",
+    modeProDesc: "Quote assigned to contractor",
+    modeDiyLabel: "DIY only",
+    modeDiyDesc: "Calculate materials, tools, and hours",
+    qualitySelectLabel: "Material Quality",
+    qualityBaseLabel: "Basic",
+    qualityBaseDesc: "Economical / Standard",
+    qualityStandardLabel: "Standard",
+    qualityStandardDesc: "Great value for money",
+    qualityPremiumLabel: "Premium",
+    qualityPremiumDesc: "High-end & design",
+    skillSelectLabel: "Your DIY Experience",
+    skillBeginnerLabel: "Beginner",
+    skillBeginnerDesc: "First manual project",
+    skillHandyLabel: "Handy",
+    skillHandyDesc: "Good hobbyist dexterity",
+    skillExpertLabel: "Expert",
+    skillExpertDesc: "Advanced skills",
+    difficultySelectLabel: "Site Difficulty",
+    difficultyLowLabel: "Low",
+    difficultyLowDesc: "Clear room, ground level",
+    difficultyMediumLabel: "Medium",
+    difficultyMediumDesc: "Standard access",
+    difficultyHighLabel: "High",
+    difficultyHighDesc: "Heights, tight spaces",
 
-    section4Title: "4. Company & Logo Details (Sender / Contractor)",
-    section4Desc: "These contractor details and company brand logo will be dynamically added to the document header and printable exports.",
-    companyLogoLabel: "Company Logo / Emblem",
-    dragLogoText: "Drag logo here",
-    orSelectText: "or choose file",
-    removeLogoBtn: "Remove Logo",
-    companyNameLabel: "Registered Trading Name *",
-    companyNamePlaceholder: "e.g., TradeCraft Builders Ltd",
-    companyVatLabel: "VAT ID Number / Tax Code",
-    companyEmailLabel: "Company Email Address",
-    companyPhoneLabel: "Contact Phone Number",
-    companyAddressLabel: "Trading / Registered Address",
-    companyAddressPlaceholder: "e.g., 12 Trade Way, London EC1A 1BB",
-    companyWebsiteLabel: "Company Website (Optional)",
-
-    section5Title: "5. Takeoff Dimensions, Site Conditions & Labor",
-    section5Desc: "Configure basic sizing parameters, labor rates, travel allowances, and installation setup fees for ultimate quote accuracy.",
-    metricsPanelTitle: " Quantity Takeoff Shortcuts",
-    metricsPanelSubmit: "Use as quantity for the last active item selected",
-    dimensionsTitle: "Reference Construction Sizing (Complete if applicable to scope)",
-    areaLabel: "Total Ground/Wall Area (sqm)",
-    lengthLabel: "Total Linear Length (lm)",
-    piecesLabel: "Total Items Count (pcs)",
-    laborConfigTitle: "Labor Overhead & Site Mobilization Fees",
-    laborConfigDesc: "These pricing configurations are calculated mathematically and fed into the AI models.",
-    hourlyRateLabel: "Hourly Trade Rate (Currency/hr)",
-    estimatedHoursLabel: "Total Predicted Trade Hours",
-    travelCostsLabel: "Travel & Mobilization Allowance",
-    setupCostsLabel: "Site Setup & Health & Safety Fees",
-    difficultyLabel: "Site Access / Difficulty Rating",
-    difficultyLow: "Low difficulty (Standard ground level, linear access)",
-    difficultyMedium: "Medium difficulty (Standard heights or typical obstacles)",
-    difficultyHigh: "High difficulty (Restricted spaces, high altitudes, scaffolding)",
-    materialsCustomerLabel: "Material Supply & Provisioning",
-    materialsCustomerDesc: "All structural materials directly supplied by the Client (Labor only)",
-    discountLabel: "Lump-Sum Discount to Apply on Total",
-
-    section6Title: "6. European AI Valuation & Generation Engine",
-    section6Desc: "The Gemini AI evaluates technical feasibility, proposes estimated ancillary works, verifies building codes, and writes a formal cover letter.",
-    generateBtnText: "Analyze and Build Estimate with AI",
-    generatingBtnText: "Generating Estimate (Model Fallback)...",
-    generateErrorTitle: "Generation Failure",
-    retryBtnText: "Retry Generation",
-
-    tabPreview: "Quote Document Preview",
-    tabDataSign: "Technical Data & Signatures",
-    tabEmail: "Email Dispatch Configuration",
-
-    noQuoteGenerated: "No quote generated yet",
-    noQuoteHint: "Fill out the required contractor and project parameters on the left and click 'Analyze' to produce a dynamic, legally compliant digital estimate.",
-    loadingQuoteTitle: "Generating takeoff details...",
-    loadingQuoteDesc: "The AI is auditing work compatibility, sizing local materials prices, and assembling compliance summaries. Please wait...",
-
-    quoteProfessionalTitle: "PROFESSIONAL CONSTRUCTION QUOTE",
-    invoiceIdLabel: "Quote Reference",
-    issueDateLabel: "Date of Issue",
-    issuerLabel: "SENDER / SENSOR ENGINEER / CONTRACTOR",
-    receiverLabel: "CLIENT & SITE LOCALE",
-    projectPrefix: "PROJECT",
-    sectorPrefix: "SECTOR",
-    countryPrefix: "COUNTRY",
-    vatRegimePrefix: "VAT REGIME",
-
-    presentationLetterTitle: "Artisan Presentation / Executive Project Summary",
-    feasibilityTitle: "1. Technical Site Assessment & Feasibility Report",
-    ratingLabel: "Feasibility rating",
-    technicalAnalysisLabel: "Technical Assessment",
-    potentialRisksLabel: "Identified Construction Risks & Obstacles",
-    recommendationsLabel: "Operation Recommendations & Local Workmanship Standards",
-    costsBreakdownTitle: "2. Detailed Estimative Cost Schedule",
-    itemDescriptionHeader: "Detailed Trade Work / Itemized Cost Schedule",
-    itemSourceHeader: "Source",
-    itemQtyHeader: "Qty",
-    itemPriceHeader: "Unit Price",
-    itemTotalHeader: "Line Total",
-    costsSubtotal: "Net Taxable Subtotal",
-    costsTaxRate: "Applied VAT / Sales Tax",
-    costsDiscount: "Applied Discount",
-    costsTotal: "TOTAL ESTIMATED QUOTE",
-    estimatedTimeTitle: "3. Execution Timeline & Scheduling Schedule",
-    localRegsAndCertsTitle: "4. Mandatory Standards & Building Code Requirements",
-
-    clientSignatureLabel: "Client Acceptance / Approval Signature",
-    contractorSignatureLabel: "Authorized Signature for",
-
-    downloadPdfBtn: "Export Estimate to PDF",
-    copyAllBtn: "Copy Quote Text",
-    copiedSuccess: "Quote text copied to clipboard!",
-
-    emailConfigTitle: "Email Dispatch & Client Presentation",
-    emailConfigDesc: "Email this complete formatted cost estimate to the customer as a Base64-encoded PDF attachment.",
-    emailRecipientLabel: "Recipient Email Address (Client)",
-    emailSubjectLabel: "Email Message Subject",
-    emailBodyLabel: "Covering Email Body Message Text",
-    sendEmailBtn: "Email Quote to Client",
-    sendingEmailBtn: "Dispatching...",
-    emailSentSuccess: "Email dispatched successfully! (App Sandbox Mode)",
-    emailSendError: "An error occurred during email transmission.",
-    itLanguage: "Italian",
-    deLanguage: "German",
-    frLanguage: "French",
-    enLanguage: "English"
+    resultsTitle: "Estimate Result & Analysis",
+    resultsSubtitle: "Customized analysis for {country}",
+    diyCardTitle: "Do It Yourself (DIY)",
+    diyCardDesc: "Estimated cost for materials & tools (incl. VAT)",
+    diySavingsLabel: "Estimated savings compared to professional: ~{amount} {currency}",
+    proCardTitle: "With a Professional",
+    proCardKey: "Turnkey",
+    proCardDesc: "Contractor cost range (incl. VAT)",
+    proCardFeature: "Includes skilled labor, warranty, and regulatory compliance.",
+    feasibilityTitle: "DIY Feasibility: {rating}",
+    shoppingListTitle: "Shopping List & Materials",
+    shoppingListDesc: "Quantities calculated with waste percentage included to prevent site shortages. (Waste/scrap: extra material needed for cuts and waste)",
+    itemHeader: "Material / Item",
+    netQtyHeader: "Net Qty",
+    wasteQtyHeader: "Qty with Waste",
+    estCostHeader: "Estimated Cost",
+    toolsTitle: "Tools & Equipment",
+    toolsDesc: "Comparison of buy vs. rent. Check the tools you already own.",
+    toolsTotal: "Tools total",
+    noToolsText: "No special tools required for these tasks.",
+    rentBetter: "Renting is cheaper",
+    buyBetter: "Buying is cheaper",
+    alreadyOwned: "Already owned (0 €)",
+    proMandatoryTitle: "Mandatory Work Items for Professionals",
+    proMandatoryDesc: "By law or technical safety regulations, certain tasks cannot be performed as DIY.",
+    stepsTitle: "Operational Steps & Schedule",
+    stepsDesc: "Estimated execution schedule.",
+    diyTimeTotal: "Estimated DIY time:",
+    safetyTitle: "Risks, Safety & PPE",
+    safetyDesc: "Personal protective equipment and precautions.",
+    mainRisks: "Main risks",
+    safetyRecs: "Safety recommendations",
+    permitsTitle: "Permits, Authorizations and Regulations ({country})",
+    permitsDesc: "Bureaucratic requirements under applicable local regulations.",
+    disclaimerTitle: "Important Disclaimer & Liability Limitation",
+    disclaimerText: "Non-binding indicative estimate. Material and labor costs may vary based on geographic location, seasonality, and specific project complexity. It is strongly advised to always request at least 2-3 written quotes from licensed professionals before starting any construction or installation work.",
+    photoSectionTitle: "Room Photos (Optional)",
+    photoSectionDesc: "Upload up to 3 photos to analyze conditions, detect issues, and automatically estimate dimensions.",
+    photoPrivacyNotice: "Photos are processed in memory solely for analysis and are not stored on the server.",
+    photoAnalyzeBtn: "Analyze Photos with AI",
+    photoAnalyzingBtn: "Analyzing photos...",
+    photoMeasureWarning: "Warning: measurements are estimated from photos, always verify with a tape measure.",
+    photoErrorMax10M: "File exceeds maximum size of 10MB.",
+    photoErrorInvalid: "Selected file is not a valid image.",
+    photoErrorMaxCount: "You can upload a maximum of 3 photos.",
+    detectedIssuesTitle: "Detected Issues & Problems",
+    visibleStateTitle: "Visible State",
+    confidenceLabel: "Estimation Confidence:",
+    recommendationsTitle: "Recommendations & Checks",
+    photoAnalysisSuccess: "Analysis complete! Measurements and observations updated."
   }
 };

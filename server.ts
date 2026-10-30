@@ -75,6 +75,159 @@ async function generateContentWithFallback(ai: any, contents: any, config: any):
   throw lastError;
 }
 
+/**
+ * Helper to call OpenRouter API with fallback across primary, secondary, and tertiary vision models.
+ * Uses direct fetch (no SDK), 45s timeout per attempt, 500ms delay between retries on error (429, 5xx, timeout).
+ * Requests JSON output with response_format json_schema, falls back to json_object if not supported,
+ * and validates schema server-side before returning.
+ */
+async function generateWithFallback(messages: Array<any>, options: {
+  temperature?: number;
+  max_tokens?: number;
+  jsonSchema?: any;
+  schemaName?: string;
+  systemInstruction?: string;
+}): Promise<{ text: string; raw: any; modelUsed: string }> {
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    throw new Error("OPENROUTER_API_KEY non è configurata nelle variabili d'ambiente.");
+  }
+
+  const primaryModel = process.env.OPENROUTER_MODEL_VISION_PRIMARY || "google/gemini-2.0-flash-001";
+  const secondaryModel = process.env.OPENROUTER_MODEL_VISION_SECONDARY || "openai/gpt-4o-mini";
+  const tertiaryModel = process.env.OPENROUTER_MODEL_VISION_TERTIARY || "google/gemini-flash-1.5";
+
+  const modelsToTry = [primaryModel, secondaryModel, tertiaryModel];
+  let lastError: any = null;
+
+  let fullMessages = [...messages];
+  if (options.systemInstruction) {
+    fullMessages = [
+      { role: "system", content: options.systemInstruction },
+      ...messages
+    ];
+  }
+
+  for (let i = 0; i < modelsToTry.length; i++) {
+    const currentModel = modelsToTry[i];
+    console.log(`[OpenRouter] Tentativo con il modello ${currentModel} (Tentativo ${i + 1}/${modelsToTry.length})...`);
+
+    let responseFormat: any = undefined;
+    if (options.jsonSchema) {
+      responseFormat = {
+        type: "json_schema",
+        json_schema: {
+          name: options.schemaName || "response_schema",
+          strict: false,
+          schema: options.jsonSchema
+        }
+      };
+    }
+
+    let success = false;
+    let data: any = null;
+
+    for (let formatAttempt = 0; formatAttempt < 2; formatAttempt++) {
+      if (formatAttempt === 1 && responseFormat?.type === "json_schema") {
+        console.log(`[OpenRouter] Fallback a response_format: json_object per ${currentModel}...`);
+        responseFormat = { type: "json_object" };
+      }
+
+      const requestBody: any = {
+        model: currentModel,
+        messages: fullMessages,
+      };
+      if (options.temperature !== undefined) requestBody.temperature = options.temperature;
+      if (options.max_tokens !== undefined) requestBody.max_tokens = options.max_tokens;
+      if (responseFormat) requestBody.response_format = responseFormat;
+
+      const headers: Record<string, string> = {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      };
+      if (process.env.APP_URL) {
+        headers["HTTP-Referer"] = process.env.APP_URL;
+      }
+      headers["X-Title"] = "Preventivatore Edile AI";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000); // 45 seconds timeout
+
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(requestBody),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          const errText = await res.text();
+          if ((res.status === 400 || res.status === 422) && responseFormat?.type === "json_schema" && formatAttempt === 0) {
+            console.warn(`[OpenRouter] Modello ${currentModel} non supporta json_schema (status ${res.status}), riprovo con json_object.`);
+            continue;
+          }
+          throw new Error(`OpenRouter API error (status ${res.status}): ${errText}`);
+        }
+
+        data = await res.json();
+        success = true;
+        break;
+      } catch (err: any) {
+        clearTimeout(timeoutId);
+        if (err.name === 'AbortError') {
+          lastError = new Error(`Timeout di 45 secondi scaduto per il modello ${currentModel}`);
+        } else {
+          lastError = err;
+        }
+        if (formatAttempt === 0 && responseFormat?.type === "json_schema") {
+          continue;
+        }
+        break;
+      }
+    }
+
+    if (success && data) {
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) {
+        lastError = new Error(`Risposta vuota da OpenRouter per il modello ${currentModel}`);
+      } else {
+        if (options.jsonSchema) {
+          try {
+            const parsed = JSON.parse(content);
+            if (options.jsonSchema.required && Array.isArray(options.jsonSchema.required)) {
+              for (const reqKey of options.jsonSchema.required) {
+                if (!(reqKey in parsed)) {
+                  console.warn(`[OpenRouter] Attenzione: la proprietà richiesta '${reqKey}' manca nella risposta JSON del modello ${currentModel}`);
+                }
+              }
+            }
+          } catch (parseErr) {
+            console.warn(`[OpenRouter] Attenzione: la risposta di ${currentModel} non è un JSON valido:`, parseErr);
+          }
+        }
+
+        console.log(`[OpenRouter] Fatto! Risposta completata usando il modello: ${currentModel}`);
+        return {
+          text: content,
+          raw: data,
+          modelUsed: currentModel
+        };
+      }
+    }
+
+    console.warn(`[OpenRouter] Errore riscontrato con il modello ${currentModel}:`, lastError?.message || lastError);
+
+    if (i < modelsToTry.length - 1) {
+      console.log(`[OpenRouter] Eseguo fallback al prossimo modello tra 500ms...`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+  }
+
+  throw lastError || new Error("Tutti i modelli OpenRouter hanno fallito la generazione.");
+}
+
 // API route to generate cost estimate
 app.post("/api/estimate", rateLimiter, async (req, res) => {
   try {
@@ -336,6 +489,118 @@ Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella ling
     console.error("Errore durante la stima del costo:", error);
     res.status(500).json({
       error: "Errore durante il calcolo della stima: " + (error.message || error)
+    });
+  }
+});
+
+// API route to analyze room photos with AI vision
+app.post("/api/analyze-photos", rateLimiter, async (req, res) => {
+  try {
+    const { photos, sectorId, workDescription, language } = req.body;
+
+    if (!photos || !Array.isArray(photos) || photos.length === 0) {
+      return res.status(400).json({ error: "Nessuna foto fornita per l'analisi." });
+    }
+    if (photos.length > 3) {
+      return res.status(400).json({ error: "Massimo 3 foto consentite." });
+    }
+
+    // Validate MIME types and structure
+    for (const photo of photos) {
+      const url = typeof photo === "string" ? photo : photo.dataUrl;
+      if (!url || !url.startsWith("data:image/")) {
+        return res.status(400).json({ error: "Formato immagine non valido. Sono accettati solo JPEG, PNG e WebP." });
+      }
+      const mimeMatch = url.match(/^data:(image\/(jpeg|png|webp));base64,/);
+      if (!mimeMatch) {
+        return res.status(400).json({ error: "Formato immagine non supportato. Utilizzare JPEG, PNG o WebP." });
+      }
+    }
+
+    const selectedLang = language || "it";
+    let langNameFull = "italiana";
+    if (selectedLang === "de") langNameFull = "tedesca (German)";
+    else if (selectedLang === "fr") langNameFull = "francese (French)";
+    else if (selectedLang === "en") langNameFull = "inglese (English)";
+
+    const sectorInfo = sectorPriceLists.find(s => s.id === sectorId) || sectorPriceLists[0];
+
+    const promptText = `
+Analizza le foto fornite per un cantiere nel settore "${sectorInfo.name}".
+Descrizione fornita dall'utente: "${workDescription || "Nessuna descrizione"}".
+
+Fornisci un'analisi tecnica in formato JSON rigoroso (nella lingua ${langNameFull}):
+1. **visibleState**: Descrizione dello stato visibile di pareti, pavimenti, infissi e superfici.
+2. **detectedIssues**: Array di problemi o criticità rilevate (es. presenza di muffa, umidità di risalita, crepe strutturali o d'intonaco, vecchi materiali sospetti come amianto o vecchi impianti).
+3. **suggestedDimensions**: Stima approssimativa basata sulle foto per:
+   - areaMq: numero stimato di metri quadrati (0 se non stimabile)
+   - lengthMl: numero stimato di metri lineari (0 se non stimabile)
+   - quantityCad: numero stimato di elementi (0 se non stimabile)
+4. **confidence**: Livello di confidenza della stima visiva ('alto', 'medio', 'basso').
+5. **recommendations**: Consigli su cosa misurare realmente con il metro e verifiche da compiere.
+`;
+
+    const imageContentParts = photos.map((p: any) => ({
+      type: "image_url",
+      image_url: {
+        url: typeof p === "string" ? p : p.dataUrl
+      }
+    }));
+
+    const messages = [
+      {
+        role: "user",
+        content: [
+          { type: "text", text: promptText },
+          ...imageContentParts
+        ]
+      }
+    ];
+
+    const jsonSchema = {
+      type: "object",
+      properties: {
+        visibleState: { type: "string" },
+        detectedIssues: {
+          type: "array",
+          items: { type: "string" }
+        },
+        suggestedDimensions: {
+          type: "object",
+          properties: {
+            areaMq: { type: "number" },
+            lengthMl: { type: "number" },
+            quantityCad: { type: "number" }
+          },
+          required: ["areaMq", "lengthMl", "quantityCad"]
+        },
+        confidence: { type: "string" },
+        recommendations: {
+          type: "array",
+          items: { type: "string" }
+        }
+      },
+      required: ["visibleState", "detectedIssues", "suggestedDimensions", "confidence", "recommendations"]
+    };
+
+    const aiResponse = await generateWithFallback(messages, {
+      systemInstruction: `Sei l'esperto ingegnere edile e perito di Preventivatore Edile. Analizzi le foto dei locali inviate dai clienti per stimare le condizioni, i problemi e le dimensioni approssimative, rispondendo sempre in JSON rigoroso nella lingua ${langNameFull}.`,
+      jsonSchema,
+      schemaName: "photo_analysis_schema"
+    });
+
+    const parsedResult = JSON.parse(aiResponse.text.trim());
+
+    res.json({
+      success: true,
+      modelUsed: aiResponse.modelUsed,
+      analysis: parsedResult
+    });
+
+  } catch (error: any) {
+    console.error("Errore durante l'analisi delle foto:", error);
+    res.status(500).json({
+      error: "Errore durante l'analisi delle foto: " + (error.message || error)
     });
   }
 });

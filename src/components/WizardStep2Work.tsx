@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { sectorPriceLists, PriceItem } from "../data/priceLists";
 import { Paintbrush, DoorOpen, Grid, Droplets, Zap, Check, Hammer } from "lucide-react";
 import { SelectedPrivateItem } from "../hooks/useEstimateState";
+import { TranslationDict } from "../data/translations";
 
 interface Props {
   selectedSectorId: string;
@@ -9,6 +10,7 @@ interface Props {
   selectedItems: SelectedPrivateItem[];
   handleToggleItem: (item: PriceItem) => void;
   handleUpdateQuantity: (id: string, qty: number) => void;
+  t: TranslationDict;
 }
 
 export const WizardStep2Work: React.FC<Props> = ({
@@ -17,6 +19,7 @@ export const WizardStep2Work: React.FC<Props> = ({
   selectedItems,
   handleToggleItem,
   handleUpdateQuantity,
+  t,
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const activeSector = sectorPriceLists.find((s) => s.id === selectedSectorId) || sectorPriceLists[0];
@@ -39,13 +42,13 @@ export const WizardStep2Work: React.FC<Props> = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 mb-1">Che tipo di lavoro vuoi realizzare?</h2>
-        <p className="text-sm text-slate-500">Scegli il settore d'intervento e seleziona le lavorazioni specifiche desiderate.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t.step2Title}</h2>
+        <p className="text-sm text-slate-500">{t.step2Desc}</p>
       </div>
 
       {/* Settori con icone */}
       <div>
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Settore d'intervento</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">{t.sectorSelectLabel}</label>
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {sectorPriceLists.map((sec) => {
             const isSelected = selectedSectorId === sec.id;
@@ -88,16 +91,16 @@ export const WizardStep2Work: React.FC<Props> = ({
         ))}
       </div>
 
-      {/* Voci del listino come scelta semplificata (senza prezzi min/max visibili) */}
+      {/* Voci del listino */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">Voci di lavorazione disponibili</label>
-          <span className="text-xs text-slate-500 font-medium">{selectedItems.length} selezionate</span>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">{t.availableWorksLabel}</label>
+          <span className="text-xs text-slate-500 font-medium">{selectedItems.length} {t.selectedCountLabel}</span>
         </div>
 
         <div className="grid grid-cols-1 gap-2.5 max-h-80 overflow-y-auto pr-1">
           {filteredItems.length === 0 ? (
-            <p className="text-sm text-slate-400 py-6 text-center">Nessuna lavorazione trovata per questa categoria.</p>
+            <p className="text-sm text-slate-400 py-6 text-center">{t.noItemsFound}</p>
           ) : (
             filteredItems.map((item) => {
               const selectedObj = selectedItems.find((i) => i.id === item.id);
@@ -128,14 +131,14 @@ export const WizardStep2Work: React.FC<Props> = ({
                       <p className="text-sm font-semibold text-slate-900">{item.name}</p>
                       <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>
                       <span className="inline-block mt-1 text-[11px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
-                        Unità di misura: {item.unit}
+                        {t.quantityLabel} ({item.unit})
                       </span>
                     </div>
                   </div>
 
                   {isSelected && (
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
-                      <span className="text-xs text-slate-500 font-medium">Q.tà ({item.unit}):</span>
+                      <span className="text-xs text-slate-500 font-medium">{t.quantityLabel} ({item.unit}):</span>
                       <input
                         type="number"
                         min="1"

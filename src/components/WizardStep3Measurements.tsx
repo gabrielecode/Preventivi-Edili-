@@ -1,5 +1,12 @@
 import React from "react";
-import { Info } from "lucide-react";
+import { Info, Camera, X, Sparkles, AlertTriangle, ShieldAlert } from "lucide-react";
+import { TranslationDict } from "../data/translations";
+
+interface PhotoItem {
+  id: string;
+  dataUrl: string;
+  name: string;
+}
 
 interface Props {
   areaMq: number;
@@ -10,6 +17,14 @@ interface Props {
   setQuantityCad: (val: number) => void;
   workDescription: string;
   setWorkDescription: (val: string) => void;
+  photos: PhotoItem[];
+  handleAddPhotos: (files: FileList | File[]) => void;
+  handleRemovePhoto: (id: string) => void;
+  photoAnalysisResult: any | null;
+  analyzingPhotos: boolean;
+  photoError: string | null;
+  analyzePhotos: () => void;
+  t: TranslationDict;
 }
 
 export const WizardStep3Measurements: React.FC<Props> = ({
@@ -21,55 +36,188 @@ export const WizardStep3Measurements: React.FC<Props> = ({
   setQuantityCad,
   workDescription,
   setWorkDescription,
+  photos,
+  handleAddPhotos,
+  handleRemovePhoto,
+  photoAnalysisResult,
+  analyzingPhotos,
+  photoError,
+  analyzePhotos,
+  t,
 }) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleAddPhotos(e.target.files);
+      e.target.value = "";
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-slate-900 mb-1">Misure e descrizione del lavoro</h2>
-        <p className="text-sm text-slate-500">Inserisci le dimensioni approssimative del cantiere e descrivi cosa desideri realizzare.</p>
+        <h2 className="text-xl font-bold text-slate-900 mb-1">{t.step3Title}</h2>
+        <p className="text-sm text-slate-500">{t.step3Desc}</p>
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-xs text-amber-900">
         <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
         <div>
-          <p className="font-semibold mb-0.5">Suggerimento utile per le misure:</p>
-          <p className="text-amber-800">Misura larghezza × altezza delle pareti per calcolare i metri quadrati (mq). Per elementi lineari (battiscopa, tubi) misura lo sviluppo in metri lineari (ml).</p>
+          <p className="font-semibold mb-0.5">{t.measureTipTitle}</p>
+          <p className="text-amber-800">{t.measureTipDesc}</p>
         </div>
       </div>
 
+      {/* Photo Upload Section */}
+      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+        <div>
+          <h3 className="text-sm font-bold text-slate-900 mb-0.5">{t.photoSectionTitle}</h3>
+          <p className="text-xs text-slate-500">{t.photoSectionDesc}</p>
+        </div>
+
+        {photoError && (
+          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span>{photoError}</span>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center gap-3">
+          {photos.map((photo) => (
+            <div key={photo.id} className="relative w-24 h-24 rounded-xl overflow-hidden border border-slate-300 shadow-sm bg-white group">
+              <img src={photo.dataUrl} alt={photo.name} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() => handleRemovePhoto(photo.id)}
+                className="absolute top-1 right-1 bg-slate-900/70 hover:bg-red-600 text-white p-1 rounded-full transition-colors cursor-pointer"
+                title="Rimuovi foto"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+
+          {photos.length < 3 && (
+            <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white hover:bg-blue-50/50 rounded-xl w-24 h-24 flex flex-col items-center justify-center cursor-pointer transition-all text-slate-500 hover:text-blue-600">
+              <Camera className="w-6 h-6 mb-1" />
+              <span className="text-[10px] font-semibold text-center px-1">Aggiungi foto</span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </label>
+          )}
+        </div>
+
+        <p className="text-[11px] text-slate-400 italic">
+          {t.photoPrivacyNotice}
+        </p>
+
+        {photos.length > 0 && (
+          <div className="pt-2 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={analyzePhotos}
+              disabled={analyzingPhotos}
+              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer disabled:opacity-50"
+            >
+              {analyzingPhotos ? (
+                <>
+                  <Sparkles className="w-4 h-4 animate-spin" /> {t.photoAnalyzingBtn}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" /> {t.photoAnalyzeBtn}
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Photo Analysis Results Card */}
+      {photoAnalysisResult && (
+        <div className="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-indigo-900 font-bold text-sm">
+              <Sparkles className="w-4 h-4 text-indigo-600" />
+              <span>Analisi IA delle foto completata</span>
+            </div>
+            <span className="bg-indigo-100 text-indigo-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+              {t.confidenceLabel} {photoAnalysisResult.confidence}
+            </span>
+          </div>
+
+          <p className="text-xs text-indigo-950 leading-relaxed">
+            <strong className="font-semibold">{t.visibleStateTitle}:</strong> {photoAnalysisResult.visibleState}
+          </p>
+
+          {photoAnalysisResult.detectedIssues && photoAnalysisResult.detectedIssues.length > 0 && (
+            <div>
+              <p className="text-xs font-bold text-indigo-950 mb-1">{t.detectedIssuesTitle}:</p>
+              <ul className="list-disc list-inside text-xs text-indigo-900 space-y-0.5">
+                {photoAnalysisResult.detectedIssues.map((issue: string, idx: number) => (
+                  <li key={idx}>{issue}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {photoAnalysisResult.recommendations && photoAnalysisResult.recommendations.length > 0 && (
+            <div>
+              <p className="text-xs font-bold text-indigo-950 mb-1">{t.recommendationsTitle}:</p>
+              <ul className="list-disc list-inside text-xs text-indigo-900 space-y-0.5">
+                {photoAnalysisResult.recommendations.map((rec: string, idx: number) => (
+                  <li key={idx}>{rec}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="bg-white/80 border border-indigo-100 rounded-xl p-3 flex gap-2 text-xs text-indigo-900">
+            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+            <p className="font-medium">{t.photoMeasureWarning}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Dimensions inputs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Superficie (mq)</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">{t.areaMqLabel}</label>
           <input
             type="number"
             min="0"
             value={areaMq || ""}
             onChange={(e) => setAreaMq(Number(e.target.value))}
-            placeholder="Es. 45"
+            placeholder={t.areaMqPlaceholder}
             className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Sviluppo lineare (ml)</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">{t.lengthMlLabel}</label>
           <input
             type="number"
             min="0"
             value={lengthMl || ""}
             onChange={(e) => setLengthMl(Number(e.target.value))}
-            placeholder="Es. 12"
+            placeholder={t.lengthMlPlaceholder}
             className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">Numero elementi (cad)</label>
+          <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">{t.quantityCadLabel}</label>
           <input
             type="number"
             min="0"
             value={quantityCad || ""}
             onChange={(e) => setQuantityCad(Number(e.target.value))}
-            placeholder="Es. 4"
+            placeholder={t.quantityCadPlaceholder}
             className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -77,13 +225,13 @@ export const WizardStep3Measurements: React.FC<Props> = ({
 
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-          Descrizione libera dei lavori *
+          {t.workDescriptionLabel}
         </label>
         <textarea
           rows={4}
           value={workDescription}
           onChange={(e) => setWorkDescription(e.target.value)}
-          placeholder="Descrivi dettagliatamente cosa deve essere fatto (es. imbiancare soggiorno con presenza di lieve umidità angolare, stuccatura crepe e rifinitura con due mani di idropittura lavabile)..."
+          placeholder={t.workDescriptionPlaceholder}
           className="w-full px-3.5 py-3 bg-white border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
         />
       </div>

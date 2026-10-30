@@ -5,7 +5,7 @@ import { WizardStep1Location } from "./components/WizardStep1Location";
 import { WizardStep2Work } from "./components/WizardStep2Work";
 import { WizardStep3Measurements } from "./components/WizardStep3Measurements";
 import { WizardStep4Preferences } from "./components/WizardStep4Preferences";
-import { ResultsPreview } from "./components/ResultsPreview";
+import { EstimateResult } from "./components/EstimateResult";
 
 export default function App() {
   const {
@@ -40,8 +40,15 @@ export default function App() {
     errorMsg,
     quoteResult,
     activeCountry,
-    activeSector,
+    t,
     generateEstimate,
+    photos,
+    handleAddPhotos,
+    handleRemovePhoto,
+    photoAnalysisResult,
+    analyzingPhotos,
+    photoError,
+    analyzePhotos,
   } = useEstimateState();
 
   return (
@@ -55,10 +62,10 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-lg font-bold tracking-tight text-slate-950 flex items-center gap-2">
-                Preventivo Casa & Fai da Te <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold">{activeCountry.name} {activeCountry.flag}</span>
+                {t.appName} <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-xs font-semibold">{activeCountry.name} {activeCountry.flag}</span>
               </h1>
               <p className="text-xs text-slate-500">
-                Stima costi, fattibilità e confronto Fai da Te vs Professionista con l'Intelligenza Artificiale
+                {t.appSubtitle}
               </p>
             </div>
           </div>
@@ -66,7 +73,7 @@ export default function App() {
       </header>
 
       {/* Wizard Container */}
-      <main className="flex-1 max-w-3xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
+      <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8">
           
           {/* Step Indicator */}
@@ -89,7 +96,7 @@ export default function App() {
                 ))}
               </div>
               <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                Passo {currentStep} di 4
+                {t.stepIndicator.replace("{currentStep}", String(currentStep))}
               </span>
             </div>
           )}
@@ -108,6 +115,7 @@ export default function App() {
                 setSelectedCountryId={setSelectedCountryId}
                 selectedLanguage={selectedLanguage}
                 setSelectedLanguage={setSelectedLanguage}
+                t={t}
               />
             )}
 
@@ -118,6 +126,7 @@ export default function App() {
                 selectedItems={selectedItems}
                 handleToggleItem={handleToggleItem}
                 handleUpdateQuantity={handleUpdateQuantity}
+                t={t}
               />
             )}
 
@@ -131,6 +140,14 @@ export default function App() {
                 setQuantityCad={setQuantityCad}
                 workDescription={workDescription}
                 setWorkDescription={setWorkDescription}
+                photos={photos}
+                handleAddPhotos={handleAddPhotos}
+                handleRemovePhoto={handleRemovePhoto}
+                photoAnalysisResult={photoAnalysisResult}
+                analyzingPhotos={analyzingPhotos}
+                photoError={photoError}
+                analyzePhotos={analyzePhotos}
+                t={t}
               />
             )}
 
@@ -144,13 +161,18 @@ export default function App() {
                 setSkillLevel={setSkillLevel}
                 siteDifficulty={siteDifficulty}
                 setSiteDifficulty={setSiteDifficulty}
+                t={t}
               />
             )}
 
             {currentStep === 5 && quoteResult && (
-              <ResultsPreview
+              <EstimateResult
                 quoteResult={quoteResult}
+                selectedItems={selectedItems}
+                mode={mode}
+                activeCountry={activeCountry}
                 onReset={() => setCurrentStep(1)}
+                t={t}
               />
             )}
           </div>
@@ -168,7 +190,7 @@ export default function App() {
                 }`}
                 type="button"
               >
-                <ChevronLeft className="w-4 h-4" /> Indietro
+                <ChevronLeft className="w-4 h-4" /> {t.backBtn}
               </button>
 
               {currentStep < 4 ? (
@@ -177,7 +199,7 @@ export default function App() {
                   className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-blue-200 transition-all cursor-pointer"
                   type="button"
                 >
-                  Avanti <ChevronRight className="w-4 h-4" />
+                  {t.nextBtn} <ChevronRight className="w-4 h-4" />
                 </button>
               ) : (
                 <button
@@ -188,11 +210,11 @@ export default function App() {
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" /> Elaborazione IA in corso...
+                      <Loader2 className="w-4 h-4 animate-spin" /> {t.generatingBtn}
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" /> Calcola Preventivo con IA
+                      <Sparkles className="w-4 h-4" /> {t.generateBtn}
                     </>
                   )}
                 </button>
