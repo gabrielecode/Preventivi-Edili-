@@ -80,6 +80,12 @@ export const Footer: React.FC = () => {
               >
                 {t.navPrivacy}
               </Link>
+              <Link
+                to="/tecnica"
+                className="text-slate-300 hover:text-white transition-colors"
+              >
+                {t.navTechnical}
+              </Link>
               <a
                 href="/#faq"
                 onClick={handleFaqClick}

@@ -18,6 +18,7 @@ import { CookieBanner } from "./components/pwa/CookieBanner";
 const LazyWizardPage = lazy(() => import("./pages/WizardPage").then(m => ({ default: m.WizardPage })));
 const LazyDashboardPage = lazy(() => import("./pages/DashboardPage").then(m => ({ default: m.DashboardPage })));
 const LazyAdminPage = lazy(() => import("./pages/AdminPage").then(m => ({ default: m.AdminPage })));
+const LazyTechnicalPage = lazy(() => import("./pages/TechnicalPage").then(m => ({ default: m.TechnicalPage })));
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ children, adminOnly }) => {
   const { user, loading, isAdmin } = useAuth();
@@ -86,6 +87,7 @@ export default function App() {
                     }
                   />
                   <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/tecnica" element={<Suspense fallback={<WizardLoadingFallback />}><LazyTechnicalPage /></Suspense>} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
                 <Footer />
