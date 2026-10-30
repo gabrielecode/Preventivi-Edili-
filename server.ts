@@ -213,14 +213,12 @@ async function start() {
       res.sendFile(path.join(distPath, 'index.html'));
     });
   }
-
-  if (!process.env.VERCEL) {
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on http://localhost:${PORT} (Local dev using shared server-lib)`);
-    });
-  }
 }
 
 if (!process.env.VERCEL) {
-  start();
+  start().then(() => {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT} (Local dev using shared server-lib)`);
+    });
+  });
 }
