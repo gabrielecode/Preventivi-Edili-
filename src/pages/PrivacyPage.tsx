@@ -1,0 +1,136 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import { ShieldCheck, ArrowLeft, ArrowRight, Lock, EyeOff, FileText, CheckCircle2 } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
+
+export const PrivacyPage: React.FC = () => {
+  const { t } = useLanguage();
+
+  return (
+    <div className="flex-1 bg-slate-50 py-10 sm:py-16 px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto">
+        {/* Navigation Breadcrumb / Back button */}
+        <div className="mb-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>{t.privacyBackToHome}</span>
+          </Link>
+        </div>
+
+        {/* Header Card */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-10 mb-8">
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-indigo-50 text-indigo-600 mb-4">
+            <ShieldCheck className="w-7 h-7" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-3">
+            {t.privacyPageTitle}
+          </h1>
+          <p className="text-sm text-slate-500 leading-relaxed">
+            {t.privacyPageSubtitle}
+          </p>
+
+          <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center gap-3 text-xs text-emerald-700">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 font-semibold border border-emerald-100">
+              <CheckCircle2 className="w-3.5 h-3.5" /> GDPR Compliant (UE 2016/679)
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+              <EyeOff className="w-3.5 h-3.5" /> No Cookies di profilazione
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 font-semibold border border-amber-100">
+              <Lock className="w-3.5 h-3.5" /> Nessuna registrazione richiesta
+            </span>
+          </div>
+        </div>
+
+        {/* Content Sections */}
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-10 space-y-8">
+          
+          {/* Section 1 */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-blue-600" />
+              {t.privacySection1Title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.privacySection1Text}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section 2 */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Lock className="w-4 h-4 text-emerald-600" />
+              {t.privacySection2Title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.privacySection2Text}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section 3 */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <EyeOff className="w-4 h-4 text-indigo-600" />
+              {t.privacySection3Title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.privacySection3Text}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section 4 */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-amber-600" />
+              {t.privacySection4Title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.privacySection4Text}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section 5 */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-blue-600" />
+              {t.privacySection5Title}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.privacySection5Text}
+            </p>
+          </section>
+
+          {/* Bottom Actions */}
+          <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <Link
+              to="/"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              {t.privacyBackToHome}
+            </Link>
+
+            <Link
+              to="/stima"
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+            >
+              <span>{t.privacyStartEstimate}</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};

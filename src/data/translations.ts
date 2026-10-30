@@ -167,6 +167,53 @@ export interface TranslationDict {
   photoAnalyzingWait: string;
   photoAnalyzingAlternative: string;
   continueWithManualMeasures: string;
+
+  // Navigation & Layout
+  navCalculateBtn: string;
+  navHome: string;
+  navPrivacy: string;
+
+  // Hero & Trust Points
+  heroTitle: string;
+  heroSubtitle: string;
+  heroCtaBtn: string;
+  heroHowItWorksLink: string;
+  trustPoint1Title: string;
+  trustPoint1Desc: string;
+  trustPoint2Title: string;
+  trustPoint2Desc: string;
+  trustPoint3Title: string;
+  trustPoint3Desc: string;
+
+  // How It Works Section
+  howItWorksTitle: string;
+  howItWorksStep1Title: string;
+  howItWorksStep1Desc: string;
+  howItWorksStep2Title: string;
+  howItWorksStep2Desc: string;
+  howItWorksStep3Title: string;
+  howItWorksStep3Desc: string;
+
+  // Privacy Page
+  privacyPageTitle: string;
+  privacyPageSubtitle: string;
+  privacySection1Title: string;
+  privacySection1Text: string;
+  privacySection2Title: string;
+  privacySection2Text: string;
+  privacySection3Title: string;
+  privacySection3Text: string;
+  privacySection4Title: string;
+  privacySection4Text: string;
+  privacySection5Title: string;
+  privacySection5Text: string;
+  privacyBackToHome: string;
+  privacyStartEstimate: string;
+
+  // 404 Page
+  notFoundTitle: string;
+  notFoundDesc: string;
+  notFoundBtn: string;
 }
 
 export const translations: Record<string, TranslationDict> = {
@@ -331,7 +378,54 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalysisUnavailableNotice: "Analisi foto non disponibile in questo momento. Puoi proseguire inserendo le misure manualmente nei campi sottostanti.",
     photoAnalyzingWait: "Sto analizzando le foto del locale...",
     photoAnalyzingAlternative: "Il motore visivo è lento, provo un'alternativa...",
-    continueWithManualMeasures: "Inserisci le misure a mano per proseguire"
+    continueWithManualMeasures: "Inserisci le misure a mano per proseguire",
+
+    // Navigation & Layout
+    navCalculateBtn: "Calcola il costo",
+    navHome: "Home",
+    navPrivacy: "Privacy",
+
+    // Hero & Trust Points
+    heroTitle: "Stima il costo dei lavori in casa, anche fai da te",
+    heroSubtitle: "Confronta all'istante materiali, manodopera e risparmio reale con l'Intelligenza Artificiale.",
+    heroCtaBtn: "Calcola il costo",
+    heroHowItWorksLink: "Come funziona",
+    trustPoint1Title: "Confronto Fai da Te o Professionista",
+    trustPoint1Desc: "Valuta subito tempi, attrezzi necessari e risparmio effettivo rispetto alla ditta.",
+    trustPoint2Title: "Intervalli con IVA inclusa",
+    trustPoint2Desc: "Prezzi trasparenti calibrati sulle aliquote IVA territoriali e listini locali.",
+    trustPoint3Title: "Nessuna registrazione",
+    trustPoint3Desc: "Calcola subito la stima dettagliata liberamente e senza dover creare un account.",
+
+    // How It Works Section
+    howItWorksTitle: "Come funziona in 3 semplici passi",
+    howItWorksStep1Title: "1. Scegli le lavorazioni",
+    howItWorksStep1Desc: "Seleziona il settore d'intervento, il paese e le lavorazioni specifiche che vuoi realizzare.",
+    howItWorksStep2Title: "2. Inserisci misure o foto",
+    howItWorksStep2Desc: "Inserisci le dimensioni oppure carica le foto del locale per la stima automatica.",
+    howItWorksStep3Title: "3. Ottieni la stima con IA",
+    howItWorksStep3Desc: "Ricevi distinta materiali con sfrido, costi chiavi in mano, attrezzi e consigli tecnici.",
+
+    // Privacy Page
+    privacyPageTitle: "Informativa sulla Privacy & Protezione Dati",
+    privacyPageSubtitle: "Trasparenza, riservatezza e conformità al Regolamento UE 2016/679 (GDPR)",
+    privacySection1Title: "1. Finalità del servizio",
+    privacySection1Text: "Preventivo Casa & Fai da Te è uno strumento digitale per la stima orientativa dei costi di lavori domestici e ristrutturazioni. Tutti i calcoli economici di base sono effettuati lato server in modo trasparente e neutrale.",
+    privacySection2Title: "2. Utilizzo anonimo e senza registrazione",
+    privacySection2Text: "L'accesso e l'utilizzo del preventivatore sono completamente gratuiti e non richiedono alcuna registrazione né la creazione di un profilo o fornitura di credenziali personali.",
+    privacySection3Title: "3. Trattamento delle immagini del locale",
+    privacySection3Text: "Se scegli di caricare immagini delle stanze per agevolare l'analisi e la stima dimensionale, i file vengono elaborati temporaneamente in memoria volatile (RAM) solo per la durata dell'analisi e non vengono mai salvati su disco o server.",
+    privacySection4Title: "4. Modulo facoltativo per professionisti",
+    privacySection4Text: "La richiesta di contatto con imprese o professionisti abilitati della tua zona è del tutto facoltativa. Qualora decida di inviarla, i recapiti inseriti saranno conservati in sicurezza esclusivamente per consentire il contatto diretto tra te e i professionisti partner.",
+    privacySection5Title: "5. Diritti dell'interessato",
+    privacySection5Text: "In qualunque momento puoi esercitare i tuoi diritti previsti dagli articoli 15-22 del GDPR (accesso, rettifica, cancellazione, limitazione del trattamento) contattando il supporto del servizio.",
+    privacyBackToHome: "Torna alla Home",
+    privacyStartEstimate: "Inizia il preventivo",
+
+    // 404 Page
+    notFoundTitle: "Pagina non trovata (404)",
+    notFoundDesc: "La pagina che stai cercando non esiste o è stata spostata.",
+    notFoundBtn: "Torna alla Home"
   },
   de: {
     appName: "Haus- & Heimwerker-Rechner",
@@ -494,7 +588,54 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalysisUnavailableNotice: "Fotoanalyse derzeit nicht verfügbar. Sie können fortfahren, indem Sie die Maße manuell in die folgenden Felder eingeben.",
     photoAnalyzingWait: "Raumfotos werden analysiert...",
     photoAnalyzingAlternative: "Bildverarbeitung verzögert, alternative Route wird versucht...",
-    continueWithManualMeasures: "Maße manuell eingeben, um fortzufahren"
+    continueWithManualMeasures: "Maße manuell eingeben, um fortzufahren",
+
+    // Navigation & Layout
+    navCalculateBtn: "Kosten berechnen",
+    navHome: "Startseite",
+    navPrivacy: "Datenschutz",
+
+    // Hero & Trust Points
+    heroTitle: "Kosten für Hausarbeiten schätzen, auch zum Selbermachen",
+    heroSubtitle: "Vergleichen Sie sofort Materialien, Handwerkerkosten und echte Ersparnisse mit KI.",
+    heroCtaBtn: "Kosten berechnen",
+    heroHowItWorksLink: "Wie es funktioniert",
+    trustPoint1Title: "Vergleich Heimwerken vs. Profi",
+    trustPoint1Desc: "Bewerten Sie Zeitaufwand, nötige Werkzeuge und reale Ersparnisse im Vergleich zum Fachbetrieb.",
+    trustPoint2Title: "Preisspannen inklusive MwSt.",
+    trustPoint2Desc: "Transparente Preise abgestimmt auf regionale Steuersätze und örtliche Richtwerte.",
+    trustPoint3Title: "Keine Registrierung erforderlich",
+    trustPoint3Desc: "Erhalten Sie Ihre detaillierte Kostenschätzung sofort ohne Anmeldung oder Kundenkonto.",
+
+    // How It Works Section
+    howItWorksTitle: "So funktioniert es in 3 einfachen Schritten",
+    howItWorksStep1Title: "1. Arbeiten auswählen",
+    howItWorksStep1Desc: "Wählen Sie das Gewerk, Ihr Land und die spezifischen Leistungen für Ihr Vorhaben aus.",
+    howItWorksStep2Title: "2. Maße oder Fotos eingeben",
+    howItWorksStep2Desc: "Geben Sie die ungefähren Maße ein oder laden Sie bis zu 3 Raumfotos zur Analyse hoch.",
+    howItWorksStep3Title: "3. KI-Schätzung erhalten",
+    howItWorksStep3Desc: "Erhalten Sie Einkaufsliste mit Verschnitt, schlüsselfertige Kosten, Werkzeuge und Hinweise.",
+
+    // Privacy Page
+    privacyPageTitle: "Datenschutzerklärung & Datenschutz",
+    privacyPageSubtitle: "Transparenz, Vertraulichkeit und Konformität mit der EU-Verordnung 2016/679 (DSGVO)",
+    privacySection1Title: "1. Zweck des Dienstes",
+    privacySection1Text: "Dieser Rechner bietet eine transparente und unverbindliche Kostenschätzung für Heimwerker- und Renovierungsarbeiten basierend auf regionalen Richtwerten.",
+    privacySection2Title: "2. Anonyme Nutzung ohne Registrierung",
+    privacySection2Text: "Die Nutzung des Rechners ist komplett kostenlos und erfordert keine Registrierung, kein Profil und keine persönlichen Zugangsdaten.",
+    privacySection3Title: "3. Verarbeitung von Raumfotos",
+    privacySection3Text: "Hochgeladene Fotos zur Maßanalyse werden ausschließlich temporär im Arbeitsspeicher verarbeitet und niemals dauerhaft auf Servern gespeichert.",
+    privacySection4Title: "4. Freiwillige Fachbetriebsanfragen",
+    privacySection4Text: "Das Formular für Angebote von Partnerbetrieben ist vollkommen freiwillig. Eingegebene Kontaktdaten dienen nur der direkten Kontaktaufnahme durch Fachleute.",
+    privacySection5Title: "5. Ihre Rechte als betroffene Person",
+    privacySection5Text: "Sie können jederzeit Ihre Rechte nach DSGVO (Auskunft, Berichtigung, Löschung) gegenüber dem Betreiber geltend machen.",
+    privacyBackToHome: "Zurück zur Startseite",
+    privacyStartEstimate: "Jetzt schätzen",
+
+    // 404 Page
+    notFoundTitle: "Seite nicht gefunden (404)",
+    notFoundDesc: "Die angeforderte Seite existiert nicht oder wurde verschoben.",
+    notFoundBtn: "Zurück zur Startseite"
   },
   fr: {
     appName: "Calculateur Maison & Bricolage",
@@ -657,7 +798,54 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalysisUnavailableNotice: "Analyse photo non disponible pour le moment. Vous pouvez continuer en saisissant manuellement les mesures dans les champs ci-dessous.",
     photoAnalyzingWait: "Analyse des photos en cours...",
     photoAnalyzingAlternative: "Le traitement visuel est lent, tentative avec une alternative...",
-    continueWithManualMeasures: "Saisissez les mesures à la main pour continuer"
+    continueWithManualMeasures: "Saisissez les mesures à la main pour continuer",
+
+    // Navigation & Layout
+    navCalculateBtn: "Calculer le coût",
+    navHome: "Accueil",
+    navPrivacy: "Confidentialité",
+
+    // Hero & Trust Points
+    heroTitle: "Estimez le coût des travaux de maison, même en DIY",
+    heroSubtitle: "Comparez instantanément matériaux, main-d'œuvre et économies réelles grâce à l'IA.",
+    heroCtaBtn: "Calculer le coût",
+    heroHowItWorksLink: "Comment ça marche",
+    trustPoint1Title: "Comparatif Bricolage ou Artisan",
+    trustPoint1Desc: "Évaluez immédiatement le temps nécessaire, l'outillage et l'économie réelle réalisée.",
+    trustPoint2Title: "Fourchettes avec TVA incluse",
+    trustPoint2Desc: "Tarifs transparents intégrant les taux de TVA locaux et les barèmes de votre région.",
+    trustPoint3Title: "Aucune inscription requise",
+    trustPoint3Desc: "Calculez votre devis détaillé immédiatement sans devoir créer de compte ni renseigner d'email.",
+
+    // How It Works Section
+    howItWorksTitle: "Comment ça marche en 3 étapes simples",
+    howItWorksStep1Title: "1. Choisissez vos travaux",
+    howItWorksStep1Desc: "Sélectionnez le corps d'état, votre pays et les prestations précises souhaitées.",
+    howItWorksStep2Title: "2. Entrez mesures ou photos",
+    howItWorksStep2Desc: "Indiquez les dimensions ou téléchargez des photos de la pièce pour l'analyse automatique.",
+    howItWorksStep3Title: "3. Obtenez l'estimation IA",
+    howItWorksStep3Desc: "Recevez la liste des matériaux avec chutes, coût clé en main d'entreprise et conseils de sécurité.",
+
+    // Privacy Page
+    privacyPageTitle: "Politique de Confidentialité & Protection des Données",
+    privacyPageSubtitle: "Transparence, confidentialité et conformité au Règlement UE 2016/679 (RGPD)",
+    privacySection1Title: "1. Finalité du service",
+    privacySection1Text: "Ce calculateur permet d'estimer gratuitement et à titre indicatif le coût des travaux de rénovation et de bricolage.",
+    privacySection2Title: "2. Utilisation anonyme sans inscription",
+    privacySection2Text: "L'accès au calculateur ne demande aucune inscription ni création de compte préalable. Vous calculez votre devis librement.",
+    privacySection3Title: "3. Traitement des photos du chantier",
+    privacySection3Text: "Les photos téléchargées pour l'estimation sont traitées temporairement en mémoire vive (RAM) et ne sont jamais stockées sur disque.",
+    privacySection4Title: "4. Demande facultative auprès de professionnels",
+    privacySection4Text: "La demande de devis à des artisans partenaires est facultative. Vos coordonnées ne servent qu'à la mise en relation avec des professionnels qualifiés.",
+    privacySection5Title: "5. Vos droits (RGPD)",
+    privacySection5Text: "Vous disposez d'un droit d'accès, de rectification et d'effacement de vos données conformément aux articles 15-22 du RGPD.",
+    privacyBackToHome: "Retour à l'accueil",
+    privacyStartEstimate: "Commencer l'estimation",
+
+    // 404 Page
+    notFoundTitle: "Page non trouvée (404)",
+    notFoundDesc: "La page demandée n'existe pas ou a été déplacée.",
+    notFoundBtn: "Retour à l'accueil"
   },
   en: {
     appName: "Home & DIY Estimator",
@@ -820,6 +1008,53 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalysisUnavailableNotice: "Photo analysis is currently unavailable. You can continue by entering your measurements manually in the fields below.",
     photoAnalyzingWait: "Analyzing room photos...",
     photoAnalyzingAlternative: "Visual processing is slow, trying an alternative...",
-    continueWithManualMeasures: "Enter measurements manually to proceed"
+    continueWithManualMeasures: "Enter measurements manually to proceed",
+
+    // Navigation & Layout
+    navCalculateBtn: "Calculate cost",
+    navHome: "Home",
+    navPrivacy: "Privacy",
+
+    // Hero & Trust Points
+    heroTitle: "Estimate the cost of home projects, even DIY",
+    heroSubtitle: "Instantly compare materials, contractor labor, and real savings with Artificial Intelligence.",
+    heroCtaBtn: "Calculate cost",
+    heroHowItWorksLink: "How it works",
+    trustPoint1Title: "DIY vs. Professional Comparison",
+    trustPoint1Desc: "Quickly assess required time, tools, and actual savings compared to hiring a contractor.",
+    trustPoint2Title: "Ranges with VAT included",
+    trustPoint2Desc: "Transparent pricing calibrated to territorial tax rates and regional price lists.",
+    trustPoint3Title: "No registration required",
+    trustPoint3Desc: "Calculate your detailed estimate instantly without creating an account or signing in.",
+
+    // How It Works Section
+    howItWorksTitle: "How it works in 3 simple steps",
+    howItWorksStep1Title: "1. Choose your work",
+    howItWorksStep1Desc: "Select the trade sector, country, and specific tasks you want to undertake.",
+    howItWorksStep2Title: "2. Enter dimensions or photos",
+    howItWorksStep2Desc: "Provide room dimensions or upload photos for automated AI dimension analysis.",
+    howItWorksStep3Title: "3. Get your AI estimate",
+    howItWorksStep3Desc: "Receive a material shopping list with scrap rates, turnkey pro costs, tools, and safety tips.",
+
+    // Privacy Page
+    privacyPageTitle: "Privacy Policy & Data Protection",
+    privacyPageSubtitle: "Transparency, confidentiality, and compliance with EU Regulation 2016/679 (GDPR)",
+    privacySection1Title: "1. Purpose of the service",
+    privacySection1Text: "This tool provides an indicative estimation of home renovation and DIY project costs based on local standards.",
+    privacySection2Title: "2. Anonymous use without registration",
+    privacySection2Text: "Access to the calculator is completely free and requires no account registration, login credentials, or personal profiles.",
+    privacySection3Title: "3. Processing of room photos",
+    privacySection3Text: "Photos uploaded for dimension estimation are processed solely in volatile memory (RAM) and are never stored on server disks.",
+    privacySection4Title: "4. Optional quote request to contractors",
+    privacySection4Text: "Requesting quotes from verified local contractors is entirely optional. Submitted contact information is handled securely for matching purposes only.",
+    privacySection5Title: "5. Your GDPR rights",
+    privacySection5Text: "You may exercise your rights of access, rectification, or deletion under GDPR Articles 15-22 by contacting service support.",
+    privacyBackToHome: "Back to Home",
+    privacyStartEstimate: "Start estimate",
+
+    // 404 Page
+    notFoundTitle: "Page Not Found (404)",
+    notFoundDesc: "The page you are looking for does not exist or has been moved.",
+    notFoundBtn: "Back to Home"
   }
 };

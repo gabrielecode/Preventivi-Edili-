@@ -13,10 +13,21 @@ export interface SelectedPrivateItem {
 // Client timeout must be > TOTAL_BUDGET_MS (250s). We use 270s as required by Task 11c.
 export const CLIENT_TIMEOUT_MS = 270000;
 
-export function useEstimateState() {
+export function useEstimateState(
+  externalLanguage?: string,
+  onLanguageChange?: (lang: string) => void
+) {
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedCountryId, setSelectedCountryId] = useState<string>("IT");
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("it");
+  const [internalLanguage, setInternalLanguage] = useState<string>("it");
+
+  const selectedLanguage = externalLanguage ?? internalLanguage;
+  const setSelectedLanguage = (lang: string) => {
+    setInternalLanguage(lang);
+    if (onLanguageChange) {
+      onLanguageChange(lang);
+    }
+  };
   
   const [selectedSectorId, setSelectedSectorId] = useState<string>("imbianchino");
   const [selectedItems, setSelectedItems] = useState<SelectedPrivateItem[]>([]);
