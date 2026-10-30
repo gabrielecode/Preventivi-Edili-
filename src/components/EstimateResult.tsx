@@ -15,12 +15,18 @@ import {
   Download,
   Copy,
   Share2,
-  RotateCcw
+  RotateCcw,
+  Save,
+  X,
+  Loader2
 } from "lucide-react";
 import { sectorPriceLists, toolsCatalog, ToolItem } from "../data/priceLists";
 import { TranslationDict } from "../data/translations";
 import { jsPDF } from "jspdf";
 import { LeadRequestModal } from "./LeadRequestModal";
+import { useAuth } from "../context/AuthContext";
+import { saveEstimate } from "../lib/firebase";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Props {
   quoteResult: any;
@@ -43,9 +49,14 @@ export const EstimateResult: React.FC<Props> = ({
   loading = false,
   t,
 }) => {
+  const { user } = useAuth();
   const [ownedTools, setOwnedTools] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [estimateName, setEstimateName] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const toggleToolOwned = (toolId: string) => {
     setOwnedTools(prev => ({ ...prev, [toolId]: !prev[toolId] }));
@@ -122,111 +133,166 @@ export const EstimateResult: React.FC<Props> = ({
     };
   });
 
+  const handleSaveEstimate = async () => {
+    if (!user || !estimateName.trim()) return;
+    setSaving(true);
+    try {
+      const fullData = {
+        ...quoteResult,
+        economicSummary: {
+          professionalTotal: proTotal,
+          diyTotal: adjustedDiyTotal,
+          savings: currentSavings,
+          estimatedDays,
+          estimatedHours
+        },
+        toolAdjustments: {
+          ownedTools,
+          toolsCostTotal
+        }
+      };
+      await saveEstimate(user.uid, estimateName.trim(), quoteResult.sector, activeCountry.name, quoteResult.city || "N/A", fullData);
+      setSaveSuccess(true);
+      setTimeout(() => {
+        setShowSaveModal(false);
+        setSaveSuccess(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Save error", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const formatCurrency = (val: number | undefined, symbol: string) => {
+    if (val === undefined || isNaN(val)) return `0 ${symbol === "€" ? "EUR" : symbol}`;
+    const safeSymbol = symbol === "€" ? "EUR" : symbol;
+    return `${Math.round(val).toLocaleString()} ${safeSymbol}`;
+  };
+
   const handleDownloadPdf = () => {
-    const doc = new jsPDF();
-    const d = doc as any;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    let y = 20;
+    try {
+      const doc = new jsPDF();
+      const d = doc as any;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let y = 20;
 
-    // Title
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Riepilogo Stima Lavori", 15, y);
-    y += 7;
+      // Safe values for both live results and saved database results
+      const proMin = quoteResult.professionalEstimate?.minIncl ?? quoteResult.economicSummary?.professionalTotal ?? 0;
+      const proMax = quoteResult.professionalEstimate?.maxIncl ?? quoteResult.economicSummary?.professionalTotal ?? 0;
+      const diyMinLocal = adjustedDiyMin ?? quoteResult.economicSummary?.diyTotal ?? 0;
+      const diyMaxLocal = adjustedDiyMax ?? quoteResult.economicSummary?.diyTotal ?? 0;
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(100);
-    doc.text(`Settore: ${quoteResult.sector} | Data: ${new Date().toLocaleDateString()} | Paese: ${activeCountry.name}`, 15, y);
-    y += 8;
+      const currSymbol = activeCountry.currencySymbol || "EUR";
 
-    d.setLineWidth(0.4);
-    d.setLineColor(200);
-    d.line(15, y, pageWidth - 15, y);
-    y += 8;
-
-    // Costs
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(0);
-    doc.text("1. Intervalli di Costo Stimati (IVA inclusa)", 15, y);
-    y += 6;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(`- Fai da Te: ${Math.round(adjustedDiyMin)} - ${Math.round(adjustedDiyMax)} ${activeCountry.currencySymbol} (${estimatedDays} giorni / ${estimatedHours} ore)`, 18, y);
-    y += 5;
-    doc.text(`- Professionista: ${Math.round(quoteResult.professionalEstimate?.minIncl || 0)} - ${Math.round(quoteResult.professionalEstimate?.maxIncl || 0)} ${activeCountry.currencySymbol}`, 18, y);
-    y += 8;
-
-    // Shopping List
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.text("2. Lista della Spesa & Materiali (con Sfrido)", 15, y);
-    y += 6;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    shoppingList.forEach((item: any) => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(`• ${item.item || item.name}: ${item.qtyWithWaste} ${item.unit} (~${item.materialCostEst} ${activeCountry.currencySymbol})`, 18, y);
-      y += 5;
-    });
-    y += 5;
-
-    // Tools
-    if (toolsList.length > 0) {
-      if (y > 260) { doc.addPage(); y = 20; }
+      // Title
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text("3. Attrezzatura & Utensili", 15, y);
-      y += 6;
+      doc.setFontSize(16);
+      doc.text("Riepilogo Stima Lavori", 15, y);
+      y += 7;
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      toolCalculated.forEach((tool: any) => {
-        if (y > 270) { doc.addPage(); y = 20; }
-        const statusStr = tool.isOwned ? "Ce l'ho già (0 €)" : `${Math.round(tool.bestCost)} ${activeCountry.currencySymbol} (${tool.isRentCheaper ? 'Noleggio' : 'Acquisto'})`;
-        doc.text(`• ${tool.name}: ${statusStr}`, 18, y);
-        y += 5;
-      });
-      y += 5;
-    }
+      doc.setTextColor(100);
+      doc.text(`Settore: ${quoteResult.sector} | Data: ${new Date().toLocaleDateString()} | Paese: ${activeCountry.name}`, 15, y);
+      y += 8;
 
-    // Pro mandatory
-    if (quoteResult.daAffidareAProfessionista && quoteResult.daAffidareAProfessionista.length > 0) {
-      if (y > 260) { doc.addPage(); y = 20; }
+      d.setLineWidth(0.4);
+      d.setLineColor(200);
+      d.line(15, y, pageWidth - 15, y);
+      y += 8;
+
+      // Costs
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(180, 50, 50);
-      doc.text("4. Lavori da Affidare Obbligatoriamente a Professionisti", 15, y);
-      y += 6;
-
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
       doc.setTextColor(0);
-      quoteResult.daAffidareAProfessionista.forEach((item: any) => {
-        if (y > 270) { doc.addPage(); y = 20; }
-        doc.text(`• ${item.name}: ${item.reason}`, 18, y);
-        y += 5;
-      });
+      doc.text("1. Intervalli di Costo Stimati (IVA inclusa)", 15, y);
+      y += 6;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(`- Fai da Te: ${formatCurrency(diyMinLocal, currSymbol)} - ${formatCurrency(diyMaxLocal, currSymbol)} (${estimatedDays} giorni / ${estimatedHours} ore)`, 18, y);
       y += 5;
+      doc.text(`- Professionista: ${formatCurrency(proMin, currSymbol)} - ${formatCurrency(proMax, currSymbol)}`, 18, y);
+      y += 8;
+
+      // Shopping List
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text("2. Lista della Spesa & Materiali (con Sfrido)", 15, y);
+      y += 6;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      if (shoppingList && shoppingList.length > 0) {
+        shoppingList.forEach((item: any) => {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.text(`• ${item.item || item.name}: ${item.qtyWithWaste} ${item.unit} (~${formatCurrency(item.materialCostEst, currSymbol)})`, 18, y);
+          y += 5;
+        });
+      } else {
+        doc.text("Nessun materiale specifico in elenco.", 18, y);
+        y += 5;
+      }
+      y += 5;
+
+      // Tools
+      if (toolCalculated && toolCalculated.length > 0) {
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.text("3. Attrezzatura & Utensili", 15, y);
+        y += 6;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        toolCalculated.forEach((tool: any) => {
+          if (y > 270) { doc.addPage(); y = 20; }
+          const statusStr = tool.isOwned ? "Ce l'ho già (0 EUR)" : `${formatCurrency(tool.bestCost, currSymbol)} (${tool.isRentCheaper ? 'Noleggio' : 'Acquisto'})`;
+          doc.text(`• ${tool.name}: ${statusStr}`, 18, y);
+          y += 5;
+        });
+        y += 5;
+      }
+
+      // Pro mandatory
+      if (quoteResult.daAffidareAProfessionista && quoteResult.daAffidareAProfessionista.length > 0) {
+        if (y > 260) { doc.addPage(); y = 20; }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(180, 50, 50);
+        doc.text("4. Lavori da Affidare Obbligatoriamente a Professionisti", 15, y);
+        y += 6;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(0);
+        quoteResult.daAffidareAProfessionista.forEach((item: any) => {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.text(`• ${item.name}: ${item.reason}`, 18, y);
+          y += 5;
+        });
+        y += 5;
+      }
+
+      // Disclaimer
+      if (y > 230) { doc.addPage(); y = 20; }
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text("Avvertenza Importante", 15, y);
+      y += 4;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      doc.setTextColor(100);
+      const splitDisclaimer = doc.splitTextToSize(t.disclaimerText || "Disclaimer not available.", pageWidth - 30);
+      doc.text(splitDisclaimer, 15, y);
+
+      doc.save("riepilogo-stima-lavori.pdf");
+    } catch (err) {
+      console.error("PDF generation error:", err);
+      alert("Errore nella generazione del PDF. Per favore riprova.");
     }
-
-    // Disclaimer
-    if (y > 230) { doc.addPage(); y = 20; }
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
-    doc.text("Avvertenza Importante", 15, y);
-    y += 4;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(100);
-    const splitDisclaimer = doc.splitTextToSize(t.disclaimerText, pageWidth - 30);
-    doc.text(splitDisclaimer, 15, y);
-
-    doc.save("riepilogo-stima-lavori.pdf");
   };
 
   const handleCopySummary = () => {
@@ -276,7 +342,7 @@ ${t.disclaimerText}
   return (
     <div className="space-y-8 pb-12">
       
-      {/* Top bar with back button & export actions */}
+      {/* Top bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">{t.resultsTitle}</h2>
@@ -284,6 +350,28 @@ ${t.disclaimerText}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {user ? (
+            <button
+              onClick={() => setShowSaveModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
+              type="button"
+            >
+              <Save className="w-4 h-4" /> Salva Stima
+            </button>
+          ) : (
+            <div className="group relative">
+               <button
+                className="flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-500 rounded-xl text-xs font-bold cursor-not-allowed opacity-60"
+                type="button"
+              >
+                <Save className="w-4 h-4" /> Salva Stima
+              </button>
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1 bg-slate-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                Accedi per salvare i preventivi
+              </div>
+            </div>
+          )}
+
           <button
             onClick={() => setShowLeadModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
@@ -329,7 +417,7 @@ ${t.disclaimerText}
         </div>
       </div>
 
-      {/* Degraded mode notice if AI chain was exhausted (Task 11c) */}
+      {/* Degraded mode notice */}
       {(quoteResult.degraded || quoteResult.meta?.degraded) && (
         <div className="bg-sky-50/90 border border-sky-200/90 rounded-2xl p-4.5 text-xs text-sky-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-start gap-3">
@@ -352,7 +440,7 @@ ${t.disclaimerText}
         </div>
       )}
 
-      {/* 1. Riepilogo in alto */}
+      {/* 1. Costs Summary */}
       <div className={`grid grid-cols-1 ${mode === "compare" ? "md:grid-cols-2" : "max-w-xl mx-auto"} gap-5`}>
         {(mode === "compare" || mode === "diy") && (
           <div className="bg-gradient-to-br from-emerald-50 to-teal-50/40 border border-emerald-200/80 rounded-3xl p-6 shadow-sm flex flex-col justify-between">
@@ -400,7 +488,7 @@ ${t.disclaimerText}
         )}
       </div>
 
-      {/* 2. Semaforo di fattibilità fai da te */}
+      {/* 2. Feasibility Rating */}
       <div className={`p-6 rounded-3xl border ${ratingColor} shadow-sm space-y-3`}>
         <div className="flex items-center gap-3">
           <div className={`w-4 h-4 rounded-full ${ratingDot} animate-pulse`} />
@@ -411,7 +499,7 @@ ${t.disclaimerText}
         </p>
       </div>
 
-      {/* 3. Lista della spesa (Materiali con sfrido) */}
+      {/* 3. Shopping List */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-blue-100 text-blue-700 rounded-xl">
@@ -447,7 +535,7 @@ ${t.disclaimerText}
         </div>
       </div>
 
-      {/* 4. Attrezzi (Acquisto vs Noleggio + Ce l'ho già) */}
+      {/* 4. Tools */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -510,7 +598,7 @@ ${t.disclaimerText}
         )}
       </div>
 
-      {/* 5. Lavori da affidare a un professionista */}
+      {/* 5. Professional Mandatory Works */}
       {quoteResult.daAffidareAProfessionista && quoteResult.daAffidareAProfessionista.length > 0 && (
         <div className="bg-amber-50/60 rounded-3xl border border-amber-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-3">
@@ -536,7 +624,7 @@ ${t.disclaimerText}
         </div>
       )}
 
-      {/* 6. Passi principali, tempi, rischi e sicurezza */}
+      {/* 6. Steps & Safety */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-3">
@@ -600,7 +688,7 @@ ${t.disclaimerText}
         </div>
       </div>
 
-      {/* 7. Permessi e pratiche nel paese scelto */}
+      {/* 7. Permits */}
       <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-teal-100 text-teal-700 rounded-xl">
@@ -622,16 +710,93 @@ ${t.disclaimerText}
         </ul>
       </div>
 
-      {/* 8. Avvertenza fissa, ben visibile */}
-      <div className="bg-slate-900 text-slate-100 p-6 rounded-3xl border border-slate-800 shadow-md space-y-2">
-        <div className="flex items-center gap-2.5 text-amber-400 font-bold text-sm">
+      {/* 8. Disclaimer */}
+      <div className="bg-slate-900 text-slate-100 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-md space-y-4">
+        <div className="flex items-center gap-2.5 text-amber-400 font-bold text-sm sm:text-base">
           <AlertCircle className="w-5 h-5 shrink-0" />
-          <span>{t.disclaimerTitle}</span>
+          <span>{t.estimateDisclaimerProTitle}</span>
         </div>
-        <p className="text-xs text-slate-300 leading-relaxed">
-          {t.disclaimerText}
-        </p>
+        <div className="space-y-3">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
+            {t.estimateDisclaimerProText}
+          </p>
+          <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+            {t.disclaimerText}
+          </p>
+        </div>
       </div>
+
+      {/* Save Modal */}
+      <AnimatePresence>
+        {showSaveModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !saving && setShowSaveModal(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden z-10 border border-slate-200"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg">
+                      <Save className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">Salva Preventivo</h3>
+                  </div>
+                  <button onClick={() => setShowSaveModal(false)} className="p-1 text-slate-400 hover:text-slate-600">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                {saveSuccess ? (
+                  <div className="py-8 text-center">
+                    <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                      <Check className="w-8 h-8" />
+                    </div>
+                    <p className="text-lg font-bold text-slate-900">Preventivo salvato!</p>
+                    <p className="text-sm text-slate-500">Puoi trovarlo nella tua Dashboard.</p>
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-sm text-slate-600 mb-6">
+                      Dai un nome al tuo progetto per ritrovarlo facilmente in futuro.
+                    </p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nome Progetto</label>
+                        <input 
+                          type="text" 
+                          placeholder="es. Ristrutturazione Bagno Piano Terra"
+                          value={estimateName}
+                          onChange={(e) => setEstimateName(e.target.value)}
+                          className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        onClick={handleSaveEstimate}
+                        disabled={saving || !estimateName.trim()}
+                        className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
+                      >
+                        {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                        {saving ? "Salvataggio..." : "Salva ora"}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {showLeadModal && (
         <LeadRequestModal

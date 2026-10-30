@@ -148,6 +148,14 @@ export interface TranslationDict {
   leadCloseBtn: string;
   privacyModalTitle: string;
   privacyModalText: string;
+  privacyBadgeGDPR: string;
+  privacyBadgeLPD: string;
+  cookiePolicyTitle: string;
+  cookiePolicyText: string;
+  lpdSectionTitle: string;
+  lpdSectionText: string;
+  estimateDisclaimerProTitle: string;
+  estimateDisclaimerProText: string;
 
   // Task 11c: Attese lunghe, annullamento, degraded e avvisi
   cancelBtn: string;
@@ -463,7 +471,7 @@ export const translations: Record<string, TranslationDict> = {
     permitsTitle: "Permessi, Autorizzazioni e Normative ({country})",
     permitsDesc: "Adempimenti burocratici richiesti dalle normative locali vigenti.",
     disclaimerTitle: "Avvertenza Importante e Limitazione di Responsabilità",
-    disclaimerText: "Stima indicativa non vincolante. I prezzi dei materiali e della manodopera possono variare in base alla zona geografica, alla stagionalità e alla complessità specifica del cantiere. Si consiglia vivamente di richiedere sempre almeno 2-3 preventivi scritti a professionisti abilitati prima di avviare qualsiasi intervento edile o impiantistico.",
+    disclaimerText: "Stima indicativa non vincolante. I prezzi mostrati sono medie di mercato e NON rappresentano un calcolo esatto al centesimo né un'offerta commerciale definitiva. I costi reali possono variare sensibilmente. Si consiglia vivamente di richiedere sempre almeno 2-3 preventivi scritti a professionisti abilitati prima di avviare qualsiasi intervento.",
     photoSectionTitle: "Foto del locale (Opzionale)",
     photoSectionDesc: "Carica fino a 3 foto per far analizzare lo stato, rilevare criticità e stimare automaticamente le misure.",
     photoPrivacyNotice: "Le foto vengono elaborate in memoria solo per l'analisi e non vengono salvate sul server.",
@@ -494,7 +502,15 @@ export const translations: Record<string, TranslationDict> = {
     leadSuccessText: "La tua richiesta è stata registrata con successo e inoltrata al sistema. Nessun invio automatico di email è stato effettuato. Cosa succede adesso? I professionisti partner della tua zona verificheranno i dettagli del tuo progetto e ti contatteranno direttamente tramite email o telefono entro 24-48 ore lavorative per effettuare un sopralluogo o fornirti un preventivo dettagliato.",
     leadCloseBtn: "Chiudi",
     privacyModalTitle: "Informativa sulla Privacy",
-    privacyModalText: "I dati inseriti in questo modulo vengono utilizzati esclusivamente per consentire l'inoltro della richiesta di preventivo ai professionisti e alle imprese edili partner operanti nella tua zona. Il trattamento avviene nel rispetto del Regolamento UE 2016/679 (GDPR). Nessun invio di email automatiche viene effettuato dal sistema: la richiesta viene conservata in un archivio sicuro per la gestione commerciale e sarai contattato direttamente dai professionisti interessati al tuo progetto.",
+    privacyModalText: "I dati inseriti in questo modulo vengono utilizzati esclusivamente per consentire l'inoltro della richiesta di preventivo ai professionisti e alle imprese edili partner operanti nella tua zona. Il trattamento avviene nel rispetto del Regolamento UE 2016/679 (GDPR) e della LPD svizzera. Nessun invio di email automatiche viene effettuato dal sistema: la richiesta viene conservata in un archivio sicuro per la gestione commerciale e sarai contattato direttamente dai professionisti interessati al tuo progetto.",
+    privacyBadgeGDPR: "GDPR Compliant (UE 2016/679)",
+    privacyBadgeLPD: "Conforme LPD (Svizzera)",
+    cookiePolicyTitle: "Informativa sui Cookie",
+    cookiePolicyText: "Questa applicazione non utilizza cookie di profilazione o tracciamento di terze parti. Utilizziamo esclusivamente lo storage locale del browser (localStorage) per salvare le tue preferenze sulla lingua e cookie tecnici strettamente necessari al corretto funzionamento della sessione. Nessun dato personale viene tracciato a fini pubblicitari.",
+    lpdSectionTitle: "Protezione dei Dati in Svizzera (LPD)",
+    lpdSectionText: "In conformità alla Legge federale sulla protezione dei dati (LPD), garantiamo che i dati degli utenti residenti in Svizzera siano trattati con la massima riservatezza. Il Titolare adotta misure tecniche e organizzative adeguate per impedire accessi non autorizzati.",
+    estimateDisclaimerProTitle: "Avviso Legale e Natura delle Stime",
+    estimateDisclaimerProText: "IMPORTANTE: Le cifre mostrate sono stime matematiche indicative basate su medie nazionali di mercato. NON rappresentano conti esatti al centesimo e NON costituiscono un preventivo vincolante, una fattura o un'offerta commerciale. Il costo reale del tuo progetto può variare sensibilmente a causa di rincari dei materiali, difficoltà logistiche impreviste, stati di degrado non visibili o specifiche tariffe professionali della tua zona. Si raccomanda sempre di richiedere sopralluoghi tecnici e preventivi ufficiali prima di procedere.",
 
     // Task 11c
     cancelBtn: "Annulla",

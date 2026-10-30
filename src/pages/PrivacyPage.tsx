@@ -75,7 +75,10 @@ export const PrivacyPage: React.FC = () => {
           {/* Trust Badges */}
           <div className="mt-6 pt-6 border-t border-slate-100 flex flex-wrap items-center gap-3 text-xs text-emerald-700">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 font-semibold border border-emerald-100">
-              <CheckCircle2 className="w-3.5 h-3.5" /> GDPR Compliant (UE 2016/679)
+              <CheckCircle2 className="w-3.5 h-3.5" /> {t.privacyBadgeGDPR}
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
+              <ShieldCheck className="w-3.5 h-3.5" /> {t.privacyBadgeLPD}
             </span>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold border border-blue-100">
               <EyeOff className="w-3.5 h-3.5" /> Zero Cookie di profilazione
@@ -121,6 +124,32 @@ export const PrivacyPage: React.FC = () => {
 
           <hr className="border-slate-100" />
 
+          {/* Section LPD: Svizzera */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-indigo-600" />
+              {t.lpdSectionTitle}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.lpdSectionText}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
+          {/* Section: Cookies */}
+          <section className="space-y-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+              <EyeOff className="w-4 h-4 text-violet-600" />
+              {t.cookiePolicyTitle}
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              {t.cookiePolicyText}
+            </p>
+          </section>
+
+          <hr className="border-slate-100" />
+
           {/* Section 2: OpenRouter e modelli di intelligenza artificiale */}
           <section className="space-y-2">
             <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -155,19 +184,6 @@ export const PrivacyPage: React.FC = () => {
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               {t.privacySection4Text}
-            </p>
-          </section>
-
-          <hr className="border-slate-100" />
-
-          {/* Section 5: Assenza di cookie di profilazione e localStorage lingua */}
-          <section className="space-y-2">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-              <EyeOff className="w-4 h-4 text-violet-600" />
-              {t.privacySection5Title}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {t.privacySection5Text}
             </p>
           </section>
 

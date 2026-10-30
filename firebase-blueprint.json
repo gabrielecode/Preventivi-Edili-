@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information and roles.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "User avatar URL" },
+        "role": { "type": "string", "enum": ["user", "admin"], "description": "User role for access control" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "Estimate": {
+      "title": "Saved Estimate",
+      "description": "A saved calculation for a construction project.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string", "description": "Owner of the estimate" },
+        "name": { "type": "string", "description": "Custom name given by the user", "maxLength": 100 },
+        "sector": { "type": "string" },
+        "country": { "type": "string" },
+        "city": { "type": "string" },
+        "data": { "type": "object", "description": "The raw estimate data from the API" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name", "data", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and roles."
+    },
+    "/estimates/{estimateId}": {
+      "schema": "Estimate",
+      "description": "Saved estimates for individual users."
+    }
+  }
+}
