@@ -15,6 +15,7 @@ import { WhatYouGet } from "../components/home/WhatYouGet";
 import { SupportedSectors } from "../components/home/SupportedSectors";
 import { EstimateSample } from "../components/home/EstimateSample";
 import { FaqAccordion } from "../components/home/FaqAccordion";
+import { GuidesSection } from "../components/home/GuidesSection";
 import { FinalCta } from "../components/home/FinalCta";
 import { SeoHead } from "../components/SeoHead";
 
@@ -188,6 +189,9 @@ export const HomePage: React.FC = () => {
 
       {/* (5) FAQ accordion accessibile */}
       <FaqAccordion />
+      
+      {/* Guide */}
+      <GuidesSection />
 
       {/* (6) CTA finale verso /stima */}
       <FinalCta />
