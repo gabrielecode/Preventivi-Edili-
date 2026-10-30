@@ -1,0 +1,6 @@
+{
+  "name": "Preventivatore Edile AI",
+  "description": "Applicazione per la creazione e la personalizzazione di preventivi edili con intelligenza artificiale, valutando i listini prezzi aggiornati, la fattibilità del lavoro e le certificazioni necessarie.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
