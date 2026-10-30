@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Calculator, ChevronDown, Sparkles, LogIn, LogOut, LayoutDashboard, Settings, User } from "lucide-react";
+import { Calculator, ChevronDown, Sparkles, LogIn, LogOut, LayoutDashboard, Settings, User, Menu, X, BookOpen } from "lucide-react";
 import { useLanguage, LanguageCode } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { auth, googleProvider, signOut, signInWithPopup } from "../lib/firebase";
@@ -19,6 +19,7 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -54,30 +55,50 @@ export const Header: React.FC = () => {
 
   const currentLang = languages.find((l) => l.code === language) || languages[0];
 
+  const handleGuideClick = (e: React.MouseEvent) => {
+    if (location.pathname === "/") {
+      e.preventDefault();
+      const el = document.getElementById("guide-utili");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+    setMobileMenuOpen(false);
+  };
+
+  const NavLinks = () => (
+    <>
+      <Link
+        to="/#guide-utili"
+        onClick={handleGuideClick}
+        className="flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+      >
+        <BookOpen className="w-4 h-4" />
+        Guide
+      </Link>
+    </>
+  );
+
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs backdrop-blur-md bg-white/95">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link
           to="/"
           className="flex items-center gap-2.5 group transition-transform active:scale-98"
           title={t.appName}
         >
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/30 transition-all">
-            <Calculator className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 transition-all">
+            <Calculator className="w-5 h-5" />
           </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-slate-900 text-sm sm:text-base tracking-tight leading-tight group-hover:text-blue-600 transition-colors">
-              {t.appName}
-            </span>
-            <span className="text-[11px] text-slate-400 font-medium hidden sm:inline leading-tight">
-              AI Home & DIY Cost Estimator
-            </span>
-          </div>
+          <span className="font-bold text-slate-900 text-sm tracking-tight group-hover:text-blue-600 transition-colors">
+            {t.appName}
+          </span>
         </Link>
 
-        {/* Right Controls */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Desktop Controls */}
+        <div className="hidden md:flex items-center gap-3">
+          <NavLinks />
           <PWAInstallButton />
           
           {/* Language Selector */}
@@ -85,58 +106,47 @@ export const Header: React.FC = () => {
             <button
               type="button"
               onClick={() => setLangMenuOpen(!langMenuOpen)}
-              className="flex items-center gap-1.5 px-2 py-1.5 sm:px-2.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-all cursor-pointer border border-slate-200/60"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-all border border-slate-200/60"
             >
-              <span className="text-sm leading-none">{currentLang.flag}</span>
-              <span className="uppercase text-[10px] sm:text-[11px] font-bold text-slate-800 tracking-wider">
+              <span>{currentLang.flag}</span>
+              <span className="uppercase font-bold text-slate-800 tracking-wider">
                 {currentLang.code}
               </span>
-              <ChevronDown className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-slate-400 transition-transform ${langMenuOpen ? "rotate-180" : ""}`} />
             </button>
-
             {langMenuOpen && (
-              <div className="absolute right-0 mt-2 w-38 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute right-0 mt-2 w-32 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 z-50">
                 {languages.map((item) => (
                   <button
                     key={item.code}
-                    type="button"
-                    onClick={() => {
-                      setLanguage(item.code);
-                      setLangMenuOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-left transition-colors cursor-pointer ${
-                      language === item.code
-                        ? "bg-blue-50 text-blue-700 font-bold"
-                        : "text-slate-700 hover:bg-slate-50"
-                    }`}
+                    onClick={() => { setLanguage(item.code); setLangMenuOpen(false); }}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs text-left ${language === item.code ? "bg-blue-50 text-blue-700 font-bold" : "text-slate-700"}`}
                   >
-                    <span className="text-base">{item.flag}</span>
-                    <span className="flex-1">{item.label}</span>
+                    <span>{item.flag}</span>
+                    {item.label}
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* User Auth / Profile */}
+          {/* User Auth */}
           {user ? (
             <div className="relative" ref={userMenuRef}>
               <button
                 type="button"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-1.5 p-1 rounded-full border border-slate-200 hover:border-blue-300 transition-all cursor-pointer overflow-hidden"
+                className="flex items-center gap-1.5 p-1 rounded-full border border-slate-200"
               >
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt={user.displayName || ""} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+                  <img src={user.photoURL} className="w-8 h-8 rounded-full" />
                 ) : (
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
                     <User className="w-4 h-4" />
                   </div>
                 )}
               </button>
-
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50">
                   <div className="px-3 py-2 border-b border-slate-100 mb-1">
                     <p className="text-xs font-bold text-slate-900 truncate">{user.displayName || 'Utente'}</p>
                     <p className="text-[10px] text-slate-500 truncate">{user.email}</p>
@@ -172,25 +182,49 @@ export const Header: React.FC = () => {
           ) : (
             <button
               onClick={handleLogin}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded-xl transition-all border border-blue-200 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 rounded-xl border border-blue-200"
             >
               <LogIn className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Accedi</span>
+              Accedi
             </button>
           )}
 
-          {/* Calcola il costo */}
           {location.pathname !== "/stima" && (
             <Link
               to="/stima"
-              className="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm shadow-blue-500/25 hover:shadow-md hover:shadow-blue-500/30 transition-all cursor-pointer active:scale-98 ml-1"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl"
             >
-              <Sparkles className="w-3.5 h-3.5 hidden sm:inline" />
-              <span>{t.navCalculateBtn}</span>
+              <Sparkles className="w-3.5 h-3.5" />
+              {t.navCalculateBtn}
             </Link>
           )}
         </div>
+
+        {/* Hamburger Menu Button */}
+        <button
+          className="md:hidden p-2 text-slate-700"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <X /> : <Menu />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-slate-200 bg-white p-4 flex flex-col gap-4">
+          <NavLinks />
+          <div className="flex items-center justify-between gap-2">
+            <PWAInstallButton />
+            <button
+              onClick={handleLogin}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-600 bg-blue-50 rounded-xl"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              Accedi
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

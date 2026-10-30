@@ -77,9 +77,11 @@ export default function App() {
                   <Route
                     path="/stima"
                     element={
-                      <Suspense fallback={<WizardLoadingFallback />}>
-                        <LazyWizardPage />
-                      </Suspense>
+                      <ProtectedRoute>
+                        <Suspense fallback={<WizardLoadingFallback />}>
+                          <LazyWizardPage />
+                        </Suspense>
+                      </ProtectedRoute>
                     }
                   />
                   <Route

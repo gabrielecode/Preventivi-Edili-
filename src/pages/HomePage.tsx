@@ -23,6 +23,18 @@ export const HomePage: React.FC = () => {
   const { t } = useLanguage();
   const { isInstalled } = usePWA();
 
+  React.useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.substring(1);
+      const el = document.getElementById(id);
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, []);
+
   const handleScrollToHowItWorks = (e: React.MouseEvent) => {
     e.preventDefault();
     const element = document.getElementById("come-funziona");

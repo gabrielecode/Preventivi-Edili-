@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, PaintBucket, AlertTriangle, CheckCircle2, ShieldCheck, Wrench, Hammer, Info } from "lucide-react";
+import { ArrowLeft, ArrowRight, PaintBucket, AlertTriangle, CheckCircle2, ShieldCheck, Wrench, Hammer, Info } from "lucide-react";
 import { SeoHead } from "../../components/SeoHead";
 
 export const HowToTinteggiare: React.FC = () => {
@@ -13,6 +13,10 @@ export const HowToTinteggiare: React.FC = () => {
       />
 
       <main className="max-w-4xl mx-auto px-4 py-12">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-blue-600 mb-6 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Homepage
+        </Link>
         <article className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-8 sm:p-12 prose prose-slate max-w-none">
           
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-950 mb-4">

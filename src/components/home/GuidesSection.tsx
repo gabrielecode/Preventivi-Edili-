@@ -23,7 +23,7 @@ const guides = [
 
 export const GuidesSection: React.FC = () => {
   return (
-    <section className="py-16 px-4 bg-white">
+    <section id="guide-utili" className="py-16 px-4 bg-white scroll-mt-16">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-3 mb-8">
           <BookOpen className="w-8 h-8 text-blue-600" />
