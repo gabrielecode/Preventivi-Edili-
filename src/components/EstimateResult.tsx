@@ -14,7 +14,8 @@ import {
   Sparkles,
   Download,
   Copy,
-  Share2
+  Share2,
+  RotateCcw
 } from "lucide-react";
 import { sectorPriceLists, toolsCatalog, ToolItem } from "../data/priceLists";
 import { TranslationDict } from "../data/translations";
@@ -27,6 +28,8 @@ interface Props {
   mode: "diy" | "pro" | "compare";
   activeCountry: any;
   onReset: () => void;
+  onRetry?: () => void;
+  loading?: boolean;
   t: TranslationDict;
 }
 
@@ -36,6 +39,8 @@ export const EstimateResult: React.FC<Props> = ({
   mode,
   activeCountry,
   onReset,
+  onRetry,
+  loading = false,
   t,
 }) => {
   const [ownedTools, setOwnedTools] = useState<Record<string, boolean>>({});
@@ -323,6 +328,29 @@ ${t.disclaimerText}
           </button>
         </div>
       </div>
+
+      {/* Degraded mode notice if AI chain was exhausted (Task 11c) */}
+      {(quoteResult.degraded || quoteResult.meta?.degraded) && (
+        <div className="bg-sky-50/90 border border-sky-200/90 rounded-2xl p-4.5 text-xs text-sky-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+            <p className="font-semibold text-sky-950 text-sm leading-relaxed">
+              {t.degradedAlertMessage}
+            </p>
+          </div>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              disabled={loading}
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-sky-100 text-sky-800 rounded-xl text-xs font-bold border border-sky-300 shadow-xs transition-all cursor-pointer shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span>{t.retryBtn}</span>
+            </button>
+          )}
+        </div>
+      )}
 
       {/* 1. Riepilogo in alto */}
       <div className={`grid grid-cols-1 ${mode === "compare" ? "md:grid-cols-2" : "max-w-xl mx-auto"} gap-5`}>

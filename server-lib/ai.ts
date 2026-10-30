@@ -1,152 +1,567 @@
 import { sectorPriceLists, toolsCatalog, PriceItem } from "../src/data/priceLists";
 import { countriesList } from "../src/data/countries";
+import {
+  prepareChainForExecution,
+  recordModelSuccess,
+  recordModelFailure,
+  getAiHealthReport,
+  HealthReport
+} from "./modelHealth";
+import { getStandardSectorEstimate } from "./degradedData";
 
-export async function generateWithFallback(messages: Array<any>, options: {
+export type ChainTask = "text" | "vision";
+
+export interface RunChainOptions {
+  systemInstruction?: string;
+  language?: string;
   temperature?: number;
   max_tokens?: number;
-  jsonSchema?: any;
   schemaName?: string;
-  systemInstruction?: string;
-  models?: string[];
-  isVision?: boolean;
-}): Promise<{ text: string; raw: any; modelUsed: string }> {
+}
+
+export interface RunChainMeta {
+  modelUsed: string;
+  fallbackCount: number;
+  degraded: boolean;
+  durationMs?: number;
+}
+
+export interface RunChainResult<T = any> {
+  data: T;
+  text: string;
+  meta: RunChainMeta;
+}
+
+// Catalogo OpenRouter verificato (Task 11a / 11b)
+// Modelli Text: google/gemini-2.5-flash -> meta-llama/llama-3.3-70b-instruct -> modelli free ordinati per capacità
+const DEFAULT_TEXT_CHAIN =
+  "google/gemini-2.5-flash,meta-llama/llama-3.3-70b-instruct,google/gemma-4-31b-it:free,nvidia/nemotron-3-ultra-550b-a55b:free,google/gemma-4-26b-a4b-it:free";
+
+// Modelli Vision: google/gemini-2.5-flash -> modello free con supporto immagini (Google Gemma 4 31B)
+const DEFAULT_VISION_CHAIN =
+  "google/gemini-2.5-flash,google/gemma-4-31b-it:free";
+
+/**
+ * Ottiene la lista ordinata dei modelli per il tipo di task specificato,
+ * leggendo unicamente dalle variabili d'ambiente con fallback ai default certificati.
+ */
+export function getModelChain(task: ChainTask): string[] {
+  const envVal = task === "vision" ? process.env.AI_CHAIN_VISION : process.env.AI_CHAIN_TEXT;
+  const raw = envVal && envVal.trim().length > 0
+    ? envVal
+    : (task === "vision" ? DEFAULT_VISION_CHAIN : DEFAULT_TEXT_CHAIN);
+
+  const list = raw
+    .split(",")
+    .map(m => m.trim())
+    .filter(Boolean);
+
+  if (list.length === 0) {
+    return task === "vision"
+      ? DEFAULT_VISION_CHAIN.split(",")
+      : DEFAULT_TEXT_CHAIN.split(",");
+  }
+  return list;
+}
+
+/**
+ * Valida che l'oggetto restituito rispetti i campi e i tipi base richiesti dallo schema JSON.
+ */
+function validateSchema(data: any, schema: any): string | null {
+  if (!data || typeof data !== "object") {
+    return "La risposta non è un oggetto JSON valido.";
+  }
+
+  if (Array.isArray(schema.required)) {
+    for (const key of schema.required) {
+      if (!(key in data) || data[key] === undefined || data[key] === null) {
+        return `Campo obbligatorio mancante: '${key}'.`;
+      }
+      const propDef = schema.properties?.[key];
+      if (propDef) {
+        if (propDef.type === "array" && !Array.isArray(data[key])) {
+          return `Il campo '${key}' deve essere un array.`;
+        }
+        if (propDef.type === "object" && (typeof data[key] !== "object" || Array.isArray(data[key]))) {
+          return `Il campo '${key}' deve essere un oggetto.`;
+        }
+        if (propDef.type === "string" && typeof data[key] !== "string") {
+          return `Il campo '${key}' deve essere una stringa.`;
+        }
+        if (propDef.type === "number" && typeof data[key] !== "number") {
+          return `Il campo '${key}' deve essere un numero.`;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Risposta degradata tradotta per l'analisi visiva delle foto quando la catena Vision si esaurisce
+ */
+function getDegradedVisionData(language?: string) {
+  const lang = (language || "it").toLowerCase();
+  if (lang === "de") {
+    return {
+      visibleState: "Automatische Fotoanalyse vorübergehend nicht verfügbar. Bitte geben Sie die Maße manuell ein.",
+      detectedIssues: [],
+      suggestedDimensions: { areaMq: 0, lengthMl: 0, quantityCad: 0 },
+      confidence: "nicht verfügbar",
+      recommendations: ["Geben Sie die Maße manuell ein, um die genaue Kostenschätzung zu berechnen."]
+    };
+  }
+  if (lang === "fr") {
+    return {
+      visibleState: "Analyse photo automatique temporairement indisponible. Veuillez saisir les mesures manuellement.",
+      detectedIssues: [],
+      suggestedDimensions: { areaMq: 0, lengthMl: 0, quantityCad: 0 },
+      confidence: "non disponible",
+      recommendations: ["Saisissez vos mesures manuellement pour obtenir votre devis complet."]
+    };
+  }
+  if (lang === "en") {
+    return {
+      visibleState: "Automatic photo analysis is temporarily unavailable. Please enter your measurements manually to complete your estimate.",
+      detectedIssues: [],
+      suggestedDimensions: { areaMq: 0, lengthMl: 0, quantityCad: 0 },
+      confidence: "not available",
+      recommendations: ["Enter dimensions manually in the fields above to obtain your exact estimate."]
+    };
+  }
+  // Default Italian
+  return {
+    visibleState: "Analisi visiva delle foto temporaneamente non disponibile. È possibile inserire manualmente le misure per completare il preventivo.",
+    detectedIssues: [],
+    suggestedDimensions: { areaMq: 0, lengthMl: 0, quantityCad: 0 },
+    confidence: "non disponibile",
+    recommendations: ["Inserisci manualmente la superficie in m² o le misure nei campi sopra per ottenere la stima economica esatta."]
+  };
+}
+
+/**
+ * Risposta generica degradata tradotta per la stima qualitativa testuale se la catena Text si esaurisce
+ */
+function getDegradedTextData(language?: string) {
+  const lang = (language || "it").toLowerCase();
+  if (lang === "de") {
+    return {
+      additionalItems: [],
+      feasibility: {
+        rating: "Machbar mit Vorbehalt",
+        analysis: "Wirtschaftliche Schätzung anhand offizieller Preislisten erfolgreich berechnet. Detaillierte KI-Analyse vorübergehend vereinfacht.",
+        risks: ["Vor Beginn auf verdeckte Leitungen prüfen", "Geeignete Schutzkleidung tragen"],
+        recommendations: ["Vor Arbeitsbeginn Beratung durch einen Fachbetrieb einholen"],
+        permitsAndRules: ["Örtliche Bauvorschriften und Hausordnung prüfen"]
+      },
+      mainSteps: [
+        "Vorbereitung des Arbeitsbereichs und Absicherung",
+        "Beschaffung der notwendigen Materialien und Werkzeuge",
+        "Fachgerechte Ausführung der Arbeiten",
+        "Endreinigung und ordnungsgemäße Entsorgung"
+      ],
+      estimatedTime: "Variabel je nach gewähltem Umfang",
+      diySummaryNote: "Die Material- und Arbeitskosten wurden vollständig nach den eingestellten Parametern berechnet."
+    };
+  }
+  if (lang === "fr") {
+    return {
+      additionalItems: [],
+      feasibility: {
+        rating: "Faisable avec réserves",
+        analysis: "Estimation économique calculée avec succès sur les barèmes officiels. Analyse qualitative IA temporairement simplifiée.",
+        risks: ["Vérifier la présence de canalisations ou câbles encastrés", "Porter les équipements de protection individuelle adaptés"],
+        recommendations: ["Solliciter une visite sur place d'un artisan qualifié"],
+        permitsAndRules: ["Vérifier les règles de copropriété et déclarations préalables"]
+      },
+      mainSteps: [
+        "Préparation de la zone de travail et mise en sécurité",
+        "Approvisionnement des matériaux et outillages requis",
+        "Réalisation des travaux selon les règles de l'art",
+        "Nettoyage final et évacuation conforme des gravats"
+      ],
+      estimatedTime: "Variable selon les dimensions sélectionnées",
+      diySummaryNote: "Les coûts de matériaux et de main-d'œuvre ont été rigoureusement calculés selon votre configuration."
+    };
+  }
+  if (lang === "en") {
+    return {
+      additionalItems: [],
+      feasibility: {
+        rating: "Feasible with caution",
+        analysis: "Economic estimate successfully computed from official price lists. AI qualitative deep-dive is temporarily simplified due to high load.",
+        risks: ["Always check for concealed electrical wiring and plumbing", "Wear appropriate PPE at all times"],
+        recommendations: ["Consider an on-site consultation with a certified contractor"],
+        permitsAndRules: ["Verify municipal regulations and building management permissions"]
+      },
+      mainSteps: [
+        "Work area preparation and safety setup",
+        "Procurement of specified materials and tools",
+        "Execution according to standard technical specifications",
+        "Site cleanup and authorized waste disposal"
+      ],
+      estimatedTime: "Variable depending on dimensions",
+      diySummaryNote: "Material and labor estimates have been fully computed based on regional parameters."
+    };
+  }
+  // Default Italian
+  return {
+    additionalItems: [],
+    feasibility: {
+      rating: "Fattibile con riserva",
+      analysis: "Stima economica calcolata con successo sui prezzi di listino ufficiali. L'approfondimento qualitativo AI è momentaneamente semplificato per elevato traffico.",
+      risks: ["Verificare sempre la presenza di impianti sotto traccia", "Indossare idonei DPI durante le lavorazioni"],
+      recommendations: ["Richiedere un sopralluogo a un professionista qualificato prima dell'inizio lavori"],
+      permitsAndRules: ["Verificare eventuali autorizzazioni comunali o regolamenti condominiali locali"]
+    },
+    mainSteps: [
+      "Preparazione del locale e protezione delle superfici adiacenti",
+      "Acquisto e approvvigionamento di materiali e attrezzi necessari",
+      "Esecuzione dell'intervento secondo le buone norme tecniche",
+      "Pulizia finale e corretto smaltimento dei materiali di scarto"
+    ],
+    estimatedTime: "Variabile in base alle dimensioni specificate",
+    diySummaryNote: "I costi dei materiali e della manodopera sono stati regolarmente calcolati in base ai parametri territoriali selezionati."
+  };
+}
+
+/**
+ * UNICO helper centralizzato per tutte le chiamate AI dell'applicazione (Task 11a / 11b).
+ * Chiama OpenRouter con gestione della catena di fallback, budget temporale,
+ * circuit breaker per modello, verifica catalogo a 24h, token limit,
+ * retry json_schema -> json_object sullo stesso modello, degradazione graziosa e logging anonimo.
+ */
+export async function runChain(
+  task: ChainTask,
+  messages: Array<any>,
+  schema: any,
+  options?: RunChainOptions
+): Promise<RunChainResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     throw new Error("OPENROUTER_API_KEY non è configurata nelle variabili d'ambiente.");
   }
 
-  const hasImages = messages.some(m => Array.isArray(m.content) && m.content.some((c: any) => c.type === 'image_url'));
-  const isVision = options.isVision || hasImages;
+  const FALLBACK_TIMEOUT_MS = Number(process.env.FALLBACK_TIMEOUT_MS) || 60000;
+  const TOTAL_BUDGET_MS = Number(process.env.TOTAL_BUDGET_MS) || 250000;
 
-  const defaultPrimary = isVision
-    ? (process.env.OPENROUTER_MODEL_VISION_PRIMARY || "google/gemini-2.0-flash-001")
-    : (process.env.OPENROUTER_MODEL_TEXT_PRIMARY || "deepseek/deepseek-chat");
-  const defaultSecondary = isVision
-    ? (process.env.OPENROUTER_MODEL_VISION_SECONDARY || "openai/gpt-4o-mini")
-    : (process.env.OPENROUTER_MODEL_TEXT_SECONDARY || "openai/gpt-4o-mini");
-  const defaultTertiary = isVision
-    ? (process.env.OPENROUTER_MODEL_VISION_TERTIARY || "google/gemini-flash-1.5")
-    : (process.env.OPENROUTER_MODEL_TEXT_TERTIARY || "google/gemini-2.0-flash-001");
+  // Task 11b - Requisito 4: Limita max_tokens in base al task per evitare consumo inutile di token
+  const defaultTaskMaxTokens = task === "vision" ? 800 : 1200;
+  const effectiveMaxTokens = options?.max_tokens
+    ? Math.min(options.max_tokens, defaultTaskMaxTokens)
+    : defaultTaskMaxTokens;
 
-  const primaryModel = options.models?.[0] || defaultPrimary;
-  const secondaryModel = options.models?.[1] || defaultSecondary;
-  const tertiaryModel = options.models?.[2] || defaultTertiary;
-
-  const modelsToTry = [primaryModel, secondaryModel, tertiaryModel];
-  let lastError: any = null;
-
-  let fullMessages = [...messages];
-  if (options.systemInstruction) {
-    fullMessages = [
-      { role: "system", content: options.systemInstruction },
-      ...messages
-    ];
+  // Privacy e sanitizzazione: non inviare MAI immagini a un modello della catena TEXT
+  let sanitizedMessages = messages;
+  if (task === "text") {
+    sanitizedMessages = messages.map(m => {
+      if (typeof m.content === "string") return m;
+      if (Array.isArray(m.content)) {
+        const textOnly = m.content.filter((c: any) => c.type !== "image_url");
+        return { ...m, content: textOnly };
+      }
+      return m;
+    });
   }
 
-  for (let i = 0; i < modelsToTry.length; i++) {
-    const currentModel = modelsToTry[i];
-    console.log(`[OpenRouter] Tentativo con il modello ${currentModel} (Tentativo ${i + 1}/${modelsToTry.length})...`);
+  // Task 11b - Requisiti 1 & 2: Verifica catalogo OpenRouter (24h) e Circuit Breaker
+  const rawChain = getModelChain(task);
+  const { usableModels, skippedDueToCatalog, skippedDueToCooldown } =
+    await prepareChainForExecution(rawChain);
 
-    let responseFormat: any = undefined;
-    if (options.jsonSchema) {
-      responseFormat = {
-        type: "json_schema",
-        json_schema: {
-          name: options.schemaName || "response_schema",
-          strict: false,
-          schema: options.jsonSchema
-        }
-      };
-    }
+  const chain = usableModels;
+  const startTime = Date.now();
+  let fallbackCount = 0;
+  let lastErrorReason = "";
+  let photoPayloadSendCount = 0;
 
-    let success = false;
-    let data: any = null;
+  console.log(
+    `[OpenRouter Chain] Avvio richiesta task="${task}", modelli da provare: [${chain.join(
+      ", "
+    )}], configurati: [${rawChain.join(", ")}], budget=${TOTAL_BUDGET_MS}ms`
+  );
 
-    for (let formatAttempt = 0; formatAttempt < 2; formatAttempt++) {
-      if (formatAttempt === 1 && responseFormat?.type === "json_schema") {
-        console.log(`[OpenRouter] Fallback a response_format: json_object per ${currentModel}...`);
-        responseFormat = { type: "json_object" };
-      }
+  if (chain.length > 0) {
+    for (let i = 0; i < chain.length; i++) {
+      const currentModel = chain[i];
+      const elapsed = Date.now() - startTime;
+      const remainingTime = TOTAL_BUDGET_MS - elapsed;
 
-      const requestBody: any = {
-        model: currentModel,
-        messages: fullMessages,
-      };
-      if (options.temperature !== undefined) requestBody.temperature = options.temperature;
-      if (options.max_tokens !== undefined) requestBody.max_tokens = options.max_tokens;
-      if (responseFormat) requestBody.response_format = responseFormat;
-
-      const headers: Record<string, string> = {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      };
-      if (process.env.APP_URL) {
-        headers["HTTP-Referer"] = process.env.APP_URL;
-      }
-      headers["X-Title"] = "Preventivatore Edile AI";
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 45000);
-
-      try {
-        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(requestBody),
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          const errText = await res.text();
-          if ((res.status === 400 || res.status === 422) && responseFormat?.type === "json_schema" && formatAttempt === 0) {
-            console.warn(`[OpenRouter] Modello ${currentModel} non supporta json_schema (status ${res.status}), riprovo con json_object.`);
-            continue;
-          }
-          throw new Error(`OpenRouter API error (status ${res.status}): ${errText}`);
-        }
-
-        data = await res.json();
-        success = true;
+      // Regola 2: Prima di ogni tentativo calcola il tempo residuo.
+      // Se è inferiore a 20 secondi interrompi la catena e passa alla degradazione.
+      if (remainingTime < 20000) {
+        console.warn(
+          `[OpenRouter Chain] Tempo residuo (${Math.round(
+            remainingTime / 1000
+          )}s) inferiore a 20s. Interruzione catena e passaggio a degradazione.`
+        );
         break;
-      } catch (err: any) {
-        clearTimeout(timeoutId);
-        if (err.name === 'AbortError') {
-          lastError = new Error(`Timeout di 45 secondi scaduto per il modello ${currentModel}`);
+      }
+
+      // Il timeout di un tentativo è min(60s, tempo residuo - 5s)
+      const attemptTimeoutMs = Math.min(FALLBACK_TIMEOUT_MS, remainingTime - 5000);
+      const attemptStart = Date.now();
+
+      let modelSuccess = false;
+      let modelResultText = "";
+      let modelResultData: any = null;
+      let shouldAbortImagePayload = false;
+
+      // Output strutturato: json_schema -> fallback json_object
+      for (let formatAttempt = 0; formatAttempt < 2; formatAttempt++) {
+        const isJsonObjectFallback = formatAttempt === 1;
+
+        // Requisito 4: prompt di sistema mantenuto breve
+        let currentSystemInstruction = options?.systemInstruction || "";
+        let responseFormat: any;
+
+        if (!isJsonObjectFallback) {
+          responseFormat = {
+            type: "json_schema",
+            json_schema: {
+              name: options?.schemaName || "response_data",
+              strict: false,
+              schema: schema
+            }
+          };
         } else {
-          lastError = err;
+          responseFormat = { type: "json_object" };
+          const schemaString = JSON.stringify(schema, null, 2);
+          currentSystemInstruction = `${currentSystemInstruction}\n\nOutput ONLY a valid JSON object matching this schema:\n${schemaString}`.trim();
         }
-        if (formatAttempt === 0 && responseFormat?.type === "json_schema") {
-          continue;
-        }
-        break;
-      }
-    }
 
-    if (success && data) {
-      const content = data.choices?.[0]?.message?.content;
-      if (!content) {
-        lastError = new Error(`Risposta vuota da OpenRouter per il modello ${currentModel}`);
-      } else {
+        let requestMessages = [...sanitizedMessages];
+        if (currentSystemInstruction) {
+          requestMessages = [
+            { role: "system", content: currentSystemInstruction },
+            ...sanitizedMessages
+          ];
+        }
+
+        const requestBody: any = {
+          model: currentModel,
+          messages: requestMessages,
+          response_format: responseFormat,
+          max_tokens: effectiveMaxTokens
+        };
+        if (options?.temperature !== undefined) requestBody.temperature = options.temperature;
+
+        const appUrl = process.env.APP_URL || process.env.VITE_APP_URL || "https://preventivatore-edile.local";
+        const headers: Record<string, string> = {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": appUrl,
+          "X-Title": "Preventivatore Edile AI"
+        };
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), attemptTimeoutMs);
+
+        if (task === "vision") {
+          photoPayloadSendCount++;
+        }
+
+        try {
+          const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers,
+            body: JSON.stringify(requestBody),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          if (!res.ok) {
+            const errText = await res.text();
+
+            const isSchemaUnsupported =
+              !isJsonObjectFallback &&
+              (res.status === 400 || res.status === 422) &&
+              (errText.toLowerCase().includes("json_schema") ||
+                errText.toLowerCase().includes("response_format") ||
+                errText.toLowerCase().includes("schema") ||
+                errText.toLowerCase().includes("unsupported") ||
+                errText.toLowerCase().includes("provider"));
+
+            if (isSchemaUnsupported) {
+              console.warn(
+                `[OpenRouter Chain] Modello "${currentModel}" non supporta json_schema (HTTP ${res.status}). Riprovo lo stesso modello con response_format: json_object.`
+              );
+              continue;
+            }
+
+            const isUserInputError =
+              res.status === 400 &&
+              !isSchemaUnsupported &&
+              (errText.toLowerCase().includes("invalid input") ||
+                errText.toLowerCase().includes("base64") ||
+                errText.toLowerCase().includes("user error") ||
+                errText.toLowerCase().includes("bad request"));
+
+            if (isUserInputError) {
+              const clientErr: any = new Error(`Richiesta non valida (HTTP 400): ${errText.slice(0, 200)}`);
+              clientErr.statusCode = 400;
+              throw clientErr;
+            }
+
+            lastErrorReason = `HTTP ${res.status}: ${errText.slice(0, 150)}`;
+            break;
+          }
+
+          const resJson = await res.json();
+          const content = resJson.choices?.[0]?.message?.content;
+
+          if (!content || typeof content !== "string" || content.trim().length === 0) {
+            lastErrorReason = `Risposta vuota da OpenRouter per il modello ${currentModel}`;
+            break;
+          }
+
+          let parsed: any = null;
+          let cleanText = content.trim();
+
+          try {
+            parsed = JSON.parse(cleanText);
+          } catch {
+            if (cleanText.startsWith("```")) {
+              cleanText = cleanText.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+            } else {
+              const firstBrace = cleanText.indexOf("{");
+              const lastBrace = cleanText.lastIndexOf("}");
+              if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+                cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+              }
+            }
+            try {
+              parsed = JSON.parse(cleanText);
+            } catch (e2: any) {
+              lastErrorReason = `JSON non valido dopo tentativo di riparazione: ${e2.message}`;
+              break;
+            }
+          }
+
+          const schemaErr = validateSchema(parsed, schema);
+          if (schemaErr) {
+            lastErrorReason = `Non conforme allo schema richiesto: ${schemaErr}`;
+            break;
+          }
+
+          modelSuccess = true;
+          modelResultText = cleanText;
+          modelResultData = parsed;
+          break;
+        } catch (err: any) {
+          clearTimeout(timeoutId);
+          if (err.statusCode === 400) {
+            throw err;
+          }
+          if (err.name === "AbortError") {
+            lastErrorReason = `Timeout di ${Math.round(attemptTimeoutMs / 1000)}s scaduto`;
+            // Task 11b - Requisito 4: Non reinviare le foto se è fallito per timeout dopo aver già inviato lo stesso payload più di 2 volte
+            if (task === "vision" && photoPayloadSendCount >= 2) {
+              console.warn(
+                `[OpenRouter Chain] Rilevato timeout dopo aver già inviato il payload di foto ${photoPayloadSendCount} volte. Interruzione invii foto per evitare consumo inutile di token e banda.`
+              );
+              shouldAbortImagePayload = true;
+            }
+          } else {
+            lastErrorReason = `Errore di rete o connessione: ${err.message || err}`;
+          }
+          break;
+        }
+      }
+
+      const attemptDuration = Date.now() - attemptStart;
+
+      if (modelSuccess && modelResultData) {
+        const totalDuration = Date.now() - startTime;
+        console.log(
+          `[OpenRouter Chain] Successo con modello "${currentModel}" in ${attemptDuration}ms (totale: ${totalDuration}ms, fallbackCount: ${fallbackCount})`
+        );
+
+        // Task 11b - Requisito 1: Registra successo nel circuit breaker
+        await recordModelSuccess(currentModel);
+
         return {
-          text: content,
-          raw: data,
-          modelUsed: currentModel
+          data: modelResultData,
+          text: modelResultText,
+          meta: {
+            modelUsed: currentModel,
+            fallbackCount,
+            degraded: false,
+            durationMs: totalDuration
+          }
         };
       }
-    }
 
-    console.warn(`[OpenRouter] Errore riscontrato con il modello ${currentModel}:`, lastError?.message || lastError);
+      // Task 11b - Requisito 1: Registra fallimento nel circuit breaker
+      await recordModelFailure(currentModel, lastErrorReason);
 
-    if (i < modelsToTry.length - 1) {
-      console.log(`[OpenRouter] Eseguo fallback al prossimo modello tra 500ms...`);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.warn(
+        `[OpenRouter Chain] Fallback da "${currentModel}" (tentativo ${fallbackCount + 1}): durata=${attemptDuration}ms, motivo="${lastErrorReason}"`
+      );
+
+      fallbackCount++;
+
+      if (shouldAbortImagePayload) {
+        break;
+      }
+
+      if (i < chain.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
     }
   }
 
-  throw lastError || new Error("Tutti i modelli OpenRouter hanno fallito la generazione.");
+  // Regola 5 / Requisito 3: Degradazione controllata quando la catena si esaurisce
+  const totalDuration = Date.now() - startTime;
+
+  if (task === "vision") {
+    console.warn(
+      `[OpenRouter Chain] Catena VISION esaurita o interrotta (fallbackCount=${fallbackCount}, durata=${totalDuration}ms). Restituisco analisi degradata (non disponibile) senza fallire il preventivo.`
+    );
+    const degradedData = getDegradedVisionData(options?.language);
+    return {
+      data: degradedData,
+      text: JSON.stringify(degradedData),
+      meta: {
+        modelUsed: "none",
+        fallbackCount,
+        degraded: true,
+        durationMs: totalDuration
+      }
+    };
+  }
+
+  if (task === "text") {
+    console.warn(
+      `[OpenRouter Chain] Catena TEXT esaurita o interrotta (fallbackCount=${fallbackCount}, durata=${totalDuration}ms). Restituisco stima qualitativa degradata.`
+    );
+    const degradedTextData = getDegradedTextData(options?.language);
+    return {
+      data: degradedTextData,
+      text: JSON.stringify(degradedTextData),
+      meta: {
+        modelUsed: "none",
+        fallbackCount,
+        degraded: true,
+        durationMs: totalDuration
+      }
+    };
+  }
+
+  throw new Error(`Catena OpenRouter fallita: ${lastErrorReason || "Tutti i modelli hanno fallito."}`);
 }
 
+/**
+ * Calcola il preventivo economico completo (Regola fondamentale: calcoli deterministici sempre sul server)
+ * e arricchisce la risposta con voci e analisi tramite runChain('text', ...)
+ *
+ * Task 11b - Requisito 3: Se la catena è esaurita o il budget di tempo è finito,
+ * restituisce comunque la stima economica calcolata sul server (intervalli fai da te e professionista,
+ * lista della spesa e attrezzi derivati dal listino) con i campi di testo dell'AI
+ * (fattibilità, rischi, permessi, consigli, passi) sostituiti da un contenuto standard preparato
+ * per ogni settore e lingua, e un flag degraded: true. La risposta HTTP resta 200.
+ */
 export async function calculateEstimate(reqBody: any) {
   const {
     countryCode,
@@ -163,7 +578,9 @@ export async function calculateEstimate(reqBody: any) {
   } = reqBody;
 
   if (workDescription && typeof workDescription === "string" && workDescription.length > 1500) {
-    throw new Error("La descrizione del lavoro è troppo lunga (massimo 1500 caratteri).");
+    const err: any = new Error("La descrizione del lavoro è troppo lunga (massimo 1500 caratteri).");
+    err.statusCode = 400;
+    throw err;
   }
 
   const selectedLang = language || "it";
@@ -255,34 +672,21 @@ export async function calculateEstimate(reqBody: any) {
     }
   }
 
-  const proMinIncl = proTotalIncl * 0.9;
-  const proMaxIncl = proTotalIncl * 1.1;
-  const diyMinIncl = diyTotalIncl * 0.9;
-  const diyMaxIncl = diyTotalIncl * 1.1;
-  const estimatedSavings = Math.max(0, proTotalIncl - diyTotalIncl);
-
   const promptText = `
-Analizza la richiesta di un privato per il settore "${sectorInfo.name}" in ${targetCountry.name} (${targetCountry.flag}).
-Descrizione del lavoro: ${workDescription || "Lavori generali di manutenzione"}
+Analizza la richiesta per il settore "${sectorInfo.name}" in ${targetCountry.name} (${targetCountry.flag}).
+Descrizione: ${workDescription || "Lavori di manutenzione standard"}
 Dimensioni: ${dimsStr}
 Difficoltà cantiere: ${siteDifficulty || "media"}
 
 Fornisci in formato JSON (interamente in lingua ${langNameFull}):
-1. **additionalItems**: Eventuali voci aggiuntive non coperte dal listino ma deducibili dalla descrizione (es. smaltimento macerie, ponteggi extra, trattamenti preliminari), con stima di quantità, unità, prezzo unitario e source: "stimato".
-2. **feasibility**:
-   - rating: 'Fattibile', 'Fattibile con riserve', 'Sconsigliato fai da te'
-   - analysis: spiegazione semplice per non addetti ai lavori
-   - risks: array di rischi principali (es. lavori in quota, muffa, impianti)
-   - recommendations: consigli pratici di sicurezza
-   - permitsAndRules: permessi o pratiche necessarie in ${targetCountry.name} (es. autorizzazioni condominiali, comunicazioni comunali, certificazioni di conformità)
-3. **mainSteps**: Principali passaggi operativi in sequenza logica per fare il lavoro.
-4. **estimatedTime**: Tempo stimato in giorni/ore sia per il professionista sia per il fai da te.
-5. **diySummaryNote**: Breve nota incoraggiante o di avvertimento sulla convenienza e sicurezza del fai da te per questo specifico lavoro.
+1. additionalItems: eventuali voci extra non nel listino (con item, quantity, unit, unitPrice, source: "stimato")
+2. feasibility: rating ('Fattibile', 'Fattibile con riserva', 'Sconsigliato fai da te'), analysis, risks, recommendations, permitsAndRules
+3. mainSteps: array con passaggi operativi
+4. estimatedTime: tempo stimato
+5. diySummaryNote: nota conclusiva
 `;
 
-  const messages = [
-    { role: "user", content: promptText }
-  ];
+  const messages = [{ role: "user", content: promptText }];
 
   const jsonSchema = {
     type: "object",
@@ -322,56 +726,85 @@ Fornisci in formato JSON (interamente in lingua ${langNameFull}):
     required: ["additionalItems", "feasibility", "mainSteps", "estimatedTime", "diySummaryNote"]
   };
 
-  const textPrimary = process.env.OPENROUTER_MODEL_TEXT_PRIMARY || "deepseek/deepseek-chat";
-  const textSecondary = process.env.OPENROUTER_MODEL_TEXT_SECONDARY || "openai/gpt-4o-mini";
-  const textTertiary = process.env.OPENROUTER_MODEL_TEXT_TERTIARY || "google/gemini-2.0-flash-001";
+  // Requisito 4: prompt di sistema breve e conciso
+  const shortSystemInstruction = `Esperto stime edili di Preventivatore Edile. Indica fattibilità, rischi, permessi (${targetCountry.name}), passaggi e voci extra in JSON rigoroso nella lingua ${langNameFull}.`;
 
-  const aiResponse = await generateWithFallback(messages, {
-    systemInstruction: `Sei l'esperto di stime edili per privati di Preventivatore Edile.
-Il tuo compito è aiutare un utente non esperto a capire se può fare un lavoro da solo (Fai da Te) o se deve chiamare un professionista, evidenziando i rischi, i permessi normativi del paese (${targetCountry.name}), i passaggi del lavoro e le voci extra stimate.
-Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella lingua ${langNameFull}.`,
-    jsonSchema,
-    schemaName: "estimate_schema",
-    models: [textPrimary, textSecondary, textTertiary]
-  });
-
-  const resultText = aiResponse.text;
-  let aiInsights: any = {};
-  if (resultText) {
-    try {
-      let cleanJson = resultText.trim();
-      if (cleanJson.startsWith("```")) {
-        cleanJson = cleanJson.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  let chainResult: RunChainResult;
+  try {
+    chainResult = await runChain("text", messages, jsonSchema, {
+      systemInstruction: shortSystemInstruction,
+      schemaName: "estimate_schema",
+      language: selectedLang,
+      max_tokens: 1200
+    });
+  } catch (chainErr: any) {
+    console.warn(`[calculateEstimate] Errore runChain ("${chainErr.message}"). Attivo modalità degradata senza AI.`);
+    chainResult = {
+      data: null,
+      text: "",
+      meta: {
+        modelUsed: "none",
+        fallbackCount: 0,
+        degraded: true,
+        durationMs: 0
       }
-      aiInsights = JSON.parse(cleanJson);
-    } catch (e) {
-      console.warn("Impossibile parsare la risposta JSON da OpenRouter:", e);
-    }
+    };
   }
 
-  const processedAdditionalItems = (aiInsights.additionalItems || []).map((add: any) => {
-    const q = Number(add.quantity) || 1;
-    const up = Number(add.unitPrice) || 20;
-    const totalExcl = q * up;
-    const totalIncl = totalExcl * (1 + serviceVat / 100);
-    proTotalExcl += totalExcl;
-    proTotalIncl += totalIncl;
-    return {
-      ...add,
-      total: Math.round(totalIncl * 100) / 100
-    };
-  });
+  const isDegraded = !!chainResult.meta?.degraded;
+  const aiInsights = (!isDegraded && chainResult.data) ? chainResult.data : {};
+
+  // Task 11b - Requisito 3: Se degradato, usa contenuti standard preparati per ogni settore e lingua
+  let finalFeasibility: any;
+  let finalMainSteps: string[];
+  let finalEstimatedTime: string;
+  let finalDiySummaryNote: string;
+  let finalAdditionalItems: any[];
+
+  if (isDegraded) {
+    const standardData = getStandardSectorEstimate(sectorInfo.id, selectedLang, targetCountry.name);
+    finalFeasibility = standardData.feasibility;
+    finalMainSteps = standardData.mainSteps;
+    finalEstimatedTime = standardData.estimatedTime;
+    finalDiySummaryNote = standardData.diySummaryNote;
+    finalAdditionalItems = [];
+  } else {
+    finalFeasibility = aiInsights.feasibility || {};
+    finalMainSteps = aiInsights.mainSteps || [];
+    finalEstimatedTime = aiInsights.estimatedTime || "Non specificato";
+    finalDiySummaryNote = aiInsights.diySummaryNote || "";
+
+    finalAdditionalItems = (aiInsights.additionalItems || []).map((add: any) => {
+      const q = Number(add.quantity) || 1;
+      const up = Number(add.unitPrice) || 20;
+      const totalExcl = q * up;
+      const totalIncl = totalExcl * (1 + serviceVat / 100);
+      proTotalExcl += totalExcl;
+      proTotalIncl += totalIncl;
+      return {
+        ...add,
+        total: Math.round(totalIncl * 100) / 100
+      };
+    });
+  }
 
   const finalProMinIncl = proTotalIncl * 0.9;
   const finalProMaxIncl = proTotalIncl * 1.1;
+  const finalDiyMinIncl = diyTotalIncl * 0.9;
+  const finalDiyMaxIncl = diyTotalIncl * 1.1;
   const finalEstimatedSavings = Math.max(0, proTotalIncl - diyTotalIncl);
 
   return {
     success: true,
+    degraded: isDegraded,
     country: targetCountry,
     sector: sectorInfo.name,
     mode: mode || "compare",
-    modelUsed: aiResponse.modelUsed,
+    modelUsed: chainResult.meta.modelUsed,
+    meta: {
+      ...chainResult.meta,
+      degraded: isDegraded
+    },
     professionalEstimate: {
       totalExcl: Math.round(proTotalExcl * 100) / 100,
       totalIncl: Math.round(proTotalIncl * 100) / 100,
@@ -381,18 +814,153 @@ Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella ling
     diyEstimate: {
       totalExcl: Math.round(diyTotalExcl * 100) / 100,
       totalIncl: Math.round(diyTotalIncl * 100) / 100,
-      minIncl: Math.round(diyMinIncl * 100) / 100,
-      maxIncl: Math.round(diyMaxIncl * 100) / 100,
+      minIncl: Math.round(finalDiyMinIncl * 100) / 100,
+      maxIncl: Math.round(finalDiyMaxIncl * 100) / 100,
       estimatedHours: Math.round(totalDiyHours * 10) / 10,
       estimatedDays: Math.max(1, Math.ceil(totalDiyHours / 6))
     },
     estimatedSavings: Math.round(finalEstimatedSavings * 100) / 100,
     daAffidareAProfessionista,
     listinoBreakdown: detailedBreakdown,
-    additionalItems: processedAdditionalItems,
-    feasibility: aiInsights.feasibility || {},
-    mainSteps: aiInsights.mainSteps || [],
-    estimatedTime: aiInsights.estimatedTime || "Non specificato",
-    diySummaryNote: aiInsights.diySummaryNote || ""
+    additionalItems: finalAdditionalItems,
+    feasibility: finalFeasibility,
+    mainSteps: finalMainSteps,
+    estimatedTime: finalEstimatedTime,
+    diySummaryNote: finalDiySummaryNote
+  };
+}
+
+/**
+ * Analizza le foto del locale tramite la catena Vision di runChain
+ */
+export async function analyzePhotos(reqBody: any) {
+  const { photos, sectorId, workDescription, language } = reqBody;
+
+  if (!photos || !Array.isArray(photos) || photos.length === 0) {
+    const err: any = new Error("Nessuna foto fornita per l'analisi.");
+    err.statusCode = 400;
+    throw err;
+  }
+  if (photos.length > 3) {
+    const err: any = new Error("Massimo 3 foto consentite.");
+    err.statusCode = 400;
+    throw err;
+  }
+
+  for (const photo of photos) {
+    const url = typeof photo === "string" ? photo : photo?.dataUrl;
+    if (!url || typeof url !== "string" || !url.startsWith("data:image/")) {
+      const err: any = new Error("Formato immagine non valido. Sono accettati solo JPEG, PNG e WebP.");
+      err.statusCode = 400;
+      throw err;
+    }
+    const mimeMatch = url.match(/^data:(image\/(jpeg|png|webp));base64,/);
+    if (!mimeMatch) {
+      const err: any = new Error("Formato immagine non supportato. Utilizzare JPEG, PNG o WebP.");
+      err.statusCode = 400;
+      throw err;
+    }
+  }
+
+  const selectedLang = language || "it";
+  let langNameFull = "italiana";
+  if (selectedLang === "de") langNameFull = "tedesca (German)";
+  else if (selectedLang === "fr") langNameFull = "francese (French)";
+  else if (selectedLang === "en") langNameFull = "inglese (English)";
+
+  const sectorInfo = sectorPriceLists.find(s => s.id === sectorId) || sectorPriceLists[0];
+
+  const promptText = `
+Analizza le foto per il settore "${sectorInfo.name}". Descrizione: "${workDescription || "Nessuna"}".
+Fornisci JSON in lingua ${langNameFull}:
+1. visibleState: stato visibile
+2. detectedIssues: criticità rilevate
+3. suggestedDimensions: { areaMq, lengthMl, quantityCad }
+4. confidence: ('alto', 'medio', 'basso')
+5. recommendations: verifiche consigliate
+`;
+
+  const imageContentParts = photos.map((p: any) => ({
+    type: "image_url",
+    image_url: {
+      url: typeof p === "string" ? p : p.dataUrl
+    }
+  }));
+
+  const messages = [
+    {
+      role: "user",
+      content: [
+        { type: "text", text: promptText },
+        ...imageContentParts
+      ]
+    }
+  ];
+
+  const jsonSchema = {
+    type: "object",
+    properties: {
+      visibleState: { type: "string" },
+      detectedIssues: {
+        type: "array",
+        items: { type: "string" }
+      },
+      suggestedDimensions: {
+        type: "object",
+        properties: {
+          areaMq: { type: "number" },
+          lengthMl: { type: "number" },
+          quantityCad: { type: "number" }
+        },
+        required: ["areaMq", "lengthMl", "quantityCad"]
+      },
+      confidence: { type: "string" },
+      recommendations: {
+        type: "array",
+        items: { type: "string" }
+      }
+    },
+    required: ["visibleState", "detectedIssues", "suggestedDimensions", "confidence", "recommendations"]
+  };
+
+  // Requisito 4: prompt di sistema breve e max_tokens 800
+  const shortVisionSystemInstruction = `Perito edile di Preventivatore Edile. Analizza le foto di cantiere in JSON rigoroso nella lingua ${langNameFull}.`;
+
+  const chainResult = await runChain("vision", messages, jsonSchema, {
+    systemInstruction: shortVisionSystemInstruction,
+    schemaName: "photo_analysis_schema",
+    language: selectedLang,
+    max_tokens: 800
+  });
+
+  return {
+    success: true,
+    modelUsed: chainResult.meta.modelUsed,
+    meta: chainResult.meta,
+    analysis: chainResult.data
+  };
+}
+
+/**
+ * Task 11b - Requisito 5: Helper per l'endpoint di stato e monitoraggio catena AI
+ */
+export async function getAiHealthStatus(): Promise<HealthReport> {
+  const textChain = getModelChain("text");
+  const visionChain = getModelChain("vision");
+  return await getAiHealthReport(textChain, visionChain);
+}
+
+/**
+ * Alias di retrocompatibilità
+ */
+export async function generateWithFallback(messages: Array<any>, options: any) {
+  const task: ChainTask = options.isVision ? "vision" : "text";
+  const schema = options.jsonSchema || {};
+  const res = await runChain(task, messages, schema, options);
+  return {
+    text: res.text,
+    raw: res.data,
+    modelUsed: res.meta.modelUsed,
+    meta: res.meta
   };
 }

@@ -6,6 +6,7 @@ import { WizardStep2Work } from "./components/WizardStep2Work";
 import { WizardStep3Measurements } from "./components/WizardStep3Measurements";
 import { WizardStep4Preferences } from "./components/WizardStep4Preferences";
 import { EstimateResult } from "./components/EstimateResult";
+import { WaitingProgress } from "./components/WaitingProgress";
 
 export default function App() {
   const {
@@ -42,6 +43,8 @@ export default function App() {
     activeCountry,
     t,
     generateEstimate,
+    cancelEstimate,
+    elapsedSeconds,
     photos,
     handleAddPhotos,
     handleRemovePhoto,
@@ -49,6 +52,9 @@ export default function App() {
     analyzingPhotos,
     photoError,
     analyzePhotos,
+    cancelAnalyzePhotos,
+    photoElapsedSeconds,
+    photoAnalysisUnavailable,
   } = useEstimateState();
 
   return (
@@ -76,8 +82,8 @@ export default function App() {
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8">
           
-          {/* Step Indicator */}
-          {currentStep < 5 && (
+          {/* Step Indicator (hidden during loading to focus on progress steps) */}
+          {currentStep < 5 && !loading && (
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 {[1, 2, 3, 4].map((step) => (
@@ -101,84 +107,99 @@ export default function App() {
             </div>
           )}
 
-          {errorMsg && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm">
-              {errorMsg}
+          {errorMsg && !loading && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm flex items-center justify-between gap-3">
+              <span>{errorMsg}</span>
             </div>
           )}
 
-          {/* Wizard Content */}
+          {/* Wizard Content or Waiting Screen */}
           <div className="mb-8">
-            {currentStep === 1 && (
-              <WizardStep1Location
-                selectedCountryId={selectedCountryId}
-                setSelectedCountryId={setSelectedCountryId}
-                selectedLanguage={selectedLanguage}
-                setSelectedLanguage={setSelectedLanguage}
+            {loading ? (
+              <WaitingProgress
+                elapsedSeconds={elapsedSeconds}
+                onCancel={cancelEstimate}
                 t={t}
               />
-            )}
+            ) : (
+              <>
+                {currentStep === 1 && (
+                  <WizardStep1Location
+                    selectedCountryId={selectedCountryId}
+                    setSelectedCountryId={setSelectedCountryId}
+                    selectedLanguage={selectedLanguage}
+                    setSelectedLanguage={setSelectedLanguage}
+                    t={t}
+                  />
+                )}
 
-            {currentStep === 2 && (
-              <WizardStep2Work
-                selectedSectorId={selectedSectorId}
-                setSelectedSectorId={setSelectedSectorId}
-                selectedItems={selectedItems}
-                handleToggleItem={handleToggleItem}
-                handleUpdateQuantity={handleUpdateQuantity}
-                t={t}
-              />
-            )}
+                {currentStep === 2 && (
+                  <WizardStep2Work
+                    selectedSectorId={selectedSectorId}
+                    setSelectedSectorId={setSelectedSectorId}
+                    selectedItems={selectedItems}
+                    handleToggleItem={handleToggleItem}
+                    handleUpdateQuantity={handleUpdateQuantity}
+                    t={t}
+                  />
+                )}
 
-            {currentStep === 3 && (
-              <WizardStep3Measurements
-                areaMq={areaMq}
-                setAreaMq={setAreaMq}
-                lengthMl={lengthMl}
-                setLengthMl={setLengthMl}
-                quantityCad={quantityCad}
-                setQuantityCad={setQuantityCad}
-                workDescription={workDescription}
-                setWorkDescription={setWorkDescription}
-                photos={photos}
-                handleAddPhotos={handleAddPhotos}
-                handleRemovePhoto={handleRemovePhoto}
-                photoAnalysisResult={photoAnalysisResult}
-                analyzingPhotos={analyzingPhotos}
-                photoError={photoError}
-                analyzePhotos={analyzePhotos}
-                t={t}
-              />
-            )}
+                {currentStep === 3 && (
+                  <WizardStep3Measurements
+                    areaMq={areaMq}
+                    setAreaMq={setAreaMq}
+                    lengthMl={lengthMl}
+                    setLengthMl={setLengthMl}
+                    quantityCad={quantityCad}
+                    setQuantityCad={setQuantityCad}
+                    workDescription={workDescription}
+                    setWorkDescription={setWorkDescription}
+                    photos={photos}
+                    handleAddPhotos={handleAddPhotos}
+                    handleRemovePhoto={handleRemovePhoto}
+                    photoAnalysisResult={photoAnalysisResult}
+                    analyzingPhotos={analyzingPhotos}
+                    photoError={photoError}
+                    analyzePhotos={analyzePhotos}
+                    cancelAnalyzePhotos={cancelAnalyzePhotos}
+                    photoElapsedSeconds={photoElapsedSeconds}
+                    photoAnalysisUnavailable={photoAnalysisUnavailable}
+                    t={t}
+                  />
+                )}
 
-            {currentStep === 4 && (
-              <WizardStep4Preferences
-                mode={mode}
-                setMode={setMode}
-                quality={quality}
-                setQuality={setQuality}
-                skillLevel={skillLevel}
-                setSkillLevel={setSkillLevel}
-                siteDifficulty={siteDifficulty}
-                setSiteDifficulty={setSiteDifficulty}
-                t={t}
-              />
-            )}
+                {currentStep === 4 && (
+                  <WizardStep4Preferences
+                    mode={mode}
+                    setMode={setMode}
+                    quality={quality}
+                    setQuality={setQuality}
+                    skillLevel={skillLevel}
+                    setSkillLevel={setSkillLevel}
+                    siteDifficulty={siteDifficulty}
+                    setSiteDifficulty={setSiteDifficulty}
+                    t={t}
+                  />
+                )}
 
-            {currentStep === 5 && quoteResult && (
-              <EstimateResult
-                quoteResult={quoteResult}
-                selectedItems={selectedItems}
-                mode={mode}
-                activeCountry={activeCountry}
-                onReset={() => setCurrentStep(1)}
-                t={t}
-              />
+                {currentStep === 5 && quoteResult && (
+                  <EstimateResult
+                    quoteResult={quoteResult}
+                    selectedItems={selectedItems}
+                    mode={mode}
+                    activeCountry={activeCountry}
+                    onReset={() => setCurrentStep(1)}
+                    onRetry={generateEstimate}
+                    loading={loading}
+                    t={t}
+                  />
+                )}
+              </>
             )}
           </div>
 
-          {/* Navigation Controls */}
-          {currentStep < 5 && (
+          {/* Navigation Controls (active only when not loading) */}
+          {!loading && currentStep < 5 && (
             <div className="flex items-center justify-between pt-4 border-t border-slate-100">
               <button
                 onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
@@ -205,7 +226,7 @@ export default function App() {
                 <button
                   onClick={generateEstimate}
                   disabled={loading}
-                  className="flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 transition-all cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-2 px-7 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-200 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   type="button"
                 >
                   {loading ? (

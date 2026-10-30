@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sectorPriceLists, PriceItem } from "../data/priceLists";
 import { countriesList } from "../data/countries";
 import { translations } from "../data/translations";
@@ -9,6 +9,9 @@ export interface SelectedPrivateItem {
   unit: string;
   quantity: number;
 }
+
+// Client timeout must be > TOTAL_BUDGET_MS (250s). We use 270s as required by Task 11c.
+export const CLIENT_TIMEOUT_MS = 270000;
 
 export function useEstimateState() {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -29,6 +32,47 @@ export function useEstimateState() {
   const [photoAnalysisResult, setPhotoAnalysisResult] = useState<any | null>(null);
   const [analyzingPhotos, setAnalyzingPhotos] = useState<boolean>(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [photoElapsedSeconds, setPhotoElapsedSeconds] = useState<number>(0);
+  const [photoAnalysisUnavailable, setPhotoAnalysisUnavailable] = useState<boolean>(false);
+
+  // How you want to do it / preferences
+  const [mode, setMode] = useState<"diy" | "pro" | "compare">("compare");
+  const [quality, setQuality] = useState<"base" | "standard" | "premium">("standard");
+  const [skillLevel, setSkillLevel] = useState<"beginner" | "handy" | "expert">("handy");
+  const [siteDifficulty, setSiteDifficulty] = useState<"low" | "medium" | "high">("medium");
+
+  // API result & loading
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [quoteResult, setQuoteResult] = useState<any | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+
+  // Refs for AbortControllers, timeouts and intervals
+  const estimateAbortControllerRef = useRef<AbortController | null>(null);
+  const estimateTimeoutIdRef = useRef<any>(null);
+  const estimateIntervalIdRef = useRef<any>(null);
+  const isEstimateUserCancelledRef = useRef<boolean>(false);
+
+  const photoAbortControllerRef = useRef<AbortController | null>(null);
+  const photoTimeoutIdRef = useRef<any>(null);
+  const photoIntervalIdRef = useRef<any>(null);
+  const isPhotoUserCancelledRef = useRef<boolean>(false);
+
+  const activeCountry = countriesList.find((c) => c.id === selectedCountryId) || countriesList[0];
+  const activeSector = sectorPriceLists.find((s) => s.id === selectedSectorId) || sectorPriceLists[0];
+  const t = translations[selectedLanguage] || translations.it;
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (estimateTimeoutIdRef.current) clearTimeout(estimateTimeoutIdRef.current);
+      if (estimateIntervalIdRef.current) clearInterval(estimateIntervalIdRef.current);
+      if (estimateAbortControllerRef.current) estimateAbortControllerRef.current.abort();
+      if (photoTimeoutIdRef.current) clearTimeout(photoTimeoutIdRef.current);
+      if (photoIntervalIdRef.current) clearInterval(photoIntervalIdRef.current);
+      if (photoAbortControllerRef.current) photoAbortControllerRef.current.abort();
+    };
+  }, []);
 
   const resizeAndCompressImage = (file: File, maxDimension = 1280, quality = 0.7): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -71,6 +115,7 @@ export function useEstimateState() {
 
   const handleAddPhotos = async (files: FileList | File[]) => {
     setPhotoError(null);
+    setPhotoAnalysisUnavailable(false);
     const fileArray = Array.from(files);
     const newPhotos = [...photos];
     const errors: string[] = [];
@@ -111,19 +156,63 @@ export function useEstimateState() {
     setPhotos(photos.filter(p => p.id !== id));
     if (photos.length <= 1) {
       setPhotoAnalysisResult(null);
+      setPhotoAnalysisUnavailable(false);
     }
   };
 
+  const cancelAnalyzePhotos = () => {
+    if (photoAbortControllerRef.current) {
+      isPhotoUserCancelledRef.current = true;
+      photoAbortControllerRef.current.abort();
+      photoAbortControllerRef.current = null;
+    }
+    if (photoTimeoutIdRef.current) {
+      clearTimeout(photoTimeoutIdRef.current);
+      photoTimeoutIdRef.current = null;
+    }
+    if (photoIntervalIdRef.current) {
+      clearInterval(photoIntervalIdRef.current);
+      photoIntervalIdRef.current = null;
+    }
+    setAnalyzingPhotos(false);
+    setPhotoAnalysisUnavailable(true);
+    setPhotoError(t.requestCancelled);
+  };
+
   const analyzePhotos = async () => {
+    // Anti double-click
+    if (analyzingPhotos) return;
     if (photos.length === 0) return;
 
+    // Reset previous cancellation & interval
+    if (photoTimeoutIdRef.current) clearTimeout(photoTimeoutIdRef.current);
+    if (photoIntervalIdRef.current) clearInterval(photoIntervalIdRef.current);
+
+    isPhotoUserCancelledRef.current = false;
     setAnalyzingPhotos(true);
     setPhotoError(null);
+    setPhotoElapsedSeconds(0);
+
+    const controller = new AbortController();
+    photoAbortControllerRef.current = controller;
+
+    // Client timeout of 270s
+    photoTimeoutIdRef.current = setTimeout(() => {
+      if (photoAbortControllerRef.current === controller) {
+        controller.abort("TIMEOUT");
+      }
+    }, CLIENT_TIMEOUT_MS);
+
+    // Track elapsed seconds
+    photoIntervalIdRef.current = setInterval(() => {
+      setPhotoElapsedSeconds(prev => prev + 1);
+    }, 1000);
 
     try {
       const response = await fetch("/api/analyze-photos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           photos: photos.map(p => p.dataUrl),
           sectorId: selectedSectorId,
@@ -141,6 +230,20 @@ export function useEstimateState() {
       const analysis = data.analysis;
       setPhotoAnalysisResult(analysis);
 
+      // Check if photo analysis was degraded or unavailable
+      const conf = String(analysis?.confidence || "").toLowerCase();
+      if (
+        data.meta?.degraded ||
+        conf.includes("non disponibile") ||
+        conf.includes("nicht verfügbar") ||
+        conf.includes("not available") ||
+        conf.includes("non disponible")
+      ) {
+        setPhotoAnalysisUnavailable(true);
+      } else {
+        setPhotoAnalysisUnavailable(false);
+      }
+
       if (analysis.suggestedDimensions) {
         if (analysis.suggestedDimensions.areaMq > 0) {
           setAreaMq(analysis.suggestedDimensions.areaMq);
@@ -154,26 +257,31 @@ export function useEstimateState() {
       }
     } catch (err: any) {
       console.error(err);
-      setPhotoError(err.message || "Errore durante l'analisi delle foto.");
+      setPhotoAnalysisUnavailable(true);
+      if (err.name === "AbortError" || controller.signal.aborted) {
+        if (isPhotoUserCancelledRef.current) {
+          setPhotoError(t.requestCancelled);
+        } else {
+          setPhotoError(t.requestTimeout);
+        }
+      } else {
+        setPhotoError(err.message || "Errore durante l'analisi delle foto.");
+      }
     } finally {
+      if (photoTimeoutIdRef.current) {
+        clearTimeout(photoTimeoutIdRef.current);
+        photoTimeoutIdRef.current = null;
+      }
+      if (photoIntervalIdRef.current) {
+        clearInterval(photoIntervalIdRef.current);
+        photoIntervalIdRef.current = null;
+      }
+      if (photoAbortControllerRef.current === controller) {
+        photoAbortControllerRef.current = null;
+      }
       setAnalyzingPhotos(false);
     }
   };
-
-  // How you want to do it / preferences
-  const [mode, setMode] = useState<"diy" | "pro" | "compare">("compare");
-  const [quality, setQuality] = useState<"base" | "standard" | "premium">("standard");
-  const [skillLevel, setSkillLevel] = useState<"beginner" | "handy" | "expert">("handy");
-  const [siteDifficulty, setSiteDifficulty] = useState<"low" | "medium" | "high">("medium");
-
-  // API result & loading
-  const [loading, setLoading] = useState<boolean>(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [quoteResult, setQuoteResult] = useState<any | null>(null);
-
-  const activeCountry = countriesList.find((c) => c.id === selectedCountryId) || countriesList[0];
-  const activeSector = sectorPriceLists.find((s) => s.id === selectedSectorId) || sectorPriceLists[0];
-  const t = translations[selectedLanguage] || translations.it;
 
   // Reset selected items when sector changes
   useEffect(() => {
@@ -211,15 +319,55 @@ export function useEstimateState() {
     );
   };
 
+  const cancelEstimate = () => {
+    if (estimateAbortControllerRef.current) {
+      isEstimateUserCancelledRef.current = true;
+      estimateAbortControllerRef.current.abort();
+      estimateAbortControllerRef.current = null;
+    }
+    if (estimateTimeoutIdRef.current) {
+      clearTimeout(estimateTimeoutIdRef.current);
+      estimateTimeoutIdRef.current = null;
+    }
+    if (estimateIntervalIdRef.current) {
+      clearInterval(estimateIntervalIdRef.current);
+      estimateIntervalIdRef.current = null;
+    }
+    setLoading(false);
+    setErrorMsg(t.requestCancelled);
+  };
+
   const generateEstimate = async () => {
+    // Anti double-click
+    if (loading) return;
+
     if (!workDescription.trim()) {
       setErrorMsg("Per favore, inserisci una breve descrizione del lavoro.");
       return;
     }
 
+    if (estimateTimeoutIdRef.current) clearTimeout(estimateTimeoutIdRef.current);
+    if (estimateIntervalIdRef.current) clearInterval(estimateIntervalIdRef.current);
+
+    isEstimateUserCancelledRef.current = false;
     setLoading(true);
     setErrorMsg(null);
-    setQuoteResult(null);
+    setElapsedSeconds(0);
+
+    const controller = new AbortController();
+    estimateAbortControllerRef.current = controller;
+
+    // Timeout: 270 seconds
+    estimateTimeoutIdRef.current = setTimeout(() => {
+      if (estimateAbortControllerRef.current === controller) {
+        controller.abort("TIMEOUT");
+      }
+    }, CLIENT_TIMEOUT_MS);
+
+    // Track elapsed time every second
+    estimateIntervalIdRef.current = setInterval(() => {
+      setElapsedSeconds(prev => prev + 1);
+    }, 1000);
 
     const payload = {
       countryCode: selectedCountryId,
@@ -246,6 +394,7 @@ export function useEstimateState() {
       const response = await fetch("/api/estimate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify(payload),
       });
 
@@ -259,8 +408,27 @@ export function useEstimateState() {
       setCurrentStep(5);
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || "Errore sconosciuto durante la chiamata API.");
+      if (err.name === "AbortError" || controller.signal.aborted) {
+        if (isEstimateUserCancelledRef.current) {
+          setErrorMsg(t.requestCancelled);
+        } else {
+          setErrorMsg(t.requestTimeout);
+        }
+      } else {
+        setErrorMsg(err.message || "Errore sconosciuto durante la chiamata API.");
+      }
     } finally {
+      if (estimateTimeoutIdRef.current) {
+        clearTimeout(estimateTimeoutIdRef.current);
+        estimateTimeoutIdRef.current = null;
+      }
+      if (estimateIntervalIdRef.current) {
+        clearInterval(estimateIntervalIdRef.current);
+        estimateIntervalIdRef.current = null;
+      }
+      if (estimateAbortControllerRef.current === controller) {
+        estimateAbortControllerRef.current = null;
+      }
       setLoading(false);
     }
   };
@@ -300,6 +468,8 @@ export function useEstimateState() {
     activeSector,
     t,
     generateEstimate,
+    cancelEstimate,
+    elapsedSeconds,
     photos,
     handleAddPhotos,
     handleRemovePhoto,
@@ -307,5 +477,9 @@ export function useEstimateState() {
     analyzingPhotos,
     photoError,
     analyzePhotos,
+    cancelAnalyzePhotos,
+    photoElapsedSeconds,
+    photoAnalysisUnavailable,
+    setPhotoAnalysisUnavailable,
   };
 }

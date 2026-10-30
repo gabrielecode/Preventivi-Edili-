@@ -30,3 +30,21 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* Indeterminate progress bar animation for AI loading states */
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(35%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+.animate-indeterminate {
+  animation: indeterminate 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

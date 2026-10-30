@@ -147,6 +147,26 @@ export interface TranslationDict {
   leadCloseBtn: string;
   privacyModalTitle: string;
   privacyModalText: string;
+
+  // Task 11c: Attese lunghe, annullamento, degraded e avvisi
+  cancelBtn: string;
+  cancellingBtn: string;
+  requestCancelled: string;
+  requestTimeout: string;
+  loadingTitle: string;
+  loadingStepAnalyzing: string;
+  loadingStepCalculating: string;
+  loadingStepAlternative: string;
+  loadingStepFinalizing: string;
+  elapsedTimeLabel: string;
+  dataPreservedNotice: string;
+  degradedAlertMessage: string;
+  retryBtn: string;
+  photoAnalysisUnavailableTitle: string;
+  photoAnalysisUnavailableNotice: string;
+  photoAnalyzingWait: string;
+  photoAnalyzingAlternative: string;
+  continueWithManualMeasures: string;
 }
 
 export const translations: Record<string, TranslationDict> = {
@@ -291,7 +311,27 @@ export const translations: Record<string, TranslationDict> = {
     leadSuccessText: "La tua richiesta è stata registrata con successo e inoltrata al sistema. Nessun invio automatico di email è stato effettuato. Cosa succede adesso? I professionisti partner della tua zona verificheranno i dettagli del tuo progetto e ti contatteranno direttamente tramite email o telefono entro 24-48 ore lavorative per effettuare un sopralluogo o fornirti un preventivo dettagliato.",
     leadCloseBtn: "Chiudi",
     privacyModalTitle: "Informativa sulla Privacy",
-    privacyModalText: "I dati inseriti in questo modulo vengono utilizzati esclusivamente per consentire l'inoltro della richiesta di preventivo ai professionisti e alle imprese edili partner operanti nella tua zona. Il trattamento avviene nel rispetto del Regolamento UE 2016/679 (GDPR). Nessun invio di email automatiche viene effettuato dal sistema: la richiesta viene conservata in un archivio sicuro per la gestione commerciale e sarai contattato direttamente dai professionisti interessati al tuo progetto."
+    privacyModalText: "I dati inseriti in questo modulo vengono utilizzati esclusivamente per consentire l'inoltro della richiesta di preventivo ai professionisti e alle imprese edili partner operanti nella tua zona. Il trattamento avviene nel rispetto del Regolamento UE 2016/679 (GDPR). Nessun invio di email automatiche viene effettuato dal sistema: la richiesta viene conservata in un archivio sicuro per la gestione commerciale e sarai contattato direttamente dai professionisti interessati al tuo progetto.",
+
+    // Task 11c
+    cancelBtn: "Annulla",
+    cancellingBtn: "Annullamento in corso...",
+    requestCancelled: "Richiesta annullata. Tutti i dati del modulo sono stati conservati.",
+    requestTimeout: "Tempo massimo di attesa superato (270s). I server sono attualmente molto occupati. Puoi riprovare o modificare la configurazione.",
+    loadingTitle: "Elaborazione Preventivo con IA",
+    loadingStepAnalyzing: "Sto analizzando il lavoro...",
+    loadingStepCalculating: "Calcolo delle lavorazioni e verifica listini territoriali...",
+    loadingStepAlternative: "Il motore AI è lento, provo un'alternativa...",
+    loadingStepFinalizing: "Sto completando la stima...",
+    elapsedTimeLabel: "Tempo trascorso:",
+    dataPreservedNotice: "Tutti i dati e le scelte rimangono salvati se decidi di annullare.",
+    degradedAlertMessage: "Stima economica completa; i consigli personalizzati dell'AI non sono disponibili in questo momento. Puoi riprovare più tardi.",
+    retryBtn: "Riprova",
+    photoAnalysisUnavailableTitle: "Analisi foto non disponibile",
+    photoAnalysisUnavailableNotice: "Analisi foto non disponibile in questo momento. Puoi proseguire inserendo le misure manualmente nei campi sottostanti.",
+    photoAnalyzingWait: "Sto analizzando le foto del locale...",
+    photoAnalyzingAlternative: "Il motore visivo è lento, provo un'alternativa...",
+    continueWithManualMeasures: "Inserisci le misure a mano per proseguire"
   },
   de: {
     appName: "Haus- & Heimwerker-Rechner",
@@ -434,7 +474,27 @@ export const translations: Record<string, TranslationDict> = {
     leadSuccessText: "Ihre Anfrage wurde erfolgreich registriert. Es wurden keine automatischen E-Mails versendet. Partner-Fachleute in Ihrer Nähe prüfen Ihre Projektdetails und kontaktieren Sie innerhalb von 24-48 Werbestunden direkt per E-Mail oder Telefon, um eine Besichtigung oder ein detailliertes Angebot abzustimmen.",
     leadCloseBtn: "Schließen",
     privacyModalTitle: "Datenschutz",
-    privacyModalText: "Die in dieses Formular eingegebenen Daten werden ausschließlich verwendet, um die Angebotsanfrage an Partnerunternehmen und Bau-Fachleute in Ihrer Region weiterzuleiten. Die Verarbeitung erfolgt gemäß EU-Verordnung 2016/679 (DSGVO). Es werden keine automatischen E-Mails vom System versendet: Die Anfrage wird in einem sicheren Archiv gespeichert und Sie werden direkt von den interessierten Fachleuten kontaktiert."
+    privacyModalText: "Die in dieses Formular eingegebenen Daten werden ausschließlich verwendet, um die Angebotsanfrage an Partnerunternehmen und Bau-Fachleute in Ihrer Region weiterzuleiten. Die Verarbeitung erfolgt gemäß EU-Verordnung 2016/679 (DSGVO). Es werden keine automatischen E-Mails vom System versendet: Die Anfrage wird in einem sicheren Archiv gespeichert und Sie werden direkt von den interessierten Fachleuten kontaktiert.",
+
+    // Task 11c
+    cancelBtn: "Abbrechen",
+    cancellingBtn: "Wird abgebrochen...",
+    requestCancelled: "Anfrage abgebrochen. Alle Formulardaten wurden beibehalten.",
+    requestTimeout: "Maximale Wartezeit überschritten (270s). Die Server sind derzeit stark ausgelastet. Sie können es erneut versuchen oder die Einstellungen anpassen.",
+    loadingTitle: "KI-Angebot wird berechnet",
+    loadingStepAnalyzing: "Ich analysiere die Arbeiten...",
+    loadingStepCalculating: "Berechnung der Positionen und Prüfung der regionalen Preislisten...",
+    loadingStepAlternative: "Der KI-Motor reagiert langsam, ich versuche eine Alternative...",
+    loadingStepFinalizing: "Ich schließe die Schätzung ab...",
+    elapsedTimeLabel: "Verstrichene Zeit:",
+    dataPreservedNotice: "Alle Daten und Einstellungen bleiben gespeichert, falls Sie abbrechen.",
+    degradedAlertMessage: "Wirtschaftliche Schätzung abgeschlossen; die personalisierten KI-Empfehlungen sind derzeit nicht verfügbar. Sie können es später erneut versuchen.",
+    retryBtn: "Erneut versuchen",
+    photoAnalysisUnavailableTitle: "Fotoanalyse nicht verfügbar",
+    photoAnalysisUnavailableNotice: "Fotoanalyse derzeit nicht verfügbar. Sie können fortfahren, indem Sie die Maße manuell in die folgenden Felder eingeben.",
+    photoAnalyzingWait: "Raumfotos werden analysiert...",
+    photoAnalyzingAlternative: "Bildverarbeitung verzögert, alternative Route wird versucht...",
+    continueWithManualMeasures: "Maße manuell eingeben, um fortzufahren"
   },
   fr: {
     appName: "Calculateur Maison & Bricolage",
@@ -577,7 +637,27 @@ export const translations: Record<string, TranslationDict> = {
     leadSuccessText: "Votre demande a été enregistrée avec succès. Aucun e-mail automatique n'a été envoyé. Des professionnels partenaires de votre région examineront les détails de votre projet et vous contacteront directement par e-mail ou téléphone dans les 24 à 48 heures ouvrées pour convenir d'une visite ou vous envoyer un devis détaillé.",
     leadCloseBtn: "Fermer",
     privacyModalTitle: "Politique de Confidentialité",
-    privacyModalText: "Les données saisies dans ce formulaire sont utilisées exclusivement pour transmettre la demande de devis aux entreprises et professionnels partenaires de votre région. Le traitement est conforme au RGPD (Règlement UE 2016/679). Aucun e-mail automatique n'est envoyé par le système : la demande est conservée dans un espace sécurisé et vous serez contacté directement par les professionnels intéressés."
+    privacyModalText: "Les données saisies dans ce formulaire sont utilisées exclusivement pour transmettre la demande de devis aux entreprises et professionnels partenaires de votre région. Le traitement est conforme au RGPD (Règlement UE 2016/679). Aucun e-mail automatique n'est envoyé par le système : la demande est conservée dans un espace sécurisé et vous serez contacté directement par les professionnels intéressés.",
+
+    // Task 11c
+    cancelBtn: "Annuler",
+    cancellingBtn: "Annulation en cours...",
+    requestCancelled: "Demande annulée. Toutes les données du formulaire ont été conservées.",
+    requestTimeout: "Délai d'attente maximal dépassé (270s). Les serveurs sont actuellement très sollicités. Vous pouvez réessayer ou modifier vos paramètres.",
+    loadingTitle: "Calcul du devis par IA",
+    loadingStepAnalyzing: "J'analyse les travaux...",
+    loadingStepCalculating: "Calcul des prestations et vérification des barèmes régionaux...",
+    loadingStepAlternative: "Le moteur IA est lent, je tente une alternative...",
+    loadingStepFinalizing: "Je finalise l'estimation...",
+    elapsedTimeLabel: "Temps écoulé :",
+    dataPreservedNotice: "Toutes vos données restent sauvegardées si vous décidez d'annuler.",
+    degradedAlertMessage: "Estimation économique complète ; les conseils personnalisés de l'IA ne sont pas disponibles pour le moment. Vous pouvez réessayer plus tard.",
+    retryBtn: "Réessayer",
+    photoAnalysisUnavailableTitle: "Analyse photo indisponible",
+    photoAnalysisUnavailableNotice: "Analyse photo non disponible pour le moment. Vous pouvez continuer en saisissant manuellement les mesures dans les champs ci-dessous.",
+    photoAnalyzingWait: "Analyse des photos en cours...",
+    photoAnalyzingAlternative: "Le traitement visuel est lent, tentative avec une alternative...",
+    continueWithManualMeasures: "Saisissez les mesures à la main pour continuer"
   },
   en: {
     appName: "Home & DIY Estimator",
@@ -720,6 +800,26 @@ export const translations: Record<string, TranslationDict> = {
     leadSuccessText: "Your request has been successfully registered. No automatic emails have been sent. Partner professionals in your area will review your project details and contact you directly via email or phone within 24-48 business hours to arrange an inspection or send a detailed quote.",
     leadCloseBtn: "Close",
     privacyModalTitle: "Privacy Policy",
-    privacyModalText: "The data entered in this form is used exclusively to forward the quote request to partner contractors and building professionals operating in your area. Processing complies with EU Regulation 2016/679 (GDPR). No automatic emails are sent by the system: the request is stored in a secure archive for commercial management and you will be contacted directly by professionals interested in your project."
+    privacyModalText: "The data entered in this form is used exclusively to forward the quote request to partner contractors and building professionals operating in your area. Processing complies with EU Regulation 2016/679 (GDPR). No automatic emails are sent by the system: the request is stored in a secure archive for commercial management and you will be contacted directly by professionals interested in your project.",
+
+    // Task 11c
+    cancelBtn: "Cancel",
+    cancellingBtn: "Cancelling...",
+    requestCancelled: "Request cancelled. All your form data has been preserved.",
+    requestTimeout: "Maximum timeout reached (270s). Servers are currently experiencing high load. You can try again or adjust your settings.",
+    loadingTitle: "Calculating AI Estimate",
+    loadingStepAnalyzing: "Analyzing the project details...",
+    loadingStepCalculating: "Calculating line items and checking regional price lists...",
+    loadingStepAlternative: "The AI engine is slow, trying an alternative...",
+    loadingStepFinalizing: "Finalizing the estimate...",
+    elapsedTimeLabel: "Elapsed time:",
+    dataPreservedNotice: "All your inputs and selections remain saved if you choose to cancel.",
+    degradedAlertMessage: "Economic estimate complete; personalized AI recommendations are unavailable at this moment. You can try again later.",
+    retryBtn: "Try again",
+    photoAnalysisUnavailableTitle: "Photo analysis unavailable",
+    photoAnalysisUnavailableNotice: "Photo analysis is currently unavailable. You can continue by entering your measurements manually in the fields below.",
+    photoAnalyzingWait: "Analyzing room photos...",
+    photoAnalyzingAlternative: "Visual processing is slow, trying an alternative...",
+    continueWithManualMeasures: "Enter measurements manually to proceed"
   }
 };

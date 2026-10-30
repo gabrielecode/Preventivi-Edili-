@@ -24,6 +24,9 @@ interface Props {
   analyzingPhotos: boolean;
   photoError: string | null;
   analyzePhotos: () => void;
+  cancelAnalyzePhotos?: () => void;
+  photoElapsedSeconds?: number;
+  photoAnalysisUnavailable?: boolean;
   t: TranslationDict;
 }
 
@@ -43,6 +46,9 @@ export const WizardStep3Measurements: React.FC<Props> = ({
   analyzingPhotos,
   photoError,
   analyzePhotos,
+  cancelAnalyzePhotos,
+  photoElapsedSeconds = 0,
+  photoAnalysisUnavailable = false,
   t,
 }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +56,17 @@ export const WizardStep3Measurements: React.FC<Props> = ({
       handleAddPhotos(e.target.files);
       e.target.value = "";
     }
+  };
+
+  const isPhotoAlternativeActive = photoElapsedSeconds >= 25;
+  const photoWaitMessage = isPhotoAlternativeActive
+    ? t.photoAnalyzingAlternative
+    : t.photoAnalyzingWait;
+
+  const formatTime = (totalSec: number) => {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
   return (
@@ -74,6 +91,18 @@ export const WizardStep3Measurements: React.FC<Props> = ({
           <p className="text-xs text-slate-500">{t.photoSectionDesc}</p>
         </div>
 
+        {/* Notice if photo analysis is unavailable (Task 11c) */}
+        {photoAnalysisUnavailable && (
+          <div className="p-4 bg-amber-50/90 border border-amber-200 rounded-xl flex items-start gap-3 text-xs text-amber-900 shadow-xs">
+            <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-bold text-amber-950">{t.photoAnalysisUnavailableTitle}</p>
+              <p className="text-amber-800 leading-relaxed">{t.photoAnalysisUnavailableNotice}</p>
+              <p className="text-blue-700 font-semibold pt-0.5">↓ {t.continueWithManualMeasures}</p>
+            </div>
+          </div>
+        )}
+
         {photoError && (
           <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 shrink-0" />
@@ -88,7 +117,8 @@ export const WizardStep3Measurements: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={() => handleRemovePhoto(photo.id)}
-                className="absolute top-1 right-1 bg-slate-900/70 hover:bg-red-600 text-white p-1 rounded-full transition-colors cursor-pointer"
+                disabled={analyzingPhotos}
+                className="absolute top-1 right-1 bg-slate-900/70 hover:bg-red-600 text-white p-1 rounded-full transition-colors cursor-pointer disabled:opacity-40"
                 title="Rimuovi foto"
               >
                 <X className="w-3.5 h-3.5" />
@@ -97,7 +127,9 @@ export const WizardStep3Measurements: React.FC<Props> = ({
           ))}
 
           {photos.length < 3 && (
-            <label className="border-2 border-dashed border-slate-300 hover:border-blue-500 bg-white hover:bg-blue-50/50 rounded-xl w-24 h-24 flex flex-col items-center justify-center cursor-pointer transition-all text-slate-500 hover:text-blue-600">
+            <label className={`border-2 border-dashed border-slate-300 bg-white rounded-xl w-24 h-24 flex flex-col items-center justify-center transition-all text-slate-500 ${
+              analyzingPhotos ? "opacity-50 cursor-not-allowed" : "hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 cursor-pointer"
+            }`}>
               <Camera className="w-6 h-6 mb-1" />
               <span className="text-[10px] font-semibold text-center px-1">Aggiungi foto</span>
               <input
@@ -105,6 +137,7 @@ export const WizardStep3Measurements: React.FC<Props> = ({
                 accept="image/*"
                 capture="environment"
                 multiple
+                disabled={analyzingPhotos}
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -116,27 +149,60 @@ export const WizardStep3Measurements: React.FC<Props> = ({
           {t.photoPrivacyNotice}
         </p>
 
+        {/* Photo Analysis Action & Waiting State */}
         {photos.length > 0 && (
-          <div className="pt-2 flex items-center gap-3">
-            <button
-              type="button"
-              onClick={analyzePhotos}
-              disabled={analyzingPhotos}
-              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer disabled:opacity-50"
-            >
-              {analyzingPhotos ? (
-                <>
-                  <Sparkles className="w-4 h-4 animate-spin" /> {t.photoAnalyzingBtn}
-                </>
-              ) : (
-                <>
+          <div className="pt-2 space-y-3">
+            {!analyzingPhotos ? (
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={analyzePhotos}
+                  disabled={analyzingPhotos}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-100 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   <Sparkles className="w-4 h-4" /> {t.photoAnalyzeBtn}
-                </>
-              )}
-            </button>
+                </button>
+              </div>
+            ) : (
+              /* Photo waiting progress with indeterminate bar, 25s alternative message, timer and cancel button */
+              <div className="p-4 bg-white border border-indigo-200 rounded-2xl shadow-sm space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 font-semibold text-indigo-950">
+                    <Sparkles className="w-4 h-4 text-indigo-600 animate-spin" />
+                    <span>{photoWaitMessage}</span>
+                  </div>
+                  <span className="font-mono text-slate-500 text-[11px]">{formatTime(photoElapsedSeconds)}</span>
+                </div>
+
+                {/* Indeterminate progress bar */}
+                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative border border-slate-200">
+                  <div
+                    className={`h-full rounded-full animate-indeterminate ${
+                      isPhotoAlternativeActive
+                        ? "bg-gradient-to-r from-amber-500 via-indigo-600 to-blue-600"
+                        : "bg-gradient-to-r from-indigo-500 via-blue-500 to-indigo-600"
+                    }`}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-[11px] text-slate-400">{t.dataPreservedNotice}</span>
+                  {cancelAnalyzePhotos && (
+                    <button
+                      type="button"
+                      onClick={cancelAnalyzePhotos}
+                      className="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200 transition-all cursor-pointer"
+                    >
+                      {t.cancelBtn}
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+
 
       {/* Photo Analysis Results Card */}
       {photoAnalysisResult && (

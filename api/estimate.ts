@@ -3,7 +3,7 @@ import { calculateEstimate } from "../server-lib/ai";
 import { checkRateLimit, getClientIp } from "../server-lib/ratelimit";
 
 export const config = {
-  maxDuration: 60,
+  maxDuration: 300,
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -25,8 +25,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.json(result);
   } catch (error: any) {
     console.error("Error in /api/estimate:", error);
-    return res.status(500).json({
-      error: "Errore durante il calcolo della stima: " + (error.message || error)
+    const status = error.statusCode || 500;
+    return res.status(status).json({
+      error: error.message || "Errore durante il calcolo della stima."
     });
   }
 }
