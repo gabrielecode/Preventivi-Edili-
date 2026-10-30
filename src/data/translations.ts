@@ -167,6 +167,7 @@ export interface TranslationDict {
   photoAnalyzingWait: string;
   photoAnalyzingAlternative: string;
   continueWithManualMeasures: string;
+  apiErrorGeneric: string;
 
   // Navigation & Layout
   navCalculateBtn: string;
@@ -512,6 +513,7 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalyzingWait: "Sto analizzando le foto del locale...",
     photoAnalyzingAlternative: "Il motore visivo è lento, provo un'alternativa...",
     continueWithManualMeasures: "Inserisci le misure a mano per proseguire",
+    apiErrorGeneric: "Servizio temporaneamente non disponibile, riprova tra poco.",
 
     // Navigation & Layout
     navCalculateBtn: "Calcola il costo",
@@ -855,6 +857,7 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalyzingWait: "Raumfotos werden analysiert...",
     photoAnalyzingAlternative: "Bildverarbeitung verzögert, alternative Route wird versucht...",
     continueWithManualMeasures: "Maße manuell eingeben, um fortzufahren",
+    apiErrorGeneric: "Dienst vorübergehend nicht verfügbar, bitte versuchen Sie es in Kürze erneut.",
 
     // Navigation & Layout
     navCalculateBtn: "Kosten berechnen",
@@ -1198,6 +1201,7 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalyzingWait: "Analyse des photos en cours...",
     photoAnalyzingAlternative: "Le traitement visuel est lent, tentative avec une alternative...",
     continueWithManualMeasures: "Saisissez les mesures à la main pour continuer",
+    apiErrorGeneric: "Service temporairement indisponible, veuillez réessayer dans un moment.",
 
     // Navigation & Layout
     navCalculateBtn: "Calculer le coût",
@@ -1541,6 +1545,7 @@ export const translations: Record<string, TranslationDict> = {
     photoAnalyzingWait: "Analyzing room photos...",
     photoAnalyzingAlternative: "Visual processing is slow, trying an alternative...",
     continueWithManualMeasures: "Enter measurements manually to proceed",
+    apiErrorGeneric: "Service temporarily unavailable, please try again shortly.",
 
     // Navigation & Layout
     navCalculateBtn: "Calculate cost",

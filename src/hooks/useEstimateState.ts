@@ -232,15 +232,23 @@ export function useEstimateState(
         })
       });
 
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error || "Errore durante l'analisi delle foto.");
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        throw new Error(t.apiErrorGeneric);
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        // Handle standardized error format { error: { message } } or old { error: string }
+        const errMsg = typeof data.error === "object" ? data.error.message : data.error;
+        throw new Error(errMsg || t.apiErrorGeneric);
+      }
+
       const analysis = data.analysis;
       setPhotoAnalysisResult(analysis);
-
+      
       // Check if photo analysis was degraded or unavailable
       const conf = String(analysis?.confidence || "").toLowerCase();
       if (
@@ -267,7 +275,7 @@ export function useEstimateState(
         }
       }
     } catch (err: any) {
-      console.error(err);
+      console.error("AnalyzePhotos Error:", err);
       setPhotoAnalysisUnavailable(true);
       if (err.name === "AbortError" || controller.signal.aborted) {
         if (isPhotoUserCancelledRef.current) {
@@ -276,7 +284,7 @@ export function useEstimateState(
           setPhotoError(t.requestTimeout);
         }
       } else {
-        setPhotoError(err.message || "Errore durante l'analisi delle foto.");
+        setPhotoError(err.message || t.apiErrorGeneric);
       }
     } finally {
       if (photoTimeoutIdRef.current) {
@@ -409,16 +417,23 @@ export function useEstimateState(
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Errore durante la generazione della stima.");
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseErr) {
+        throw new Error(t.apiErrorGeneric);
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        const errMsg = typeof data.error === "object" ? data.error.message : data.error;
+        throw new Error(errMsg || t.apiErrorGeneric);
+      }
+
       setQuoteResult(data);
       setCurrentStep(5);
     } catch (err: any) {
-      console.error(err);
+      console.error("GenerateEstimate Error:", err);
       if (err.name === "AbortError" || controller.signal.aborted) {
         if (isEstimateUserCancelledRef.current) {
           setErrorMsg(t.requestCancelled);
@@ -426,7 +441,7 @@ export function useEstimateState(
           setErrorMsg(t.requestTimeout);
         }
       } else {
-        setErrorMsg(err.message || "Errore sconosciuto durante la chiamata API.");
+        setErrorMsg(err.message || t.apiErrorGeneric);
       }
     } finally {
       if (estimateTimeoutIdRef.current) {

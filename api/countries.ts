@@ -1,14 +1,23 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { countriesList } from "../src/data/countries";
+import { countriesList } from "../src/data/countries.js";
 
 export const config = {
   maxDuration: 10,
 };
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== "GET") {
-    res.setHeader("Allow", ["GET"]);
-    return res.status(405).end(`Method ${req.method} Not Allowed`);
+  try {
+    if (req.method !== "GET") {
+      res.setHeader("Allow", ["GET"]);
+      return res.status(405).json({
+        error: { code: "METHOD_NOT_ALLOWED", message: `Method ${req.method} Not Allowed` }
+      });
+    }
+    return res.json(countriesList);
+  } catch (error: any) {
+    console.error("Error in /api/countries:", error);
+    return res.status(500).json({
+      error: { code: "INTERNAL_SERVER_ERROR", message: "Errore durante il recupero della lista paesi." }
+    });
   }
-  return res.json(countriesList);
 }

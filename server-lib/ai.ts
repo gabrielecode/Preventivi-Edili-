@@ -1,13 +1,13 @@
-import { sectorPriceLists, toolsCatalog, PriceItem } from "../src/data/priceLists";
-import { countriesList } from "../src/data/countries";
+import { sectorPriceLists, toolsCatalog, PriceItem } from "../src/data/priceLists.js";
+import { countriesList } from "../src/data/countries.js";
 import {
   prepareChainForExecution,
   recordModelSuccess,
   recordModelFailure,
   getAiHealthReport,
   HealthReport
-} from "./modelHealth";
-import { getStandardSectorEstimate } from "./degradedData";
+} from "./modelHealth.js";
+import { getStandardSectorEstimate } from "./degradedData.js";
 
 export type ChainTask = "text" | "vision";
 

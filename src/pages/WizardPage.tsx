@@ -111,6 +111,12 @@ export const WizardPage: React.FC = () => {
         {errorMsg && !loading && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm flex items-center justify-between gap-3">
             <span>{errorMsg}</span>
+            <button
+              onClick={generateEstimate}
+              className="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-bold text-xs transition-colors whitespace-nowrap"
+            >
+              {t.retryBtn}
+            </button>
           </div>
         )}
 

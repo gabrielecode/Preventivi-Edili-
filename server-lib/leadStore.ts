@@ -1,7 +1,7 @@
 import { Redis } from "@upstash/redis";
 import fs from "fs";
 import path from "path";
-import { LeadRecord, LeadStore } from "./types";
+import { LeadRecord, LeadStore } from "./types.js";
 
 export class UpstashRedisLeadStore implements LeadStore {
   private redis: Redis | null = null;
