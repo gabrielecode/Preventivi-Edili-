@@ -3,8 +3,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
-import { sectorPriceLists } from "./src/data/priceLists";
+import { sectorPriceLists, toolsCatalog, PriceItem } from "./src/data/priceLists";
 import { countriesList } from "./src/data/countries";
 
 dotenv.config();
@@ -14,6 +13,28 @@ const PORT = 3000;
 
 app.use(express.json());
 
+// Simple in-memory rate limiter for /api/estimate: max 10 requests per hour per IP
+const requestLog = new Map<string, number[]>();
+function rateLimiter(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const ip = req.ip || req.socket.remoteAddress || "unknown";
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000; // 1 hour
+  const maxRequests = 10;
+
+  let timestamps = requestLog.get(ip) || [];
+  timestamps = timestamps.filter(t => now - t < windowMs);
+
+  if (timestamps.length >= maxRequests) {
+    return res.status(429).json({
+      error: "Troppe richieste effettuate da questo indirizzo IP. Riprova più tardi (limite: 10 richieste all'ora)."
+    });
+  }
+
+  timestamps.push(now);
+  requestLog.set(ip, timestamps);
+  next();
+}
+
 // API route to get initial price lists
 app.get("/api/price-lists", (req, res) => {
   res.json(sectorPriceLists);
@@ -22,114 +43,6 @@ app.get("/api/price-lists", (req, res) => {
 // API route to get countries list
 app.get("/api/countries", (req, res) => {
   res.json(countriesList);
-});
-
-// API route to send a PDF via email
-app.post("/api/send-email", async (req, res) => {
-  try {
-    const { to, subject, body, fileName, pdfBase64 } = req.body;
-
-    if (!to || !subject || !body || !pdfBase64) {
-      return res.status(400).json({
-        error: "Parametri mancanti. Compilare tutti i campi (Destinatario, Oggetto, Messaggio, PDF)."
-      });
-    }
-
-    let transporter;
-    let fromEmail = process.env.SMTP_FROM || '"Preventivatore Edile AI" <noreply@preventivatoreedile.com>';
-    let testUrl = null;
-
-    // Check if custom SMTP details are provided
-    if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || "587"),
-        secure: process.env.SMTP_PORT === "465", // true for 465, false for other ports
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-    } else {
-      // Create a temporary Ethereal test SMTP account (extremely useful for previewing emails in development)
-      try {
-        const testAccount = await nodemailer.createTestAccount();
-        transporter = nodemailer.createTransport({
-          host: testAccount.smtp.host,
-          port: testAccount.smtp.port,
-          secure: testAccount.smtp.secure,
-          auth: {
-            user: testAccount.user,
-            pass: testAccount.pass,
-          },
-        });
-        fromEmail = `"Preventivatore d'Esempio" <${testAccount.user}>`;
-      } catch (err) {
-        console.warn("Impossibile creare l'account SMTP di prova, invio simulato:", err);
-      }
-    }
-
-    const mailOptions = {
-      from: fromEmail,
-      to: to,
-      subject: subject,
-      text: body,
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #fafafa;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <span style="font-size: 40px;">📋</span>
-            <h2 style="color: #0f172a; margin-top: 10px; font-weight: 800; font-family: system-ui, -apple-system, sans-serif; letter-spacing: -0.025em;">Preventivo Edile Professionale</h2>
-          </div>
-          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #f1f5f9; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);">
-            <p style="color: #334155; line-height: 1.6; font-size: 14px; white-space: pre-wrap; margin: 0;">${body}</p>
-          </div>
-          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-          <div style="text-align: center; color: #64748b; font-size: 11px; line-height: 1.4;">
-            <p>Questo messaggio è stato inviato in modo sicuro tramite la piattaforma <strong>Preventivatore Edile AI</strong>.</p>
-            <p>Troverà il documento PDF dettagliato in allegato a questa email.</p>
-          </div>
-        </div>
-      `,
-      attachments: [
-        {
-          filename: fileName || "preventivo_cantiere.pdf",
-          content: pdfBase64,
-          encoding: "base64",
-        }
-      ]
-    };
-
-    if (transporter) {
-      const info = await transporter.sendMail(mailOptions);
-      
-      // If we used a test account, get the Ethereal message URL
-      if (!process.env.SMTP_HOST) {
-        testUrl = nodemailer.getTestMessageUrl(info);
-      }
-
-      console.log("Email inviata con successo:", info.messageId);
-      return res.json({
-        success: true,
-        message: "Email inviata con successo!",
-        messageId: info.messageId,
-        testUrl: testUrl
-      });
-    } else {
-      // Pure fallback mock response if SMTP creation failed completely
-      console.log("Mock invio email a:", to);
-      return res.json({
-        success: true,
-        message: "[Simulazione] Mail pronta per l'invio (SMTP non configurato).",
-        mocked: true
-      });
-    }
-
-  } catch (error: any) {
-    console.error("Errore durante l'invio dell'email:", error);
-    res.status(500).json({
-      error: "Errore nell'invio dell'email: " + (error.message || error)
-    });
-  }
 });
 
 // Helper to perform Gemini API call with backup models on service overloads (503/UNAVAILABLE)
@@ -153,7 +66,6 @@ async function generateContentWithFallback(ai: any, contents: any, config: any):
       const errorMsg = error.message || String(error);
       console.warn(`Errore riscontrato con il modello ${currentModel}:`, errorMsg);
       
-      // Keep going to fallback unless it's a fatal key error or similar
       if (i < modelsToTry.length - 1) {
         console.log(`Eseguo fallback al prossimo modello tra 500ms...`);
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -163,23 +75,29 @@ async function generateContentWithFallback(ai: any, contents: any, config: any):
   throw lastError;
 }
 
-// API route to generate quote via Gemini
-app.post("/api/generate-quote", async (req, res) => {
+// API route to generate cost estimate
+app.post("/api/estimate", rateLimiter, async (req, res) => {
   try {
     const {
-      workerSector,
-      customerName,
-      projectName,
+      countryCode,
+      language,
+      sectorId,
       workDescription,
       dimensions,
       selectedItems,
-      additionalNotes,
-      siteDifficulty,
-      materialsProvidedByCustomer,
-      countryCode,
-      laborConfig,
-      language
+      quality,
+      skillLevel,
+      mode,
+      ivaOption,
+      siteDifficulty
     } = req.body;
+
+    // Validation
+    if (workDescription && typeof workDescription === "string" && workDescription.length > 1500) {
+      return res.status(400).json({
+        error: "La descrizione del lavoro è troppo lunga (massimo 1500 caratteri)."
+      });
+    }
 
     const selectedLang = language || "it";
     let langNameFull = "italiana";
@@ -194,7 +112,6 @@ app.post("/api/generate-quote", async (req, res) => {
       });
     }
 
-    // Lazy initialization of GoogleGenAI custom header as required
     const ai = new GoogleGenAI({
       apiKey: apiKey,
       httpOptions: {
@@ -204,167 +121,226 @@ app.post("/api/generate-quote", async (req, res) => {
       }
     });
 
-    // Find the country information
     const targetCountry = countriesList.find(c => c.id === countryCode) || countriesList[0];
-
-    // Find the sector details for context
-    const sectorInfo = sectorPriceLists.find(s => s.id === workerSector) || { name: workerSector, certifications: [] };
-
-    // Format dimensions
+    const sectorInfo = sectorPriceLists.find(s => s.id === sectorId) || sectorPriceLists[0];
     const dimsStr = dimensions ? JSON.stringify(dimensions) : "Non specificato";
 
-    // Format selected items for the AI
-    let selectedItemsList = "Nessun elemento selezionato.";
-    if (selectedItems && selectedItems.length > 0) {
-      selectedItemsList = selectedItems.map((it: any) => 
-        `- ${it.name}: Prezzo Unitario calcolato dallo specialista: ${it.customPrice} ${targetCountry.currencySymbol}/${it.unit}. Quantità/Volume previsto: ${it.quantity} ${it.unit}. Totale parziale stimato della voce: ${it.customPrice * it.quantity} ${targetCountry.currencySymbol}.`
-      ).join("\n");
+    // 1. Server-side Economic Calculations for Selected Listino Items
+    const qualityFactor = quality === "base" ? 0.0 : quality === "premium" ? 1.0 : 0.5;
+    const skillFactor = skillLevel === "beginner" ? 1.3 : skillLevel === "expert" ? 0.8 : 1.0;
+    const diffFactor = siteDifficulty === "high" ? 1.2 : siteDifficulty === "low" ? 0.9 : 1.0;
+    const serviceVat = ivaOption !== undefined ? Number(ivaOption) : targetCountry.defaultVat;
+    const materialVat = targetCountry.materialVatRate || 22;
+
+    let proTotalExcl = 0;
+    let proTotalIncl = 0;
+    let diyTotalExcl = 0;
+    let diyTotalIncl = 0;
+    let totalDiyHours = 0;
+    const daAffidareAProfessionista: Array<{ name: string; reason: string }> = [];
+    const detailedBreakdown: Array<any> = [];
+
+    if (selectedItems && Array.isArray(selectedItems)) {
+      for (const sel of selectedItems) {
+        const itemDef = sectorInfo.items.find((it: PriceItem) => it.id === sel.id);
+        const qty = Number(sel.quantity) || 1;
+        if (!itemDef) continue;
+
+        // Pro unit price between min and max based on quality
+        const proUnitPrice = itemDef.minPrice + (itemDef.maxPrice - itemDef.minPrice) * qualityFactor;
+        const proItemExcl = proUnitPrice * qty;
+        const proItemVat = proItemExcl * (serviceVat / 100);
+        const proItemIncl = proItemExcl + proItemVat;
+
+        proTotalExcl += proItemExcl;
+        proTotalIncl += proItemIncl;
+
+        const isDiyAllowed = itemDef.diyAllowed !== "no";
+        if (!isDiyAllowed) {
+          daAffidareAProfessionista.push({
+            name: itemDef.name,
+            reason: itemDef.diyNote || "Per legge o normative tecniche, questo intervento richiede obbligatoriamente un professionista abilitato."
+          });
+        } else {
+          // DIY calculation
+          const matPct = itemDef.materialPct ?? 0.4;
+          const waste = itemDef.wastePct ?? 0.1;
+          const materialCost = proItemExcl * matPct * (1 + waste);
+          const materialVatAmt = materialCost * (materialVat / 100);
+
+          const hoursPerUnit = itemDef.diyHoursPerUnit ?? 2;
+          const itemDiyHours = hoursPerUnit * qty * skillFactor * diffFactor;
+          totalDiyHours += itemDiyHours;
+          const itemDiyDays = Math.max(1, Math.ceil(itemDiyHours / 6));
+
+          // Tools quota
+          let itemToolsCost = 0;
+          const usedToolIds = itemDef.tools || [];
+          for (const tId of usedToolIds) {
+            const toolObj = toolsCatalog.find(t => t.id === tId);
+            if (toolObj) {
+              const rentCost = toolObj.rentPricePerDay * itemDiyDays;
+              itemToolsCost += Math.min(toolObj.buyPrice, rentCost);
+            }
+          }
+
+          const disposalCost = Math.max(10, materialCost * 0.05);
+          const unforeseenCost = (materialCost + itemToolsCost + disposalCost) * 0.1;
+
+          const diyItemExcl = materialCost + itemToolsCost + disposalCost + unforeseenCost;
+          const diyItemVat = materialVatAmt + (itemToolsCost + disposalCost + unforeseenCost) * (serviceVat / 100);
+          const diyItemIncl = diyItemExcl + diyItemVat;
+
+          diyTotalExcl += diyItemExcl;
+          diyTotalIncl += diyItemIncl;
+        }
+
+        detailedBreakdown.push({
+          itemId: itemDef.id,
+          name: itemDef.name,
+          quantity: qty,
+          unit: itemDef.unit,
+          proUnitPrice: Math.round(proUnitPrice * 100) / 100,
+          proTotal: Math.round(proItemIncl * 100) / 100,
+          diyAllowed: itemDef.diyAllowed ?? "yes",
+          source: "listino"
+        });
+      }
     }
 
-    // Format labor configuration for explicit computation
-    let laborConfigStr = "";
-    if (laborConfig) {
-      laborConfigStr = `
-- **CONFIGURAZIONE MANO D'OPERA E COSTI ASSOCIATI (DA INSERIRE OBBLIGATORIAMENTE)**:
-  - Tariffa oraria mano d'opera: ${laborConfig.hourlyRate} ${targetCountry.currencySymbol}/ora
-  - Ore di lavoro totali stimate: ${laborConfig.estimatedHours} ore
-  - Spese di viaggio, trasferta e logistica: ${laborConfig.travelCosts} ${targetCountry.currencySymbol}
-  - Oneri sicurezza e allestimento cantiere: ${laborConfig.setupOverheadCosts} ${targetCountry.currencySymbol}
-`;
-    }
+    // Min-Max ranges
+    const proMinIncl = proTotalIncl * 0.9;
+    const proMaxIncl = proTotalIncl * 1.1;
+    const diyMinIncl = diyTotalIncl * 0.9;
+    const diyMaxIncl = diyTotalIncl * 1.1;
+    const estimatedSavings = Math.max(0, proTotalIncl - diyTotalIncl);
+
+    // 2. Gemini AI Call for qualitative insights & estimated items
     const promptText = `
-Genera un preventivo edile completo, veritiero e altamente professionale interamente scritto in lingua ${langNameFull}, per un lavoratore edile operante nel settore "${sectorInfo.name}" in ${targetCountry.name}.
+Analizza la richiesta di un privato per il settore "${sectorInfo.name}" in ${targetCountry.name} (${targetCountry.flag}).
+Descrizione del lavoro: ${workDescription || "Lavori generali di manutenzione"}
+Dimensioni: ${dimsStr}
+Difficoltà cantiere: ${siteDifficulty || "media"}
 
-Il cantiere presenta le seguenti specifiche:
-- **Nazione Target**: ${targetCountry.name} (${targetCountry.flag})
-- **Valuta Locale**: ${targetCountry.currency} (${targetCountry.currencySymbol})
-- **Contesto Normativo del Paese**: ${targetCountry.regulatoryContext}
-- **Nome Committente / Cliente**: ${customerName || "Gentile Cliente"}
-- **Titolo del Lavoro / Progetto**: ${projectName || "Intervento di manutenzione"}
-- **Descrizione dei lavori da effettuare**: ${workDescription}
-- **Dimensioni del cantiere**: ${dimsStr}
-- **Elementi selezionati dal listino prezzi di settore**: 
-${selectedItemsList}
-- **Nota aggiuntiva dello specialista**: ${additionalNotes || "Nessuna"}
-- **Difficoltà cantiere**: ${siteDifficulty || "Media"} (Bassa / Media / Alta)
-- **Materiali forniti direttamente dal cliente**: ${materialsProvidedByCustomer ? "Sì" : "No, forniti dal professionista di settore"}
-${laborConfigStr}
-
-### REQUISITI DELLA RISPOSTA (JSON):
-Fornisci il calcolo dettagliato in formato JSON seguendo specificatamente lo schema richiesto. TUTTE LE DESCRIZIONI E I CAMPI TESTUALI DEVONO ESSERE SCRITTI IN LINGUA ${langNameFull} DIZIONARIO ESTESO:
-1. **feasibility**: Esamina e documenta attentamente la fattibilità tecnica nel contesto di ${targetCountry.name}. Scrivi in lingua ${langNameFull} ("rating", "analysis" dettagliata, "risks" come lista di criticità del cantiere, "recommendations" operative per superarle seguendo le best practices professionali).
-2. **costsBreakdown**: Fornisci una lista di voci di spesa dettagliata scritta in lingua ${langNameFull}.
-   - Includi i prezzi calcolati/selezionati in precedenza segnando source = 'listino'. Puoi tradurre o tenere simili le diciture delle lavorazioni in lingua ${langNameFull}.
-   - **OBBLIGATORIO - COMPUTO MANO D'OPERA E TRASFERTE**: Se sopra è presente la "CONFIGURAZIONE MANO D'OPERA", devi assolutamente inserire all'interno di costsBreakdown le seguenti tre voci distinte con source = 'listino' tradotte coerentemente in lingua ${langNameFull}:
-     a. Lavorazione manodopera specializzata: quantità = ${laborConfig?.estimatedHours || 0}, unità = "ore" (o unità equivalente tradotta), prezzo unitario = ${laborConfig?.hourlyRate || 0}, totale = ${Number(laborConfig?.estimatedHours || 0) * Number(laborConfig?.hourlyRate || 0)}.
-     b. Spese trasferta / logistica: quantità = 1, unità = "lotto" (o equivalente tradotta), prezzo unitario = ${laborConfig?.travelCosts || 0}, totale = ${laborConfig?.travelCosts || 0}.
-     c. Allestimento cantiere / oneri sicurezza: quantità = 1, unità = "lotto" (o equivalente tradotta), prezzo unitario = ${laborConfig?.setupOverheadCosts || 0}, totale = ${laborConfig?.setupOverheadCosts || 0}.
-   - Se ci sono lavorazioni aggiuntive necessarie desunte dalla descrizione del cliente (es. se menziona muffa ed è un imbianchino, aggiungi la sanificazione muffa; se menziona montaggio e smontaggio vecchi infissi, aggiungi la posa; ecc.), stima tali voci extra in modo coerente con il mercato locale del Paese selezionato (${targetCountry.name}) e assegna source = 'stimato'. Per ogni elemento, indica quantità corretta, unità, prezzo unitario e calcola il totale parziale (quantità * prezzo unitario) descrivendo le voci in lingua ${langNameFull}. Tutti i prezzi e i totali sono espressi in ${targetCountry.currencySymbol}.
-3. **estimatedTime**: Tempo massimo stimato per svolgere l'intero lavoro scritto in lingua ${langNameFull}.
-4. **certifications**: Elenca le certificazioni, le asseverazioni e i requisiti normativi necessari per la conformità di questa tipologia di lavoro in ${targetCountry.name}, facendo esplicito riferimento alle norme locali (es. SIA in Svizzera, DIN in Germania, RE2020/NF/Décennale in Francia, CTE in Spagna, DM 37/08 in Italia) tradotte o commentate in lingua ${langNameFull}.
-5. **customLetter**: Una lettera formale, professionale, estremamente cortese, scritta in prima persona da parte dell'artigiano/ditta per il cliente, interamente scritta in lingua ${langNameFull}. Deve spiegare chiaramente lo svolgimento del cantiere, l'attenzione al dettaglio, i materiali proposti e le condizioni generali, invitando il cliente a un contatto per formalizzare l'opera. Scatta i riferimenti alla valuta locale (${targetCountry.currencySymbol}) e menziona la dedizione dello specialista edile nel rispetto delle tempistiche. Fai anche riferimento alle ore di manodopera stimate e all'attenzione alla sicurezza.
-6. **totalAmount**: Costo totale complessivo del preventivo risultante dalla somma aritmetica di tutte le voci di costo compilate in costsBreakdown (valuta: ${targetCountry.currencySymbol}). Deve corrispondere esattamente alla somma di tutti i totali parziali.
-
-Inoltre, considera eventuali rischi associati a ${siteDifficulty === "high" ? "un'alta difficoltà di cantiere" : "difficoltà cantiere " + siteDifficulty}.
+Fornisci in formato JSON (interamente in lingua ${langNameFull}):
+1. **additionalItems**: Eventuali voci aggiuntive non coperte dal listino ma deducibili dalla descrizione (es. smaltimento macerie, ponteggi extra, trattamenti preliminari), con stima di quantità, unità, prezzo unitario e source: "stimato".
+2. **feasibility**:
+   - rating: 'Fattibile', 'Fattibile con riserve', 'Sconsigliato fai da te'
+   - analysis: spiegazione semplice per non addetti ai lavori
+   - risks: array di rischi principali (es. lavori in quota, muffa, impianti)
+   - recommendations: consigli pratici di sicurezza
+   - permitsAndRules: permessi o pratiche necessarie in ${targetCountry.name} (es. autorizzazioni condominiali, comunicazioni comunali, certificazioni di conformità)
+3. **mainSteps**: Principali passaggi operativi in sequenza logica per fare il lavoro.
+4. **estimatedTime**: Tempo stimato in giorni/ore sia per il professionista sia per il fai da te.
+5. **diySummaryNote**: Breve nota incoraggiante o di avvertimento sulla convenienza e sicurezza del fai da te per questo specifico lavoro.
 `;
 
     const response = await generateContentWithFallback(ai, promptText, {
-      systemInstruction: `Sei l'assistente AI di Preventivatore Edile Multilingua ed Europeo, un software gestionale professionale e ad alto livello per artigiani e ditte edili in Europa.
-Aiuti i lavoratori edili (imbianchini, serramentisti, piastrellisti, elettricisti, idraulici) ad automatizzare la formulazione dei loro preventivi partendo dalle misurazioni di cantiere, dai listini standard di settore adattati per nazione, e nel pieno rispetto delle normative locali vigenti (come le norme svizzere SIA, DIN in Germania, NF/RGE in Francia o CTE in Spagna).
-TUTTI I TESTI DELLA RISPOSTA (analisi, rischi, raccomandazioni, descrizioni voci di costo in costsBreakdown, estimatedTime, certificazioni, e la lettera customLetter) DEVONO ESSERE SCRITTI INTEGRALMENTE CON TERMINOLOGIA TECNICA APPROPRIATA NELLA LINGUA RICHIESTA DAL CLIENTE: ${langNameFull}.
-I tuoi calcoli aritmetici delle voci di costo devono essere perfetti (totale = quantità * prezzo unitario) e il totalAmount deve corrispondere esattamente alla somma di tutti i totali parziali.
-Rispondi SEMPRE e tassativamente compilando l'intero schema JSON richiesto, senza testo aggiuntivo fuori dal blocco di ritorno.`,
+      systemInstruction: `Sei l'esperto di stime edili per privati di Preventivatore Edile.
+Il tuo compito è aiutare un utente non esperto a capire se può fare un lavoro da solo (Fai da Te) o se deve chiamare un professionista, evidenziando i rischi, i permessi normativi del paese (${targetCountry.name}), i passaggi del lavoro e le voci extra stimate.
+Rispondi SEMPRE in formato JSON rigoroso secondo lo schema richiesto, nella lingua ${langNameFull}.`,
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
         properties: {
+          additionalItems: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                item: { type: Type.STRING },
+                quantity: { type: Type.NUMBER },
+                unit: { type: Type.STRING },
+                unitPrice: { type: Type.NUMBER },
+                source: { type: Type.STRING }
+              },
+              required: ["item", "quantity", "unit", "unitPrice", "source"]
+            }
+          },
           feasibility: {
             type: Type.OBJECT,
             properties: {
-              rating: { 
-                type: Type.STRING, 
-                description: "Esito fattibilità, es. 'Fattibile', 'Fattibile con riserve', 'Non raccomandato'" 
-              },
-              analysis: { 
-                type: Type.STRING, 
-                description: "Valutazione testuale della fattibilità del lavoro." 
-              },
-              risks: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
-                description: "Potenziali rischi legati al cantiere."
-              },
-              recommendations: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
-                description: "Raccomandazioni sul lavoro e passaggi per la sicurezza o la corretta posa."
-              }
+              rating: { type: Type.STRING },
+              analysis: { type: Type.STRING },
+              risks: { type: Type.ARRAY, items: { type: Type.STRING } },
+              recommendations: { type: Type.ARRAY, items: { type: Type.STRING } },
+              permitsAndRules: { type: Type.ARRAY, items: { type: Type.STRING } }
             },
-            required: ["rating", "analysis", "risks", "recommendations"]
+            required: ["rating", "analysis", "risks", "recommendations", "permitsAndRules"]
           },
-          costsBreakdown: {
+          mainSteps: {
             type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                item: { type: Type.STRING, description: "Nome o descrizione dettagliata della lavorazione" },
-                quantity: { type: Type.NUMBER, description: "Quantità numerica calcolata" },
-                unit: { type: Type.STRING, description: "Unità di misura, es. mq, cad, ml, lotto" },
-                unitPrice: { type: Type.NUMBER, description: "Prezzo unitario in valuta locale" },
-                total: { type: Type.NUMBER, description: "Costo complessivo della lavorazione (quantità * unitPrice)" },
-                source: { type: Type.STRING, description: "Origine del prezzo: 'listino' o 'stimato'" }
-              },
-              required: ["item", "quantity", "unit", "unitPrice", "total", "source"]
-            }
+            items: { type: Type.STRING }
           },
-          estimatedTime: { 
-            type: Type.STRING, 
-            description: "Durata complessiva dell'intervento" 
-          },
-          certifications: {
-            type: Type.ARRAY,
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                title: { type: Type.STRING, description: "Nome della certificazione, es. Norme SIA 118, o Dichiarazione di Conformità" },
-                description: { type: Type.STRING, description: "Spiegazione sull'obbligo o utilità nel Paese" },
-                lawReference: { type: Type.STRING, description: "Legge o norma di riferimento specifica dello Stato selezionato" },
-                mandatory: { type: Type.BOOLEAN, description: "Vero se legalmente obbligatoria in questo Paese per emettere questo lavoro" }
-              },
-              required: ["title", "description", "lawReference", "mandatory"]
-            }
-          },
-          customLetter: { 
-            type: Type.STRING, 
-            description: "Lettera di accompagnamento altamente professionale e dettagliata per convincere il cliente." 
-          },
-          totalAmount: { 
-            type: Type.NUMBER, 
-            description: "Somma di tutti i prezzi nel preventivo in valuta locale" 
-          }
+          estimatedTime: { type: Type.STRING },
+          diySummaryNote: { type: Type.STRING }
         },
-        required: ["feasibility", "costsBreakdown", "estimatedTime", "certifications", "customLetter", "totalAmount"]
+        required: ["additionalItems", "feasibility", "mainSteps", "estimatedTime", "diySummaryNote"]
       }
     });
 
     const resultText = response.text;
-    if (!resultText) {
-      throw new Error("L'API di Gemini ha restituito una risposta vuota.");
+    let aiInsights: any = {};
+    if (resultText) {
+      try {
+        aiInsights = JSON.parse(resultText.trim());
+      } catch (e) {
+        console.warn("Impossibile parsare la risposta JSON di Gemini:", e);
+      }
     }
 
-    const parsedQuoteData = JSON.parse(resultText.trim());
-    res.json(parsedQuoteData);
+    // Recalculate additional items on server
+    const processedAdditionalItems = (aiInsights.additionalItems || []).map((add: any) => {
+      const q = Number(add.quantity) || 1;
+      const up = Number(add.unitPrice) || 20;
+      const totalExcl = q * up;
+      const totalIncl = totalExcl * (1 + serviceVat / 100);
+      proTotalExcl += totalExcl;
+      proTotalIncl += totalIncl;
+      return {
+        ...add,
+        total: Math.round(totalIncl * 100) / 100
+      };
+    });
+
+    res.json({
+      success: true,
+      country: targetCountry,
+      sector: sectorInfo.name,
+      mode: mode || "compare",
+      professionalEstimate: {
+        totalExcl: Math.round(proTotalExcl * 100) / 100,
+        totalIncl: Math.round(proTotalIncl * 100) / 100,
+        minIncl: Math.round(proMinIncl * 100) / 100,
+        maxIncl: Math.round(proMaxIncl * 100) / 100
+      },
+      diyEstimate: {
+        totalExcl: Math.round(diyTotalExcl * 100) / 100,
+        totalIncl: Math.round(diyTotalIncl * 100) / 100,
+        minIncl: Math.round(diyMinIncl * 100) / 100,
+        maxIncl: Math.round(diyMaxIncl * 100) / 100,
+        estimatedHours: Math.round(totalDiyHours * 10) / 10,
+        estimatedDays: Math.max(1, Math.ceil(totalDiyHours / 6))
+      },
+      estimatedSavings: Math.round(estimatedSavings * 100) / 100,
+      daAffidareAProfessionista,
+      listinoBreakdown: detailedBreakdown,
+      additionalItems: processedAdditionalItems,
+      feasibility: aiInsights.feasibility || {},
+      mainSteps: aiInsights.mainSteps || [],
+      estimatedTime: aiInsights.estimatedTime || "Non specificato",
+      diySummaryNote: aiInsights.diySummaryNote || ""
+    });
 
   } catch (error: any) {
-    console.error("Errore nella generazione del preventivo:", error);
+    console.error("Errore durante la stima del costo:", error);
     res.status(500).json({
-      error: "Errore durante la generazione con intelligenza artificiale: " + (error.message || error)
+      error: "Errore durante il calcolo della stima: " + (error.message || error)
     });
   }
 });
 
 // Serve assets in production and let Vite handle dev mode
-// Vite middleware for development
 async function start() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

@@ -26,7 +26,15 @@ export interface ToolItem {
   rentPricePerDay: number;
 }
 
-export const toolsCatalog: ToolItem[] = [];
+export const toolsCatalog: ToolItem[] = [
+  { id: "tool_rullo_pennelli", name: "Set rulli, pennelli e teli protettivi", buyPrice: 45, rentPricePerDay: 5 },
+  { id: "tool_scala_telescopica", name: "Scala telescopica / Trabattello domestico", buyPrice: 120, rentPricePerDay: 15 },
+  { id: "tool_miscelatore", name: "Trapano miscelatore per stucchi e colle", buyPrice: 90, rentPricePerDay: 12 },
+  { id: "tool_levigatrice", name: "Levigatrice orbitale per pareti", buyPrice: 110, rentPricePerDay: 14 },
+  { id: "tool_spatola_veneziana", name: "Spatola inox e frattazzo per decorativi", buyPrice: 35, rentPricePerDay: 6 },
+  { id: "tool_livello_laser", name: "Livello laser a croce per squadri", buyPrice: 130, rentPricePerDay: 18 },
+  { id: "tool_avvitatore", name: "Avvitatore / Foratore a batteria", buyPrice: 150, rentPricePerDay: 20 }
+];
 
 export interface Sector {
   id: string;
@@ -64,7 +72,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 8,
         maxPrice: 15,
         category: "pit",
-        description: "Compresa preparazione delle superfici, stuccatura semplice e stesura di due mani di idropittura bianca o tinte pastello."
+        description: "Compresa preparazione delle superfici, stuccatura semplice e stesura di due mani di idropittura bianca o tinte pastello.",
+        materialPct: 0.35,
+        diyLevel: 2,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.3,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli", "tool_scala_telescopica"],
+        diyNote: "Richiede buona protezione dei mobili e precisione nei bordi. Coprire accuratamente pavimento e battiscopa."
       },
       {
         id: "imb_dip_lav",
@@ -73,7 +88,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 12,
         maxPrice: 20,
         category: "pit",
-        description: "Ideale per bagni e cucine, pittura ad alta resistenza allo sfregamento ed umidità."
+        description: "Ideale per bagni e cucine, pittura ad alta resistenza allo sfregamento ed umidità.",
+        materialPct: 0.40,
+        diyLevel: 2,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.35,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli", "tool_scala_telescopica"],
+        diyNote: "Usare idropittura lavabile specifica per ambienti umidi. Applicare due mani a distanza di 4-6 ore."
       },
       {
         id: "imb_dip_est_sil",
@@ -82,7 +104,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 18,
         maxPrice: 30,
         category: "pit",
-        description: "Pittura per esterni ad elevata resistenza agli agenti atmosferici e raggi UV, idrorepellente e permeabile al vapore."
+        description: "Pittura per esterni ad elevata resistenza agli agenti atmosferici e raggi UV, idrorepellente e permeabile al vapore.",
+        materialPct: 0.45,
+        diyLevel: 3,
+        diyAllowed: "partial",
+        diyHoursPerUnit: 0.45,
+        wastePct: 0.15,
+        tools: ["tool_rullo_pennelli", "tool_scala_telescopica"],
+        diyNote: "Attenzione ai lavori in quota su facciata esterna. Utilizzare trabattello a norma e DPI adeguati."
       },
       {
         id: "imb_dip_est_acr",
@@ -91,7 +120,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 15,
         maxPrice: 28,
         category: "pit",
-        description: "Finitura opaca a base di resine acriliche e farina di quarzo ad alto potere riempitivo e protettivo."
+        description: "Finitura opaca a base di resine acriliche e farina di quarzo ad alto potere riempitivo e protettivo.",
+        materialPct: 0.40,
+        diyLevel: 3,
+        diyAllowed: "partial",
+        diyHoursPerUnit: 0.40,
+        wastePct: 0.15,
+        tools: ["tool_rullo_pennelli", "tool_scala_telescopica"],
+        diyNote: "Lavorazione in altezza sulle facciate. Richiede condizioni meteo favorevoli (senza pioggia o sole battente diretto)."
       },
       {
         id: "imb_ras_ges",
@@ -100,7 +136,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 15,
         maxPrice: 25,
         category: "prep",
-        description: "Applicazione di stucco o gesso per livellamento e finitura liscia a specchio di pareti ruvide."
+        description: "Applicazione di stucco o gesso per livellamento e finitura liscia a specchio di pareti ruvide.",
+        materialPct: 0.25,
+        diyLevel: 4,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.8,
+        wastePct: 0.20,
+        tools: ["tool_miscelatore", "tool_levigatrice"],
+        diyNote: "Richiede molta manualità ed esperienza per evitare imperfezioni e accumuli di stucco. Elevata produzione di polvere."
       },
       {
         id: "imb_tra_ant",
@@ -109,7 +152,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 5,
         maxPrice: 10,
         category: "prep",
-        description: "Rimozione muffa esistente con lavaggio acido specifico e applicazione di primer termoisolante/antimuffa."
+        description: "Rimozione muffa esistente con lavaggio acido specifico e applicazione di primer termoisolante/antimuffa.",
+        materialPct: 0.50,
+        diyLevel: 2,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.25,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli"],
+        diyNote: "Utilizzare mascherina protettiva FFP2 durante il trattamento con prodotti antimuffa e candeggina/fungicida."
       },
       {
         id: "imb_rim_pap",
@@ -118,7 +168,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 5,
         maxPrice: 12,
         category: "prep",
-        description: "Stacco bagnato o a vapore di parati esistenti, compresi lavaggio e raschiatura dei residui di colla."
+        description: "Stacco bagnato o a vapore di parati esistenti, compresi lavaggio e raschiatura dei residui di colla.",
+        materialPct: 0.20,
+        diyLevel: 1,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.4,
+        wastePct: 0.05,
+        tools: ["tool_rullo_pennelli"],
+        diyNote: "Lavoro faticoso ma semplice. Inumidire bene con acqua tiepida o rimuovi-colla prima di raschiare per non danneggiare l'intonaco."
       },
       {
         id: "imb_pos_pap",
@@ -127,7 +184,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 15,
         maxPrice: 30,
         category: "dec",
-        description: "Incollaggio professionale di rotoli carta da parati con allineamento millimetrico dei pattern e dei sormonti."
+        description: "Incollaggio professionale di rotoli carta da parati con allineamento millimetrico dei pattern e dei sormonti.",
+        materialPct: 0.60,
+        diyLevel: 4,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.7,
+        wastePct: 0.15,
+        tools: ["tool_rullo_pennelli"],
+        diyNote: "Richiede precisione millimetrica nella giunzione dei teli e gestione della colla. Molto difficile per principianti."
       },
       {
         id: "imb_dec_ven",
@@ -136,7 +200,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 40,
         maxPrice: 75,
         category: "dec",
-        description: "Decorazione classica a spatola con effetto specchiato lucido ad alta eleganza per interni signorili."
+        description: "Decorazione classica a spatola con effetto specchiato lucido ad alta eleganza per interni signorili.",
+        materialPct: 0.45,
+        diyLevel: 5,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 1.2,
+        wastePct: 0.15,
+        tools: ["tool_spatola_veneziana"],
+        diyNote: "Tecnica artistica avanzata con spatolature multiple e lucidatura finale. Richiede grande manualità professionale."
       },
       {
         id: "imb_dec_vel",
@@ -145,7 +216,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 15,
         maxPrice: 28,
         category: "dec",
-        description: "Tecnica decorativa con effetti di chiaro-scuro semitrasparenti adatta sia per ambienti classici che moderni."
+        description: "Tecnica decorativa con effetti di chiaro-scuro semitrasparenti adatta sia per ambienti classici che moderni.",
+        materialPct: 0.40,
+        diyLevel: 3,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.5,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli", "tool_spatola_veneziana"],
+        diyNote: "Velatura decorativa con spugna o pennello. Richiede rapidità di esecuzione per evitare macchie di sovrapposizione."
       },
       {
         id: "imb_dec_ter",
@@ -154,7 +232,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 20,
         maxPrice: 38,
         category: "dec",
-        description: "Applicazione speciale con pennello e spatola ad effetto rustico anticato tipico della tradizione toscana."
+        description: "Applicazione speciale con pennello e spatola ad effetto rustico anticato tipico della tradizione toscana.",
+        materialPct: 0.45,
+        diyLevel: 3,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 0.6,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli", "tool_spatola_veneziana"],
+        diyNote: "Effetto decorativo rustico. Seguire attentamente le istruzioni del produttore per la granulometria e la stesura."
       },
       {
         id: "imb_ver_ter",
@@ -163,7 +248,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 40,
         maxPrice: 80,
         category: "dec",
-        description: "Carteggiatura e applicazione di smalto sintetico ad alta temperatura antiruggine."
+        description: "Carteggiatura e applicazione di smalto sintetico ad alta temperatura antiruggine.",
+        materialPct: 0.30,
+        diyLevel: 2,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 1.0,
+        wastePct: 0.10,
+        tools: ["tool_rullo_pennelli"],
+        diyNote: "I termosifoni devono essere freddi e ben carteggiati prima della verniciatura con smalto ad alte temperature."
       },
       {
         id: "imb_ver_inf",
@@ -172,7 +264,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 60,
         maxPrice: 120,
         category: "dec",
-        description: "Riportatura a legno grezzo tramite sverniciatore termico/chimico, carteggiatura fine e tripla mano di impregnante/smalto protettivo."
+        description: "Riportatura a legno grezzo tramite sverniciatore termico/chimico, carteggiatura fine e tripla mano di impregnante/smalto protettivo.",
+        materialPct: 0.35,
+        diyLevel: 3,
+        diyAllowed: "yes",
+        diyHoursPerUnit: 2.0,
+        wastePct: 0.15,
+        tools: ["tool_levigatrice", "tool_rullo_pennelli"],
+        diyNote: "Sverniciatura e levigatura approfondita del legno. Richiede tempo e pazienza per un risultato duraturo agli agenti atmosferici."
       },
       {
         id: "imb_car_con",
@@ -181,7 +280,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 30,
         maxPrice: 45,
         category: "cart",
-        description: "Fornitura, orditura metallica e posa di singola lastra in cartongesso 12.5mm con stuccatura giunti pronta per pittura."
+        description: "Fornitura, orditura metallica e posa di singola lastra in cartongesso 12.5mm con stuccatura giunti pronta per pittura.",
+        materialPct: 0.60,
+        diyLevel: 3,
+        diyAllowed: "partial",
+        diyHoursPerUnit: 1.0,
+        wastePct: 0.12,
+        tools: ["tool_avvitatore", "tool_livello_laser", "tool_miscelatore"],
+        diyNote: "Montaggio struttura metallica e lastre. Se vi sono passaggi elettrici interni, il collaudo finale richiede tecnico abilitato."
       },
       {
         id: "imb_car_con_idro",
@@ -190,7 +296,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 35,
         maxPrice: 50,
         category: "cart",
-        description: "Struttura per pareti umide dotata di lastre idrorepellenti antiumidità ideali per lavanderie, cucine e bagni."
+        description: "Struttura per pareti umide dotata di lastre idrorepellenti antiumidità ideali per lavanderie, cucine e bagni.",
+        materialPct: 0.60,
+        diyLevel: 3,
+        diyAllowed: "partial",
+        diyHoursPerUnit: 1.1,
+        wastePct: 0.12,
+        tools: ["tool_avvitatore", "tool_livello_laser"],
+        diyNote: "Usare lastre idrorepellenti (verdi) per bagni e cucine. Sigillare accuratamente i giunti con prodotti specifici antimuffa."
       },
       {
         id: "imb_car_con_isol",
@@ -199,7 +312,14 @@ export const sectorPriceLists: Sector[] = [
         minPrice: 40,
         maxPrice: 65,
         category: "cart",
-        description: "Controsoffittatura con lana di roccia o polistirene interno per isolamento termoriflettente e acustico tra piani."
+        description: "Controsoffittatura con lana di roccia o polistirene interno per isolamento termoriflettente e acustico tra piani.",
+        materialPct: 0.65,
+        diyLevel: 4,
+        diyAllowed: "partial",
+        diyHoursPerUnit: 1.3,
+        wastePct: 0.15,
+        tools: ["tool_avvitatore", "tool_livello_laser"],
+        diyNote: "Posa di isolante termico/acustico in intercapedine. Attenzione ai requisiti energetici e antincendio se condominiale."
       }
     ]
   },
