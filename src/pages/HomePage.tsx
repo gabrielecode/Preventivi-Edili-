@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { usePWA } from "../context/PWAContext";
-import { HeroIllustration } from "../components/HeroIllustration";
 import { PWABanner } from "../components/pwa/PWABanner";
 import { HowItWorks } from "../components/home/HowItWorks";
 import { WhatYouGet } from "../components/home/WhatYouGet";
@@ -43,7 +42,19 @@ export const HomePage: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-20 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
+        {/* Background Image Overlay */}
+        <div 
+          className="absolute inset-0 z-0 opacity-20 pointer-events-none"
+          style={{
+            backgroundImage: "url('/assets/aistudio/Homeowner_viewing_renovation_hol__a732fd58_3f905c84.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "blur(2px)"
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60 z-0 pointer-events-none" />
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             
             {/* Left Column: Copy & Actions */}
@@ -135,9 +146,28 @@ export const HomePage: React.FC = () => {
 
             </div>
 
-            {/* Right Column: Inline SVG Illustration */}
-            <div className="lg:col-span-5 flex items-center justify-center">
-              <HeroIllustration className="w-full max-w-md lg:max-w-none" />
+            {/* Right Column: Contextual Image */}
+            <div className="lg:col-span-5 flex items-center justify-center relative">
+              <div className="relative group">
+                {/* Decorative glow */}
+                <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 rounded-[3rem] blur-2xl group-hover:opacity-75 transition-opacity" />
+                
+                <img 
+                  src="/assets/aistudio/Homeowner_viewing_renovation_hol__a732fd58_3f905c84.jpg" 
+                  alt="AI Renovation Cost Estimation"
+                  className="relative w-full max-w-md lg:max-w-none rounded-[2.5rem] shadow-2xl border border-white/20 opacity-90 group-hover:opacity-100 transition-opacity"
+                />
+                
+                {/* Floating Badge on Image */}
+                <div className="absolute -bottom-4 -left-4 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-200/50 hidden md:block">
+                  <div className="flex items-center gap-3 text-blue-600 font-bold text-sm">
+                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <span>Analisi Real-Time</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
           </div>
