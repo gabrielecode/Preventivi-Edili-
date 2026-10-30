@@ -18,6 +18,13 @@ import { GuidaPianificazione } from "./pages/guides/PianificareRistrutturazione"
 import { GuidaScegliereImpresa } from "./pages/guides/ScegliereImpresa";
 import { GuidaSceltaRullo } from "./pages/guides/SceltaRullo";
 import { GuidaSceltaPittura } from "./pages/guides/SceltaPittura";
+import { GuidaCaldaia } from "./pages/guides/SceltaCaldaia";
+import { GuidaTermosifoniCondizionatori } from "./pages/guides/TermosifoniCondizionatori";
+import { GuidaPorteBlindate } from "./pages/guides/PorteBlindate";
+import { GuidaScaldabagno } from "./pages/guides/Scaldabagno";
+import { GuidaInfissi } from "./pages/guides/Infissi";
+import { GuidaPavimenti } from "./pages/guides/Pavimenti";
+import { GuidaCucina } from "./pages/guides/Cucina";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { Loader2 } from "lucide-react";
 import { ReloadPrompt } from "./components/pwa/ReloadPrompt";
@@ -105,6 +112,13 @@ export default function App() {
                   <Route path="/guida/scegliere-impresa" element={<GuidaScegliereImpresa />} />
                   <Route path="/guida/scelta-rullo" element={<GuidaSceltaRullo />} />
                   <Route path="/guida/scelta-pittura" element={<GuidaSceltaPittura />} />
+                  <Route path="/guida/scelta-caldaia" element={<GuidaCaldaia />} />
+                  <Route path="/guida/termosifoni-condizionatori" element={<GuidaTermosifoniCondizionatori />} />
+                  <Route path="/guida/porte-blindate" element={<GuidaPorteBlindate />} />
+                  <Route path="/guida/scaldabagno" element={<GuidaScaldabagno />} />
+                  <Route path="/guida/infissi" element={<GuidaInfissi />} />
+                  <Route path="/guida/pavimenti" element={<GuidaPavimenti />} />
+                  <Route path="/guida/cucina" element={<GuidaCucina />} />
                   <Route path="/tecnica" element={<Suspense fallback={<WizardLoadingFallback />}><LazyTechnicalPage /></Suspense>} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>

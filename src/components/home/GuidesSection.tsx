@@ -12,6 +12,13 @@ const guides = [
   { title: "Scegliere l'impresa edile", path: "/guida/scegliere-impresa" },
   { title: "Guida alla scelta del rullo", path: "/guida/scelta-rullo" },
   { title: "Quale pittura scegliere?", path: "/guida/scelta-pittura" },
+  { title: "Scegliere la caldaia", path: "/guida/scelta-caldaia" },
+  { title: "Termosifoni e Climatizzatori", path: "/guida/termosifoni-condizionatori" },
+  { title: "Porte blindate: Guida", path: "/guida/porte-blindate" },
+  { title: "Scegliere lo scaldabagno", path: "/guida/scaldabagno" },
+  { title: "Come scegliere gli infissi", path: "/guida/infissi" },
+  { title: "Guida ai pavimenti", path: "/guida/pavimenti" },
+  { title: "Come scegliere la cucina", path: "/guida/cucina" },
 ];
 
 export const GuidesSection: React.FC = () => {
