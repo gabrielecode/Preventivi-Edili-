@@ -43,22 +43,7 @@ export const PrivacyPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Warning Callout: "Bozza da verificare" */}
-        <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200/90 shadow-xs flex items-start gap-3.5 text-amber-900">
-          <div className="p-2 rounded-xl bg-amber-100 text-amber-700 shrink-0">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-amber-200/80 text-amber-900 text-xs font-extrabold tracking-wide uppercase">
-                {t.privacyDraftBadge}
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-amber-800 leading-relaxed font-medium">
-              {t.privacyDraftNotice}
-            </p>
-          </div>
-        </div>
+
 
         {/* Header Card */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-10 mb-8">
