@@ -128,6 +128,25 @@ export interface TranslationDict {
   confidenceLabel: string;
   recommendationsTitle: string;
   photoAnalysisSuccess: string;
+
+  // Lead request modal
+  requestProBtn: string;
+  leadModalTitle: string;
+  leadModalDesc: string;
+  leadNameLabel: string;
+  leadEmailLabel: string;
+  leadPhoneLabel: string;
+  leadLocationLabel: string;
+  leadNotesLabel: string;
+  leadPrivacyLabel: string;
+  leadPrivacyLink: string;
+  leadSubmitBtn: string;
+  leadSubmitting: string;
+  leadSuccessTitle: string;
+  leadSuccessText: string;
+  leadCloseBtn: string;
+  privacyModalTitle: string;
+  privacyModalText: string;
 }
 
 export const translations: Record<string, TranslationDict> = {
@@ -255,7 +274,24 @@ export const translations: Record<string, TranslationDict> = {
     visibleStateTitle: "Stato visibile",
     confidenceLabel: "Confidenza stima:",
     recommendationsTitle: "Consigli e verifiche",
-    photoAnalysisSuccess: "Analisi completata! Misure e osservazioni aggiornate."
+    photoAnalysisSuccess: "Analisi completata! Misure e osservazioni aggiornate.",
+    requestProBtn: "Richiedi preventivi a professionisti",
+    leadModalTitle: "Richiesta Preventivo a Professionisti",
+    leadModalDesc: "Compila il modulo per ricevere preventivi senza impegno da parte di imprese e professionisti qualificati della tua zona.",
+    leadNameLabel: "Nome e Cognome *",
+    leadEmailLabel: "Indirizzo Email *",
+    leadPhoneLabel: "Telefono (facoltativo)",
+    leadLocationLabel: "CAP e Città *",
+    leadNotesLabel: "Note o richieste particolari (opzionale)",
+    leadPrivacyLabel: "Ho letto e accetto l'informativa sulla privacy e il trattamento dei dati personali ai fini della richiesta di preventivo *",
+    leadPrivacyLink: "Leggi l'informativa sulla privacy",
+    leadSubmitBtn: "Invia richiesta ai professionisti",
+    leadSubmitting: "Invio in corso...",
+    leadSuccessTitle: "Richiesta Inviata con Successo!",
+    leadSuccessText: "La tua richiesta è stata registrata con successo e inoltrata al sistema. Nessun invio automatico di email è stato effettuato. Cosa succede adesso? I professionisti partner della tua zona verificheranno i dettagli del tuo progetto e ti contatteranno direttamente tramite email o telefono entro 24-48 ore lavorative per effettuare un sopralluogo o fornirti un preventivo dettagliato.",
+    leadCloseBtn: "Chiudi",
+    privacyModalTitle: "Informativa sulla Privacy",
+    privacyModalText: "I dati inseriti in questo modulo vengono utilizzati esclusivamente per consentire l'inoltro della richiesta di preventivo ai professionisti e alle imprese edili partner operanti nella tua zona. Il trattamento avviene nel rispetto del Regolamento UE 2016/679 (GDPR). Nessun invio di email automatiche viene effettuato dal sistema: la richiesta viene conservata in un archivio sicuro per la gestione commerciale e sarai contattato direttamente dai professionisti interessati al tuo progetto."
   },
   de: {
     appName: "Haus- & Heimwerker-Rechner",
@@ -381,7 +417,24 @@ export const translations: Record<string, TranslationDict> = {
     visibleStateTitle: "Sichtbarer Zustand",
     confidenceLabel: "Konfidenz der Schätzung:",
     recommendationsTitle: "Empfehlungen & Überprüfungen",
-    photoAnalysisSuccess: "Analyse abgeschlossen! Maße und Beobachtungen aktualisiert."
+    photoAnalysisSuccess: "Analyse abgeschlossen! Maße und Beobachtungen aktualisiert.",
+    requestProBtn: "Angebote von Profis anfordern",
+    leadModalTitle: "Angebotsanfrage bei Fachleuten",
+    leadModalDesc: "Füllen Sie das Formular aus, um unverbindliche Angebote von qualifizierten lokalen Handwerkern und Firmen zu erhalten.",
+    leadNameLabel: "Vor- und Nachname *",
+    leadEmailLabel: "E-Mail-Adresse *",
+    leadPhoneLabel: "Telefon (optional)",
+    leadLocationLabel: "PLZ und Stadt *",
+    leadNotesLabel: "Notizen oder besondere Wünsche (optional)",
+    leadPrivacyLabel: "Ich habe die Datenschutzerklärung und die Verarbeitung personenbezogener Daten für die Angebotsanfrage gelesen und akzeptiere sie *",
+    leadPrivacyLink: "Datenschutzerklärung lesen",
+    leadSubmitBtn: "Anfrage an Profis senden",
+    leadSubmitting: "Wird gesendet...",
+    leadSuccessTitle: "Anfrage erfolgreich gesendet!",
+    leadSuccessText: "Ihre Anfrage wurde erfolgreich registriert. Es wurden keine automatischen E-Mails versendet. Partner-Fachleute in Ihrer Nähe prüfen Ihre Projektdetails und kontaktieren Sie innerhalb von 24-48 Werbestunden direkt per E-Mail oder Telefon, um eine Besichtigung oder ein detailliertes Angebot abzustimmen.",
+    leadCloseBtn: "Schließen",
+    privacyModalTitle: "Datenschutz",
+    privacyModalText: "Die in dieses Formular eingegebenen Daten werden ausschließlich verwendet, um die Angebotsanfrage an Partnerunternehmen und Bau-Fachleute in Ihrer Region weiterzuleiten. Die Verarbeitung erfolgt gemäß EU-Verordnung 2016/679 (DSGVO). Es werden keine automatischen E-Mails vom System versendet: Die Anfrage wird in einem sicheren Archiv gespeichert und Sie werden direkt von den interessierten Fachleuten kontaktiert."
   },
   fr: {
     appName: "Calculateur Maison & Bricolage",
@@ -507,7 +560,24 @@ export const translations: Record<string, TranslationDict> = {
     visibleStateTitle: "État visible",
     confidenceLabel: "Confiance de l'estimation :",
     recommendationsTitle: "Conseils et vérifications",
-    photoAnalysisSuccess: "Analyse terminée ! Mesures et observations mises à jour."
+    photoAnalysisSuccess: "Analyse terminée ! Mesures et observations mises à jour.",
+    requestProBtn: "Demander des devis de professionnels",
+    leadModalTitle: "Demande de devis auprès de professionnels",
+    leadModalDesc: "Remplissez le formulaire pour recevoir des devis sans engagement d'entreprises et de professionnels qualifiés de votre région.",
+    leadNameLabel: "Nom et Prénom *",
+    leadEmailLabel: "Adresse Email *",
+    leadPhoneLabel: "Téléphone (optionnel)",
+    leadLocationLabel: "Code Postal et Ville *",
+    leadNotesLabel: "Notes ou demandes particulières (optionnel)",
+    leadPrivacyLabel: "J'ai lu et j'accepte la politique de confidentialité et le traitement des données personnelles pour la demande de devis *",
+    leadPrivacyLink: "Lire la politique de confidentialité",
+    leadSubmitBtn: "Envoyer la demande aux professionnels",
+    leadSubmitting: "Envoi en cours...",
+    leadSuccessTitle: "Demande envoyée avec succès !",
+    leadSuccessText: "Votre demande a été enregistrée avec succès. Aucun e-mail automatique n'a été envoyé. Des professionnels partenaires de votre région examineront les détails de votre projet et vous contacteront directement par e-mail ou téléphone dans les 24 à 48 heures ouvrées pour convenir d'une visite ou vous envoyer un devis détaillé.",
+    leadCloseBtn: "Fermer",
+    privacyModalTitle: "Politique de Confidentialité",
+    privacyModalText: "Les données saisies dans ce formulaire sont utilisées exclusivement pour transmettre la demande de devis aux entreprises et professionnels partenaires de votre région. Le traitement est conforme au RGPD (Règlement UE 2016/679). Aucun e-mail automatique n'est envoyé par le système : la demande est conservée dans un espace sécurisé et vous serez contacté directement par les professionnels intéressés."
   },
   en: {
     appName: "Home & DIY Estimator",
@@ -633,6 +703,23 @@ export const translations: Record<string, TranslationDict> = {
     visibleStateTitle: "Visible State",
     confidenceLabel: "Estimation Confidence:",
     recommendationsTitle: "Recommendations & Checks",
-    photoAnalysisSuccess: "Analysis complete! Measurements and observations updated."
+    photoAnalysisSuccess: "Analysis complete! Measurements and observations updated.",
+    requestProBtn: "Request quotes from professionals",
+    leadModalTitle: "Request Quote from Professionals",
+    leadModalDesc: "Fill out the form to receive no-obligation quotes from qualified local contractors and professionals.",
+    leadNameLabel: "Full Name *",
+    leadEmailLabel: "Email Address *",
+    leadPhoneLabel: "Phone (optional)",
+    leadLocationLabel: "Postal Code & City *",
+    leadNotesLabel: "Notes or special requests (optional)",
+    leadPrivacyLabel: "I have read and accept the privacy policy and personal data processing for the quote request *",
+    leadPrivacyLink: "Read privacy policy",
+    leadSubmitBtn: "Submit request to professionals",
+    leadSubmitting: "Submitting...",
+    leadSuccessTitle: "Request Submitted Successfully!",
+    leadSuccessText: "Your request has been successfully registered. No automatic emails have been sent. Partner professionals in your area will review your project details and contact you directly via email or phone within 24-48 business hours to arrange an inspection or send a detailed quote.",
+    leadCloseBtn: "Close",
+    privacyModalTitle: "Privacy Policy",
+    privacyModalText: "The data entered in this form is used exclusively to forward the quote request to partner contractors and building professionals operating in your area. Processing complies with EU Regulation 2016/679 (GDPR). No automatic emails are sent by the system: the request is stored in a secure archive for commercial management and you will be contacted directly by professionals interested in your project."
   }
 };

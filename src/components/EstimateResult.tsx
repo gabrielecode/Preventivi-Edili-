@@ -19,6 +19,7 @@ import {
 import { sectorPriceLists, toolsCatalog, ToolItem } from "../data/priceLists";
 import { TranslationDict } from "../data/translations";
 import { jsPDF } from "jspdf";
+import { LeadRequestModal } from "./LeadRequestModal";
 
 interface Props {
   quoteResult: any;
@@ -39,6 +40,7 @@ export const EstimateResult: React.FC<Props> = ({
 }) => {
   const [ownedTools, setOwnedTools] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
+  const [showLeadModal, setShowLeadModal] = useState(false);
 
   const toggleToolOwned = (toolId: string) => {
     setOwnedTools(prev => ({ ...prev, [toolId]: !prev[toolId] }));
@@ -277,6 +279,14 @@ ${t.disclaimerText}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setShowLeadModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
+            type="button"
+          >
+            <Building2 className="w-4 h-4" /> {t.requestProBtn}
+          </button>
+
           <button
             onClick={handleDownloadPdf}
             className="flex items-center gap-2 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
@@ -594,6 +604,17 @@ ${t.disclaimerText}
           {t.disclaimerText}
         </p>
       </div>
+
+      {showLeadModal && (
+        <LeadRequestModal
+          quoteResult={quoteResult}
+          activeCountry={activeCountry}
+          adjustedDiyMin={adjustedDiyMin}
+          adjustedDiyMax={adjustedDiyMax}
+          onClose={() => setShowLeadModal(false)}
+          t={t}
+        />
+      )}
 
     </div>
   );
