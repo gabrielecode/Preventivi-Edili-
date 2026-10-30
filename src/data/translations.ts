@@ -83,6 +83,7 @@ export interface TranslationDict {
   diyCardTitle: string;
   diyCardDesc: string;
   diySavingsLabel: string;
+  diyCardTime: string;
   proCardTitle: string;
   proCardKey: string;
   proCardDesc: string;
@@ -431,6 +432,7 @@ export const translations: Record<string, TranslationDict> = {
     diyCardTitle: "Fai da Te",
     diyCardDesc: "Costo stimato materiali e attrezzi (IVA incl.)",
     diySavingsLabel: "Risparmio stimato rispetto al professionista: ~{amount} {currency}",
+    diyCardTime: "{days}g, {hours}h",
     proCardTitle: "Con Professionista",
     proCardKey: "Chiavi in mano",
     proCardDesc: "Intervallo di costo ditta (IVA incl.)",
@@ -775,6 +777,7 @@ export const translations: Record<string, TranslationDict> = {
     diyCardTitle: "Heimwerken (DIY)",
     diyCardDesc: "Geschätzte Kosten für Material & Werkzeug (inkl. MwSt.)",
     diySavingsLabel: "Geschätzte Ersparnis im Vergleich zum Profi: ~{amount} {currency}",
+    diyCardTime: "{days}T, {hours}Std",
     proCardTitle: "Mit Fachfirma (Profi)",
     proCardKey: "Schlüsselfertig",
     proCardDesc: "Unternehmenskosten (inkl. MwSt.)",
@@ -1119,6 +1122,7 @@ export const translations: Record<string, TranslationDict> = {
     diyCardTitle: "Fait Maison (DIY)",
     diyCardDesc: "Coût estimé matériaux et outils (TTC)",
     diySavingsLabel: "Économie estimée par rapport au professionnalisme : ~{amount} {currency}",
+    diyCardTime: "{days}j, {hours}h",
     proCardTitle: "Avec un Professionnel",
     proCardKey: "Clé en main",
     proCardDesc: "Fourchette de prix entreprise (TTC)",
@@ -1463,6 +1467,7 @@ export const translations: Record<string, TranslationDict> = {
     diyCardTitle: "Do It Yourself (DIY)",
     diyCardDesc: "Estimated cost for materials & tools (incl. VAT)",
     diySavingsLabel: "Estimated savings compared to professional: ~{amount} {currency}",
+    diyCardTime: "{days}d, {hours}h",
     proCardTitle: "With a Professional",
     proCardKey: "Turnkey",
     proCardDesc: "Contractor cost range (incl. VAT)",

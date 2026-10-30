@@ -197,6 +197,8 @@ app.post("/api/analyze-photos", rateLimiter, async (req, res) => {
   }
 });
 
+export default app;
+
 async function start() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
@@ -212,9 +214,13 @@ async function start() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT} (Local dev using shared server-lib)`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://localhost:${PORT} (Local dev using shared server-lib)`);
+    });
+  }
 }
 
-start();
+if (!process.env.VERCEL) {
+  start();
+}
