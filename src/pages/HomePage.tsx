@@ -6,16 +6,22 @@ import {
   Scale,
   Receipt,
   ShieldCheck,
-  CheckCircle2,
-  Hammer,
-  Camera,
-  FileSpreadsheet,
 } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
+import { usePWA } from "../context/PWAContext";
 import { HeroIllustration } from "../components/HeroIllustration";
+import { PWABanner } from "../components/pwa/PWABanner";
+import { HowItWorks } from "../components/home/HowItWorks";
+import { WhatYouGet } from "../components/home/WhatYouGet";
+import { SupportedSectors } from "../components/home/SupportedSectors";
+import { EstimateSample } from "../components/home/EstimateSample";
+import { FaqAccordion } from "../components/home/FaqAccordion";
+import { FinalCta } from "../components/home/FinalCta";
+import { SeoHead } from "../components/SeoHead";
 
 export const HomePage: React.FC = () => {
   const { t } = useLanguage();
+  const { isInstalled } = usePWA();
 
   const handleScrollToHowItWorks = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,6 +33,14 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      <SeoHead
+        page="home"
+        title={t.seoHomeTitle}
+        description={t.seoHomeDesc}
+      />
+      
+      <PWABanner />
+
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-8 pb-12 sm:pt-14 sm:pb-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
@@ -34,20 +48,22 @@ export const HomePage: React.FC = () => {
             
             {/* Left Column: Copy & Actions */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              {/* Pill badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-700 text-xs font-semibold mb-5 shadow-xs">
-                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-                <span>AI Cost Estimator • 2026</span>
+              {/* Unboxed category / brand kicker */}
+              <div className="flex items-center gap-2 text-xs font-semibold text-blue-700 mb-5">
+                <Sparkles className="w-4 h-4 text-blue-600" aria-hidden="true" />
+                <span>AI Cost Estimator</span>
+                <span aria-hidden="true">·</span>
+                <span className="text-slate-500 font-normal">2026</span>
               </div>
 
               {/* Titolo con la promessa */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-4">
-                {t.heroTitle}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-4 text-balance">
+                {isInstalled ? t.standaloneHomeCta : t.heroTitle}
               </h1>
 
-              {/* Sottotitolo di una riga */}
+              {/* Sottotitolo */}
               <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed mb-8 max-w-2xl">
-                {t.heroSubtitle}
+                {isInstalled ? t.standaloneHomeSubtitle : t.heroSubtitle}
               </p>
 
               {/* CTA + Link Come Funziona */}
@@ -56,8 +72,8 @@ export const HomePage: React.FC = () => {
                   to="/stima"
                   className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-base font-bold shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35 transition-all cursor-pointer active:scale-98"
                 >
-                  <span>{t.heroCtaBtn}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>{isInstalled ? t.newEstimateBtn : t.heroCtaBtn}</span>
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
 
                 <a
@@ -74,7 +90,7 @@ export const HomePage: React.FC = () => {
                 {/* Punto 1: Confronto fai da te / professionista */}
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-white/70 border border-slate-200/60 shadow-xs">
                   <div className="p-2 rounded-lg bg-amber-50 text-amber-600 shrink-0">
-                    <Scale className="w-4 h-4" />
+                    <Scale className="w-4 h-4" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-slate-900 leading-snug">
@@ -89,7 +105,7 @@ export const HomePage: React.FC = () => {
                 {/* Punto 2: Intervalli con IVA */}
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-white/70 border border-slate-200/60 shadow-xs">
                   <div className="p-2 rounded-lg bg-blue-50 text-blue-600 shrink-0">
-                    <Receipt className="w-4 h-4" />
+                    <Receipt className="w-4 h-4" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-slate-900 leading-snug">
@@ -104,7 +120,7 @@ export const HomePage: React.FC = () => {
                 {/* Punto 3: Nessuna registrazione */}
                 <div className="flex items-start gap-3 p-3 rounded-xl bg-white/70 border border-slate-200/60 shadow-xs">
                   <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600 shrink-0">
-                    <ShieldCheck className="w-4 h-4" />
+                    <ShieldCheck className="w-4 h-4" aria-hidden="true" />
                   </div>
                   <div>
                     <h3 className="text-xs font-bold text-slate-900 leading-snug">
@@ -128,71 +144,23 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* "Come funziona" Section */}
-      <section id="come-funziona" className="py-14 sm:py-20 px-4 sm:px-6 bg-white border-t border-slate-200/60">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-950 tracking-tight mb-3">
-              {t.howItWorksTitle}
-            </h2>
-            <p className="text-sm sm:text-base text-slate-500">
-              {t.appSubtitle}
-            </p>
-          </div>
+      {/* (1) Come funziona in 4 passi con icone */}
+      <HowItWorks />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {/* Step 1 */}
-            <div className="relative p-6 sm:p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:border-blue-200 transition-all flex flex-col items-start group">
-              <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
-                <Hammer className="w-6 h-6" />
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
-                {t.howItWorksStep1Title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {t.howItWorksStep1Desc}
-              </p>
-            </div>
+      {/* (2) Cosa ottieni in 6 card */}
+      <WhatYouGet />
 
-            {/* Step 2 */}
-            <div className="relative p-6 sm:p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:border-blue-200 transition-all flex flex-col items-start group">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
-                <Camera className="w-6 h-6" />
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
-                {t.howItWorksStep2Title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {t.howItWorksStep2Desc}
-              </p>
-            </div>
+      {/* (3) Per quali lavori con nota onesta su elettrico/idraulico */}
+      <SupportedSectors />
 
-            {/* Step 3 */}
-            <div className="relative p-6 sm:p-7 rounded-3xl bg-slate-50 border border-slate-200/80 hover:border-blue-200 transition-all flex flex-col items-start group">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform">
-                <FileSpreadsheet className="w-6 h-6" />
-              </div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-2">
-                {t.howItWorksStep3Title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {t.howItWorksStep3Desc}
-              </p>
-            </div>
-          </div>
+      {/* (4) Esempio di stima statico etichettato "Esempio indicativo" con cifre coerenti */}
+      <EstimateSample />
 
-          {/* Quick CTA banner at bottom of Come Funziona */}
-          <div className="mt-12 sm:mt-16 text-center">
-            <Link
-              to="/stima"
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl text-sm font-bold shadow-md transition-all active:scale-98"
-            >
-              <span>{t.navCalculateBtn}</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* (5) FAQ accordion accessibile */}
+      <FaqAccordion />
+
+      {/* (6) CTA finale verso /stima */}
+      <FinalCta />
     </div>
   );
 };

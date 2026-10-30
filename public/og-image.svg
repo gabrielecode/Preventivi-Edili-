@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#080e1a" />
+    </linearGradient>
+    <radialGradient id="glow" cx="30%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.35" />
+      <stop offset="60%" stop-color="#1d4ed8" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="blueCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="1" fill="#3b82f6" fill-opacity="0.15" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+  <rect width="1200" height="630" fill="none" stroke="#2563eb" stroke-opacity="0.25" stroke-width="2" />
+
+  <!-- Top Badge -->
+  <g transform="translate(80, 70)">
+    <rect width="56" height="56" rx="14" fill="url(#blueCard)" />
+    <!-- Calculator icon -->
+    <rect x="14" y="12" width="28" height="32" rx="4" fill="none" stroke="#ffffff" stroke-width="2.5" />
+    <rect x="18" y="16" width="20" height="7" rx="2" fill="#93c5fd" />
+    <circle cx="20" cy="29" r="2" fill="#ffffff" />
+    <circle cx="28" cy="29" r="2" fill="#ffffff" />
+    <circle cx="36" cy="29" r="2" fill="#ffffff" />
+    <circle cx="20" cy="37" r="2" fill="#ffffff" />
+    <circle cx="28" cy="37" r="2" fill="#ef4444" />
+    <circle cx="36" cy="37" r="2" fill="#22c55e" />
+
+    <rect x="72" y="10" width="310" height="36" rx="18" fill="#1e293b" stroke="#3b82f6" stroke-opacity="0.4" />
+    <text x="92" y="33" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" letter-spacing="1.5">AI ESTIMATOR • PREVENTIVI 2026</text>
+  </g>
+
+  <!-- Main Titles -->
+  <g transform="translate(80, 180)">
+    <text x="0" y="50" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="900" letter-spacing="-1">Preventivo Casa &amp; Fai da Te AI</text>
+    <text x="0" y="105" fill="#93c5fd" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700">Confronta all'istante materiali, manodopera e risparmio reale</text>
+    <text x="0" y="145" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="19" font-weight="500">Stima con IVA territoriale inclusa, lista spesa con sfrido e attrezzatura noleggio vs acquisto</text>
+  </g>
+
+  <!-- 3 Cards -->
+  <g transform="translate(80, 380)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="325" height="150" rx="20" fill="#1e293b" fill-opacity="0.8" stroke="#3b82f6" stroke-opacity="0.3" stroke-width="1.5" />
+    <text x="24" y="38" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="800">Fai da Te vs Ditta</text>
+    <text x="24" y="70" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">Risparmio reale stimato ~70%</text>
+    <text x="24" y="98" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Valutazione ore e fattibilità 1-5</text>
+    <text x="24" y="122" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Distinta materiali con sfrido 10-15%</text>
+
+    <!-- Card 2 -->
+    <rect x="355" y="0" width="325" height="150" rx="20" fill="#1e293b" fill-opacity="0.8" stroke="#a855f7" stroke-opacity="0.3" stroke-width="1.5" />
+    <text x="379" y="38" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="800">5 Settori Edili &amp; IVA</text>
+    <text x="379" y="70" fill="#c084fc" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">Italia • Svizzera • Germania • Francia</text>
+    <text x="379" y="98" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Tinteggiatura, Infissi, Pavimenti</text>
+    <text x="379" y="122" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Idraulica ed Elettricità con nota onesta</text>
+
+    <!-- Card 3 -->
+    <rect x="710" y="0" width="325" height="150" rx="20" fill="#1e293b" fill-opacity="0.8" stroke="#38bdf8" stroke-opacity="0.3" stroke-width="1.5" />
+    <text x="734" y="38" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="800">Trasparenza &amp; Sicurezza</text>
+    <text x="734" y="70" fill="#38bdf8" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700">100% Gratuito • Nessuna Registrazione</text>
+    <text x="734" y="98" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Analisi foto in sola memoria RAM</text>
+    <text x="734" y="122" fill="#94a3b8" font-family="system-ui, -apple-system, sans-serif" font-size="13">Totali calcolati dal server (senza errori AI)</text>
+  </g>
+
+  <!-- Developer Footer -->
+  <text x="600" y="590" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="500">
+    App sviluppata da sititicino.ch – sviluppo app su misura
+  </text>
+</svg>

@@ -11,6 +11,7 @@ Un'applicazione web professionale Full-Stack (React SPA + Vercel Serverless Func
 - **Multilingua e Internazionale**: Supporto completo per Italia, Germania, Francia e Regno Unito con aliquote IVA dedicate e traduzioni in IT, DE, FR, EN.
 - **Esportazione PDF & Richiesta Preventivi**: Generazione di computi metrici estimativi in PDF con `jspdf` e sistema di invio richieste ai professionisti partner.
 - **Rate Limiting e Storage Redis**: Protezione da abusi tramite Upstash Ratelimit e persistenza dei lead su Upstash Redis con fallback locale in sviluppo.
+- **Progressive Web App (PWA)**: Installabile su Android, iOS e Desktop. Supporto offline per la home page, icone maskable e prompt di installazione personalizzati con guida per Safari iOS.
 
 ## 🛠️ Stack Tecnologico
 
@@ -34,6 +35,10 @@ Un'applicazione web professionale Full-Stack (React SPA + Vercel Serverless Func
 5. Per compilare per la produzione:
    ```bash
    npm run build
+   ```
+6. Rigenerare le icone PWA (richiede `public/icon.svg`):
+   ```bash
+   npx pwa-assets-generator
    ```
 
 ---

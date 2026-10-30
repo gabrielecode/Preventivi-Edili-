@@ -16,6 +16,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<LanguageCode>(() => {
     try {
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langParam = urlParams.get("lang");
+        if (langParam && ["it", "de", "fr", "en"].includes(langParam)) {
+          return langParam as LanguageCode;
+        }
+      }
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved && ["it", "de", "fr", "en"].includes(saved)) {
         return saved as LanguageCode;
@@ -25,6 +32,18 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     return "it";
   });
+
+  useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const langParam = urlParams.get("lang");
+      if (langParam && ["it", "de", "fr", "en"].includes(langParam) && langParam !== language) {
+        setLanguageState(langParam as LanguageCode);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
 
   const setLanguage = (lang: LanguageCode) => {
     setLanguageState(lang);

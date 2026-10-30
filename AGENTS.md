@@ -75,6 +75,25 @@ Tutte le chiamate AI dell'applicazione (`/api/estimate` e `/api/analyze-photos`)
 
 ---
 
+## 📱 Progressive Web App (PWA) e Offline (Task P2)
+
+1.  **Installabilità e Prompts**:
+    *   L'applicazione intercetta `beforeinstallprompt` e mostra pulsanti di installazione in Header e un Banner in Home (richiudibile per 14 giorni via `localStorage`).
+    *   Su iOS/Safari viene mostrata una guida modale ("Condividi → Aggiungi alla schermata Home").
+    *   I componenti `PWAInstallButton` e `PWABanner` si nascondono automaticamente se l'app è già installata (`display-mode: standalone`).
+2.  **Modalità Standalone**:
+    *   In modalità standalone, la Home Page mostra il titolo "Nuova stima" e un sottotitolo semplificato per favorire la ricorrenza d'uso.
+3.  **Service Worker e Caching**:
+    *   `registerType: 'prompt'`: Notifica l'utente quando è disponibile una nuova versione.
+    *   **Regola ferrea**: Le rotte `/api/*` non vengono mai caricate dalla cache (`NetworkOnly`) per garantire dati sempre aggiornati.
+    *   Pagina di fallback offline: `public/offline.html`.
+4.  **Rigenerazione Icone e Asset PWA**:
+    *   Le icone sono gestite tramite `pwa-assets.config.ts`.
+    *   Per rigenerare le icone partendo da `public/icon.svg`, eseguire: `npx pwa-assets-generator`.
+    *   Assicurarsi che `maskable-icon-512x512.png` abbia un margine di sicurezza del 10-15%.
+
+---
+
 ## 🗄️ Standard di Configurazione
 
 *   **Chiavi Segrete**: Salvate unicamente nelle variabili d'ambiente (`OPENROUTER_API_KEY`, `AI_CHAIN_TEXT`, `AI_CHAIN_VISION`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `ADMIN_TOKEN`).

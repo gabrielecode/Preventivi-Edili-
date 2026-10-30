@@ -8,6 +8,7 @@ import { WizardStep3Measurements } from "../components/WizardStep3Measurements";
 import { WizardStep4Preferences } from "../components/WizardStep4Preferences";
 import { EstimateResult } from "../components/EstimateResult";
 import { WaitingProgress } from "../components/WaitingProgress";
+import { SeoHead } from "../components/SeoHead";
 
 export const WizardPage: React.FC = () => {
   const {
@@ -60,6 +61,11 @@ export const WizardPage: React.FC = () => {
 
   return (
     <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:p-8 flex flex-col justify-center">
+      <SeoHead
+        page="estimate"
+        title={t.seoEstimateTitle}
+        description={t.seoEstimateDesc}
+      />
       {/* Breadcrumb back to Home */}
       <div className="mb-4">
         <Link

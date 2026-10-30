@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Calculator, ChevronDown, Sparkles } from "lucide-react";
 import { useLanguage, LanguageCode } from "../context/LanguageContext";
+import { PWAInstallButton } from "./pwa/PWAInstallButton";
 
 const languages: { code: LanguageCode; flag: string; label: string }[] = [
   { code: "it", flag: "🇮🇹", label: "Italiano" },
@@ -51,8 +52,10 @@ export const Header: React.FC = () => {
           </div>
         </Link>
 
-        {/* Right Controls: Language Selector + "Calcola il costo" */}
+        {/* Right Controls: Install + Language Selector + "Calcola il costo" */}
         <div className="flex items-center gap-2 sm:gap-3">
+          <PWAInstallButton />
+          
           {/* Language Selector Dropdown */}
           <div className="relative" ref={menuRef}>
             <button
