@@ -9,6 +9,15 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { HomePage } from "./pages/HomePage";
 import { PrivacyPage } from "./pages/PrivacyPage";
+import { HowToTinteggiare } from "./pages/guides/ComeTinteggiare";
+import { GuidaLavandino } from "./pages/guides/ComeSturareLavandino";
+import { GuidaRistrutturazioneCasa } from "./pages/guides/RistrutturazioneCasa";
+import { GuidaCostiRistrutturazione } from "./pages/guides/CostiRistrutturazione";
+import { GuidaRistrutturazioneBagno } from "./pages/guides/RistrutturazioneBagno";
+import { GuidaPianificazione } from "./pages/guides/PianificareRistrutturazione";
+import { GuidaScegliereImpresa } from "./pages/guides/ScegliereImpresa";
+import { GuidaSceltaRullo } from "./pages/guides/SceltaRullo";
+import { GuidaSceltaPittura } from "./pages/guides/SceltaPittura";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { Loader2 } from "lucide-react";
 import { ReloadPrompt } from "./components/pwa/ReloadPrompt";
@@ -87,6 +96,15 @@ export default function App() {
                     }
                   />
                   <Route path="/privacy" element={<PrivacyPage />} />
+                  <Route path="/guida/come-tinteggiare" element={<HowToTinteggiare />} />
+                  <Route path="/guida/sturare-lavandino" element={<GuidaLavandino />} />
+                  <Route path="/guida/ristrutturazione-casa" element={<GuidaRistrutturazioneCasa />} />
+                  <Route path="/guida/costi-ristrutturazione" element={<GuidaCostiRistrutturazione />} />
+                  <Route path="/guida/ristrutturazione-bagno" element={<GuidaRistrutturazioneBagno />} />
+                  <Route path="/guida/pianificare-ristrutturazione" element={<GuidaPianificazione />} />
+                  <Route path="/guida/scegliere-impresa" element={<GuidaScegliereImpresa />} />
+                  <Route path="/guida/scelta-rullo" element={<GuidaSceltaRullo />} />
+                  <Route path="/guida/scelta-pittura" element={<GuidaSceltaPittura />} />
                   <Route path="/tecnica" element={<Suspense fallback={<WizardLoadingFallback />}><LazyTechnicalPage /></Suspense>} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
