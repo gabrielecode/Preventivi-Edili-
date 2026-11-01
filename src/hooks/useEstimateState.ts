@@ -508,16 +508,6 @@ export function useEstimateState(
     photoElapsedSeconds,
     photoAnalysisUnavailable,
     setPhotoAnalysisUnavailable,
-    setMode,
     setSelectedItems,
-    setSelectedCountryId,
-    setSelectedSectorId,
-    setAreaMq,
-    setLengthMl,
-    setQuantityCad,
-    setWorkDescription,
-    setQuality,
-    setSkillLevel,
-    setSiteDifficulty,
   };
 }

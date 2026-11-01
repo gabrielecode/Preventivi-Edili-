@@ -182,6 +182,7 @@ export interface TranslationDict {
   navCalculateBtn: string;
   navHome: string;
   navPrivacy: string;
+  navTechnical: string;
 
   // Hero & Trust Points
   heroTitle: string;
@@ -537,6 +538,7 @@ export const translations: Record<string, TranslationDict> = {
     navCalculateBtn: "Calcola il costo",
     navHome: "Home",
     navPrivacy: "Privacy",
+    navTechnical: "Dettagli Tecnici",
 
     // Hero & Trust Points
     heroTitle: "Stima il costo dei lavori in casa, anche fai da te",
@@ -856,6 +858,14 @@ export const translations: Record<string, TranslationDict> = {
     leadCloseBtn: "Schließen",
     privacyModalTitle: "Datenschutz",
     privacyModalText: "Die in dieses Formular eingegebenen Daten werden ausschließlich verwendet, um die Angebotsanfrage an Partnerunternehmen und Bau-Fachleute in Ihrer Region weiterzuleiten. Die Verarbeitung erfolgt gemäß EU-Verordnung 2016/679 (DSGVO). Es werden keine automatischen E-Mails vom System versendet: Die Anfrage wird in einem sicheren Archiv gespeichert und Sie werden direkt von den interessierten Fachleuten kontaktiert.",
+    privacyBadgeGDPR: "DSGVO-konform (EU 2016/679)",
+    privacyBadgeLPD: "DSG-konform (Schweiz)",
+    cookiePolicyTitle: "Cookie-Richtlinie",
+    cookiePolicyText: "Diese Anwendung verwendet keine Profiling- oder Tracking-Cookies von Drittanbietern. Wir verwenden ausschließlich den lokalen Speicher des Browsers (localStorage), um Ihre Sprachpräferenzen zu speichern, sowie technisch notwendige Cookies für das ordnungsgemäße Funktionieren der Sitzung. Es werden keine personenbezogenen Daten für Werbezwecke verfolgt.",
+    lpdSectionTitle: "Datenschutz in der Schweiz (DSG)",
+    lpdSectionText: "In Übereinstimmung mit dem Bundesgesetz über den Datenschutz (DSG) garantieren wir, dass die Daten von in der Schweiz ansässigen Nutzern mit höchster Vertraulichkeit behandelt werden. Der Verantwortliche ergreift angemessene technische und organisatorische Maßnahmen, um unbefugten Zugriff zu verhindern.",
+    estimateDisclaimerProTitle: "Rechtlicher Hinweis und Art der Schätzungen",
+    estimateDisclaimerProText: "WICHTIG: Die angezeigten Zahlen sind indikative mathematische Schätzungen basierend auf nationalen Marktdurchschnitten. Sie stellen KEINE auf den Cent genauen Abrechnungen dar und bilden KEIN verbindliches Angebot, keine Rechnung und kein kommerzielles Angebot. Die tatsächlichen Kosten Ihres Projekts können aufgrund von Materialpreissteigerungen, unvorhergesehenen logistischen Schwierigkeiten, nicht sichtbaren Verschleißzuständen oder spezifischen Fachgebühren in Ihrer Region erheblich variieren. Es wird immer empfohlen, vor dem Fortfahren technische Besichtigungen und offizielle Angebote anzufordern.",
 
     // Task 11c
     cancelBtn: "Abbrechen",
@@ -882,6 +892,7 @@ export const translations: Record<string, TranslationDict> = {
     navCalculateBtn: "Kosten berechnen",
     navHome: "Startseite",
     navPrivacy: "Datenschutz",
+    navTechnical: "Technische Details",
 
     // Hero & Trust Points
     heroTitle: "Kosten für Hausarbeiten schätzen, auch zum Selbermachen",
@@ -1201,6 +1212,14 @@ export const translations: Record<string, TranslationDict> = {
     leadCloseBtn: "Fermer",
     privacyModalTitle: "Politique de Confidentialité",
     privacyModalText: "Les données saisies dans ce formulaire sont utilisées exclusivement pour transmettre la demande de devis aux entreprises et professionnels partenaires de votre région. Le traitement est conforme au RGPD (Règlement UE 2016/679). Aucun e-mail automatique n'est envoyé par le système : la demande est conservée dans un espace sécurisé et vous serez contacté directement par les professionnels intéressés.",
+    privacyBadgeGDPR: "Conforme au RGPD (UE 2016/679)",
+    privacyBadgeLPD: "Conforme à la LPD (Suisse)",
+    cookiePolicyTitle: "Politique relative aux cookies",
+    cookiePolicyText: "Cette application n'utilise pas de cookies de profilage ou de suivi tiers. Nous utilisons exclusivement le stockage local du navigateur (localStorage) pour enregistrer vos préférences linguistiques et les cookies techniques strictement nécessaires au bon fonctionnement de la session. Aucune donnée personnelle n'est suivie à des fins publicitaires.",
+    lpdSectionTitle: "Protection des données en Suisse (LPD)",
+    lpdSectionText: "Conformément à la Loi fédérale sur la protection des données (LPD), nous garantissons que les données des utilisateurs résidant en Suisse sont traitées avec la plus grande confidentialité. Le Responsable adopte les mesures techniques et organisationnelles appropriées pour empêcher tout accès non autorisé.",
+    estimateDisclaimerProTitle: "Avis juridique et nature des estimations",
+    estimateDisclaimerProText: "IMPORTANT : Les chiffres affichés sont des estimations mathématiques indicatives basées sur des moyennes nationales du marché. Ils ne représentent PAS des comptes exacts au centime près et ne constituent PAS un devis contraignant, une facture ou une offre commerciale. Le coût réel de votre projet peut varier sensiblement en raison de l'augmentation du prix des matériaux, de difficultés logistiques imprévues, d'états de dégradation non visibles ou de tarifs professionnels spécifiques à votre région. Il est toujours recommandé de demander des visites techniques et des devis officiels avant de procéder.",
 
     // Task 11c
     cancelBtn: "Annuler",
@@ -1227,6 +1246,7 @@ export const translations: Record<string, TranslationDict> = {
     navCalculateBtn: "Calculer le coût",
     navHome: "Accueil",
     navPrivacy: "Confidentialité",
+    navTechnical: "Détails techniques",
 
     // Hero & Trust Points
     heroTitle: "Estimez le coût des travaux de maison, même en DIY",
@@ -1546,6 +1566,14 @@ export const translations: Record<string, TranslationDict> = {
     leadCloseBtn: "Close",
     privacyModalTitle: "Privacy Policy",
     privacyModalText: "The data entered in this form is used exclusively to forward the quote request to partner contractors and building professionals operating in your area. Processing complies with EU Regulation 2016/679 (GDPR). No automatic emails are sent by the system: the request is stored in a secure archive for commercial management and you will be contacted directly by professionals interested in your project.",
+    privacyBadgeGDPR: "GDPR Compliant (EU 2016/679)",
+    privacyBadgeLPD: "FADP Compliant (Switzerland)",
+    cookiePolicyTitle: "Cookie Policy",
+    cookiePolicyText: "This application does not use profiling or third-party tracking cookies. We exclusively use the browser's local storage (localStorage) to save your language preferences and technically necessary cookies for the proper functioning of the session. No personal data is tracked for advertising purposes.",
+    lpdSectionTitle: "Data Protection in Switzerland (FADP)",
+    lpdSectionText: "In accordance with the Federal Act on Data Protection (FADP), we guarantee that the data of users residing in Switzerland is treated with the utmost confidentiality. The Controller adopts appropriate technical and organizational measures to prevent unauthorized access.",
+    estimateDisclaimerProTitle: "Legal Notice and Nature of Estimates",
+    estimateDisclaimerProText: "IMPORTANT: The figures shown are indicative mathematical estimates based on national market averages. They do NOT represent exact calculations to the cent and do NOT constitute a binding quote, an invoice, or a commercial offer. The actual cost of your project may vary significantly due to material price increases, unforeseen logistical difficulties, non-visible degradation states, or specific professional rates in your area. It is always recommended to request technical inspections and official quotes before proceeding.",
 
     // Task 11c
     cancelBtn: "Cancel",
@@ -1572,6 +1600,7 @@ export const translations: Record<string, TranslationDict> = {
     navCalculateBtn: "Calculate cost",
     navHome: "Home",
     navPrivacy: "Privacy",
+    navTechnical: "Technical Details",
 
     // Hero & Trust Points
     heroTitle: "Estimate the cost of home projects, even DIY",

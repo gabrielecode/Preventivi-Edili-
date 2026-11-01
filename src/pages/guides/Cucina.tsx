@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Utensils, CheckCircle2, ShieldCheck, Info, AlertTriangle, Hammer, Wrench } from "lucide-react";
+import { ArrowLeft, ArrowRight, Utensils, CheckCircle2, ShieldCheck, Info, AlertTriangle, Hammer, Wrench } from "lucide-react";
 import { SeoHead } from "../../components/SeoHead";
 
 export const GuidaCucina: React.FC = () => {
