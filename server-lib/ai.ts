@@ -1,5 +1,6 @@
 import { sectorPriceLists, toolsCatalog, PriceItem } from "../src/data/priceLists.js";
 import { countriesList } from "../src/data/countries.js";
+import { getCountryPrice, getMaterialIndex, getHourlyRate } from "../src/data/countryPrices.js";
 import {
   prepareChainForExecution,
   recordModelSuccess,
@@ -598,6 +599,8 @@ export async function calculateEstimate(reqBody: any) {
   const diffFactor = siteDifficulty === "high" ? 1.2 : siteDifficulty === "low" ? 0.9 : 1.0;
   const serviceVat = ivaOption !== undefined ? Number(ivaOption) : targetCountry.defaultVat;
   const materialVat = targetCountry.materialVatRate || 22;
+  const itCountry = countriesList.find(c => c.id === "IT") || countriesList[0];
+  const laborRatio = targetCountry.standardHourlyLaborRate / itCountry.standardHourlyLaborRate;
 
   let proTotalExcl = 0;
   let proTotalIncl = 0;
@@ -613,7 +616,19 @@ export async function calculateEstimate(reqBody: any) {
       const qty = Number(sel.quantity) || 1;
       if (!itemDef) continue;
 
-      const proUnitPrice = itemDef.minPrice + (itemDef.maxPrice - itemDef.minPrice) * qualityFactor;
+      const matPct = itemDef.materialPct ?? 0.4;
+      
+      const cp = getCountryPrice(itemDef.id, targetCountry.id);
+      let effectiveMin = cp ? cp.min : itemDef.minPrice;
+      let effectiveMax = cp ? cp.max : itemDef.maxPrice;
+
+      if (!cp) {
+        const countryIdx = matPct * targetCountry.materialIndex + (1 - matPct) * laborRatio;
+        effectiveMin = itemDef.minPrice * countryIdx;
+        effectiveMax = itemDef.maxPrice * countryIdx;
+      }
+
+      const proUnitPrice = effectiveMin + (effectiveMax - effectiveMin) * qualityFactor;
       const proItemExcl = proUnitPrice * qty;
       const proItemVat = proItemExcl * (serviceVat / 100);
       const proItemIncl = proItemExcl + proItemVat;
@@ -628,9 +643,10 @@ export async function calculateEstimate(reqBody: any) {
           reason: itemDef.diyNote || "Per legge o normative tecniche, questo intervento richiede obbligatoriamente un professionista abilitato."
         });
       } else {
-        const matPct = itemDef.materialPct ?? 0.4;
         const waste = itemDef.wastePct ?? 0.1;
-        const materialCost = proItemExcl * matPct * (1 + waste);
+        // DIY material cost derives from base Italy price * materialIndex (not from the scaled pro price)
+        const baseItalyUnitPrice = itemDef.minPrice + (itemDef.maxPrice - itemDef.minPrice) * qualityFactor;
+        const materialCost = baseItalyUnitPrice * matPct * getMaterialIndex(targetCountry.id) * qty * (1 + waste);
         const materialVatAmt = materialCost * (materialVat / 100);
 
         const hoursPerUnit = itemDef.diyHoursPerUnit ?? 2;
@@ -667,16 +683,71 @@ export async function calculateEstimate(reqBody: any) {
         proUnitPrice: Math.round(proUnitPrice * 100) / 100,
         proTotal: Math.round(proItemIncl * 100) / 100,
         diyAllowed: itemDef.diyAllowed ?? "yes",
+        source: "listino",
+        priceBasis: cp?.basis ?? "listino",
+        priceConfidence: cp?.confidence,
+        priceSource: cp?.source || itemDef.priceSource,
+        priceDate: itemDef.priceDate
+      });
+    }
+
+    // Task 4: Trasferta / costo minimo cantiere (solo in modalità pro/compare e per piccoli importi)
+    if (mode !== "diy" && proTotalExcl > 0 && proTotalExcl < targetCountry.standardTravelCost * 5) {
+      const travelCost = targetCountry.standardTravelCost;
+      const travelVat = travelCost * (serviceVat / 100);
+      proTotalExcl += travelCost;
+      proTotalIncl += travelCost + travelVat;
+      
+      detailedBreakdown.push({
+        itemId: "travel_cost",
+        name: "Trasferta / costo minimo cantiere",
+        quantity: 1,
+        unit: "lotto",
+        proUnitPrice: travelCost,
+        proTotal: Math.round((travelCost + travelVat) * 100) / 100,
+        diyAllowed: "no",
         source: "listino"
       });
     }
   }
 
+  // Preparazione listino prezzi scalato per il prompt AI (Task 6)
+  const scaledItemsForAi = sectorInfo.items.map(it => {
+    const mPct = it.materialPct ?? 0.4;
+    let sMin = it.minPrice;
+    let sMax = it.maxPrice;
+    const cp = getCountryPrice(it.id, targetCountry.id);
+    if (cp) {
+      sMin = cp.min;
+      sMax = cp.max;
+    } else {
+      const idx = mPct * targetCountry.materialIndex + (1 - mPct) * laborRatio;
+      sMin = it.minPrice * idx;
+      sMax = it.maxPrice * idx;
+    }
+    return {
+      id: it.id,
+      name: it.name,
+      unit: it.unit,
+      priceRange: `${Math.round(sMin)}-${Math.round(sMax)} ${targetCountry.currencySymbol}`
+    };
+  });
+
   const promptText = `
 Analizza la richiesta per il settore "${sectorInfo.name}" in ${targetCountry.name} (${targetCountry.flag}).
-Descrizione: ${workDescription || "Lavori di manutenzione standard"}
-Dimensioni: ${dimsStr}
+Paese: ${targetCountry.name}, Valuta: ${targetCountry.currency} (${targetCountry.currencySymbol}), Tariffa oraria media manodopera: ${getHourlyRate(targetCountry.id, sectorId as any) || targetCountry.standardHourlyLaborRate} ${targetCountry.currencySymbol}/h.
+
+Descrizione lavoro: ${workDescription || "Lavori di manutenzione standard"}
+Dimensioni indicate: ${dimsStr}
 Difficoltà cantiere: ${siteDifficulty || "media"}
+
+Listino prezzi di riferimento già scalato per ${targetCountry.name}:
+${JSON.stringify(scaledItemsForAi, null, 2)}
+
+REGOLE PER IL MODELLO:
+1. Per le voci non presenti nel listino sopra, resta coerente con la tariffa oraria del paese (${getHourlyRate(targetCountry.id, sectorId as any) || targetCountry.standardHourlyLaborRate} ${targetCountry.currencySymbol}/h) e con le voci di listino fornite.
+2. Usa la valuta del paese (${targetCountry.currencySymbol}).
+3. Non inventare prezzi o fonti.
 
 Fornisci in formato JSON (interamente in lingua ${langNameFull}):
 1. additionalItems: eventuali voci extra non nel listino (con item, quantity, unit, unitPrice, source: "stimato")

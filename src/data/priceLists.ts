@@ -13,6 +13,9 @@ export interface PriceItem {
   wastePct?: number;
   tools?: string[];
   diyNote?: string;
+  countryPrices?: Record<string, { min: number; max: number }>;
+  priceSource?: string;
+  priceDate?: string;
 }
 
 export type QualityLevel = "base" | "standard" | "premium";

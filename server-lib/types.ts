@@ -1,3 +1,5 @@
+export type SectorId = "imbianchino" | "serramentista" | "piastrellista" | "idraulico" | "elettricista";
+
 export interface LeadRecord {
   id: string;
   createdAt: string;

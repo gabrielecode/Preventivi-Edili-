@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { sectorPriceLists, toolsCatalog, ToolItem } from "../data/priceLists";
 import { TranslationDict } from "../data/translations";
+import { COUNTRY_PRICES_DISCLAIMER } from "../data/countryPrices";
 import { jsPDF } from "jspdf";
 import { LeadRequestModal } from "./LeadRequestModal";
 import { useAuth } from "../context/AuthContext";
@@ -479,6 +480,15 @@ ${t.disclaimerText}
               <div className="text-3xl font-extrabold text-blue-900">
                 {Math.round(quoteResult.professionalEstimate?.minIncl || proTotal * 0.9)} - {Math.round(quoteResult.professionalEstimate?.maxIncl || proTotal * 1.1)} <span className="text-lg font-bold">{activeCountry.currencySymbol}</span>
               </div>
+              <p className="text-[10px] text-blue-600/70 mt-1.5 font-medium italic">
+                {t.priceReferenceNote
+                  .replace("{country}", activeCountry.name)
+                  .replace("{rate}", String(activeCountry.standardHourlyLaborRate))
+                  .replace("{currency}", activeCountry.currencySymbol)}
+              </p>
+              <p className="text-[10px] text-blue-500/60 mt-1 font-normal leading-tight">
+                {COUNTRY_PRICES_DISCLAIMER}
+              </p>
             </div>
 
             <div className="mt-6 pt-4 border-t border-blue-200/60 text-xs text-blue-800 font-medium">
@@ -524,7 +534,27 @@ ${t.disclaimerText}
             <tbody className="divide-y divide-slate-100">
               {shoppingList.map((item: any, idx: number) => (
                 <tr key={idx} className="hover:bg-slate-50/50">
-                  <td className="py-3 font-medium text-slate-900">{item.item || item.name}</td>
+                  <td className="py-3 font-medium text-slate-900">
+                    <div>{item.item || item.name}</div>
+                    {(item.priceSource || item.priceDate || item.priceBasis) && (
+                      <div className="text-[10px] text-slate-400 font-normal mt-0.5 flex flex-wrap items-center gap-2">
+                        {item.priceBasis === "ricerca" && (
+                          <span className="bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-100">{t.priceBasisRicerca}</span>
+                        )}
+                        {item.priceBasis === "derivato" && (
+                          <span className="bg-slate-50 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200">{t.priceBasisDerivato}</span>
+                        )}
+                        {item.priceConfidence === "bassa" && (
+                          <span className="flex items-center gap-1 text-amber-600 group relative">
+                            <AlertCircle className="w-3 h-3" />
+                            <span className="hidden group-hover:block absolute bottom-full left-0 mb-1 px-2 py-1 bg-slate-900 text-white text-[9px] rounded whitespace-nowrap z-10">{t.priceConfidenceBassa}</span>
+                          </span>
+                        )}
+                        {item.priceSource && <span>{t.priceSourceLabel.replace("{source}", item.priceSource)}</span>}
+                        {item.priceDate && <span>{t.priceDateLabel.replace("{date}", item.priceDate)}</span>}
+                      </div>
+                    )}
+                  </td>
                   <td className="py-3 text-right text-slate-600">{item.quantity} {item.unit}</td>
                   <td className="py-3 text-right font-semibold text-blue-700">{item.qtyWithWaste} {item.unit} <span className="text-[10px] text-slate-400 font-normal">(+{item.wastePct}%)</span></td>
                   <td className="py-3 text-right font-bold text-slate-900">{item.materialCostEst || Math.round(item.total * 0.4)} {activeCountry.currencySymbol}</td>

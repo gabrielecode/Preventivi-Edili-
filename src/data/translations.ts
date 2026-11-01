@@ -129,6 +129,9 @@ export interface TranslationDict {
   confidenceLabel: string;
   recommendationsTitle: string;
   photoAnalysisSuccess: string;
+  priceReferenceNote: string;
+  priceSourceLabel: string;
+  priceDateLabel: string;
 
   // Lead request modal
   requestProBtn: string;
@@ -156,6 +159,9 @@ export interface TranslationDict {
   lpdSectionText: string;
   estimateDisclaimerProTitle: string;
   estimateDisclaimerProText: string;
+  priceBasisRicerca: string;
+  priceBasisDerivato: string;
+  priceConfidenceBassa: string;
 
   // Task 11c: Attese lunghe, annullamento, degraded e avvisi
   cancelBtn: string;
@@ -487,6 +493,9 @@ export const translations: Record<string, TranslationDict> = {
     confidenceLabel: "Confidenza stima:",
     recommendationsTitle: "Consigli e verifiche",
     photoAnalysisSuccess: "Analisi completata! Misure e osservazioni aggiornate.",
+    priceReferenceNote: "Prezzi indicativi per {country}, tariffa oraria di riferimento {rate} {currency}/h",
+    priceSourceLabel: "Fonte: {source}",
+    priceDateLabel: "Data: {date}",
     requestProBtn: "Richiedi preventivi a professionisti",
     leadModalTitle: "Richiesta Preventivo a Professionisti",
     leadModalDesc: "Compila il modulo per ricevere preventivi senza impegno da parte di imprese e professionisti qualificati della tua zona.",
@@ -512,6 +521,9 @@ export const translations: Record<string, TranslationDict> = {
     lpdSectionText: "In conformità alla Legge federale sulla protezione dei dati (LPD), garantiamo che i dati degli utenti residenti in Svizzera siano trattati con la massima riservatezza. Il Titolare adotta misure tecniche e organizzative adeguate per impedire accessi non autorizzati.",
     estimateDisclaimerProTitle: "Avviso Legale e Natura delle Stime",
     estimateDisclaimerProText: "IMPORTANTE: Le cifre mostrate sono stime matematiche indicative basate su medie nazionali di mercato. NON rappresentano conti esatti al centesimo e NON costituiscono un preventivo vincolante, una fattura o un'offerta commerciale. Il costo reale del tuo progetto può variare sensibilmente a causa di rincari dei materiali, difficoltà logistiche impreviste, stati di degrado non visibili o specifiche tariffe professionali della tua zona. Si raccomanda sempre di richiedere sopralluoghi tecnici e preventivi ufficiali prima di procedere.",
+    priceBasisRicerca: "Prezzo da fonti web",
+    priceBasisDerivato: "Stima derivata dalla tariffa locale",
+    priceConfidenceBassa: "Dato poco verificato",
 
     // Task 11c
     cancelBtn: "Annulla",
@@ -841,6 +853,9 @@ export const translations: Record<string, TranslationDict> = {
     confidenceLabel: "Konfidenz der Schätzung:",
     recommendationsTitle: "Empfehlungen & Überprüfungen",
     photoAnalysisSuccess: "Analyse abgeschlossen! Maße und Beobachtungen aktualisiert.",
+    priceReferenceNote: "Richtpreise für {country}, Referenzstundensatz {rate} {currency}/h",
+    priceSourceLabel: "Quelle: {source}",
+    priceDateLabel: "Datum: {date}",
     requestProBtn: "Angebote von Profis anfordern",
     leadModalTitle: "Angebotsanfrage bei Fachleuten",
     leadModalDesc: "Füllen Sie das Formular aus, um unverbindliche Angebote von qualifizierten lokalen Handwerkern und Firmen zu erhalten.",
@@ -866,6 +881,9 @@ export const translations: Record<string, TranslationDict> = {
     lpdSectionText: "In Übereinstimmung mit dem Bundesgesetz über den Datenschutz (DSG) garantieren wir, dass die Daten von in der Schweiz ansässigen Nutzern mit höchster Vertraulichkeit behandelt werden. Der Verantwortliche ergreift angemessene technische und organisatorische Maßnahmen, um unbefugten Zugriff zu verhindern.",
     estimateDisclaimerProTitle: "Rechtlicher Hinweis und Art der Schätzungen",
     estimateDisclaimerProText: "WICHTIG: Die angezeigten Zahlen sind indikative mathematische Schätzungen basierend auf nationalen Marktdurchschnitten. Sie stellen KEINE auf den Cent genauen Abrechnungen dar und bilden KEIN verbindliches Angebot, keine Rechnung und kein kommerzielles Angebot. Die tatsächlichen Kosten Ihres Projekts können aufgrund von Materialpreissteigerungen, unvorhergesehenen logistischen Schwierigkeiten, nicht sichtbaren Verschleißzuständen oder spezifischen Fachgebühren in Ihrer Region erheblich variieren. Es wird immer empfohlen, vor dem Fortfahren technische Besichtigungen und offizielle Angebote anzufordern.",
+    priceBasisRicerca: "Webbasierter Preis",
+    priceBasisDerivato: "Vom lokalen Tarif abgeleitete Schätzung",
+    priceConfidenceBassa: "Wenig verifizierte Daten",
 
     // Task 11c
     cancelBtn: "Abbrechen",
@@ -1195,6 +1213,9 @@ export const translations: Record<string, TranslationDict> = {
     confidenceLabel: "Confiance de l'estimation :",
     recommendationsTitle: "Conseils et vérifications",
     photoAnalysisSuccess: "Analyse terminée ! Mesures et observations mises à jour.",
+    priceReferenceNote: "Prix indicatifs pour {country}, taux horaire de référence {rate} {currency}/h",
+    priceSourceLabel: "Source: {source}",
+    priceDateLabel: "Date: {date}",
     requestProBtn: "Demander des devis de professionnels",
     leadModalTitle: "Demande de devis auprès de professionnels",
     leadModalDesc: "Remplissez le formulaire pour recevoir des devis sans engagement d'entreprises et de professionnels qualifiés de votre région.",
@@ -1220,6 +1241,9 @@ export const translations: Record<string, TranslationDict> = {
     lpdSectionText: "Conformément à la Loi fédérale sur la protection des données (LPD), nous garantissons que les données des utilisateurs résidant en Suisse sont traitées avec la plus grande confidentialité. Le Responsable adopte les mesures techniques et organisationnelles appropriées pour empêcher tout accès non autorisé.",
     estimateDisclaimerProTitle: "Avis juridique et nature des estimations",
     estimateDisclaimerProText: "IMPORTANT : Les chiffres affichés sont des estimations mathématiques indicatives basées sur des moyennes nationales du marché. Ils ne représentent PAS des comptes exacts au centime près et ne constituent PAS un devis contraignant, une facture ou une offre commerciale. Le coût réel de votre projet peut varier sensiblement en raison de l'augmentation du prix des matériaux, de difficultés logistiques imprévues, d'états de dégradation non visibles ou de tarifs professionnels spécifiques à votre région. Il est toujours recommandé de demander des visites techniques et des devis officiels avant de procéder.",
+    priceBasisRicerca: "Prix basé sur des sources web",
+    priceBasisDerivato: "Estimation dérivée du tarif local",
+    priceConfidenceBassa: "Donnée peu vérifiée",
 
     // Task 11c
     cancelBtn: "Annuler",
@@ -1549,6 +1573,9 @@ export const translations: Record<string, TranslationDict> = {
     confidenceLabel: "Estimation Confidence:",
     recommendationsTitle: "Recommendations & Checks",
     photoAnalysisSuccess: "Analysis complete! Measurements and observations updated.",
+    priceReferenceNote: "Indicative prices for {country}, reference hourly rate {rate} {currency}/h",
+    priceSourceLabel: "Source: {source}",
+    priceDateLabel: "Date: {date}",
     requestProBtn: "Request quotes from professionals",
     leadModalTitle: "Request Quote from Professionals",
     leadModalDesc: "Fill out the form to receive no-obligation quotes from qualified local contractors and professionals.",
@@ -1574,6 +1601,9 @@ export const translations: Record<string, TranslationDict> = {
     lpdSectionText: "In accordance with the Federal Act on Data Protection (FADP), we guarantee that the data of users residing in Switzerland is treated with the utmost confidentiality. The Controller adopts appropriate technical and organizational measures to prevent unauthorized access.",
     estimateDisclaimerProTitle: "Legal Notice and Nature of Estimates",
     estimateDisclaimerProText: "IMPORTANT: The figures shown are indicative mathematical estimates based on national market averages. They do NOT represent exact calculations to the cent and do NOT constitute a binding quote, an invoice, or a commercial offer. The actual cost of your project may vary significantly due to material price increases, unforeseen logistical difficulties, non-visible degradation states, or specific professional rates in your area. It is always recommended to request technical inspections and official quotes before proceeding.",
+    priceBasisRicerca: "Web-based price",
+    priceBasisDerivato: "Local rate derived estimate",
+    priceConfidenceBassa: "Low confidence data",
 
     // Task 11c
     cancelBtn: "Cancel",
