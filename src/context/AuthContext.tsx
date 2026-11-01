@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth, ensureUserProfile, db } from '../lib/firebase';
+import { auth, ensureUserProfile, db, getRedirectResult } from '../lib/firebase';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -17,6 +17,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    getRedirectResult(auth).catch((error) => {
+      console.error("Redirect login error:", error);
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       

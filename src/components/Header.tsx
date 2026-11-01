@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Calculator, ChevronDown, Sparkles, LogIn, LogOut, LayoutDashboard, Settings, User, Menu, X, BookOpen } from "lucide-react";
 import { useLanguage, LanguageCode } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
-import { auth, googleProvider, signOut, signInWithPopup } from "../lib/firebase";
+import { auth, googleProvider, signOut, signInWithPopup, signInWithRedirect } from "../lib/firebase";
 import { PWAInstallButton } from "./pwa/PWAInstallButton";
 
 const languages: { code: LanguageCode; flag: string; label: string }[] = [
@@ -39,8 +39,14 @@ export const Header: React.FC = () => {
   const handleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Login failed", error);
+    } catch (error: any) {
+      if (error?.code !== 'auth/popup-closed-by-user') {
+        try {
+          await signInWithRedirect(auth, googleProvider);
+        } catch (redirectError) {
+          console.error("Login redirect failed", redirectError);
+        }
+      }
     }
   };
 
